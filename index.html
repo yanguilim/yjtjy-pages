@@ -1,0 +1,3069 @@
+<!DOCTYPE html>
+<!-- 幽径通骄阳 · 个人学习工作台 | 单文件本地方案：全部 CSS/JS/图标内联，零外部依赖，数据存浏览器 localStorage，可一键导出备份到 E:\工作台数据保存\backup -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="幽径通骄阳">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FF6B35">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjRkZCNzAzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjRkY2QjM1Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyNTYiIHk9IjI1NiIgZm9udC1zaXplPSIzMDAiIGZvbnQtZmFtaWx5PSJLYWlUaSxTVEthaXRpLHNlcmlmIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iI0ZGRjhFRCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiPumYszwvdGV4dD48L3N2Zz4=">
+<title>幽径通骄阳 · 学习工作台</title>
+<style>
+/* ============ 设计令牌：多巴胺色系 × 古风宣纸 ============ */
+:root{
+  --paper:#FFFDF7; --paper2:#FFF8ED; --ink:#2B2118; --ink2:#5C4B3A; --ink3:#8B7A66;
+  --line:#EADFCD; --line2:#F3EADB;
+  --dop-rose:#FF4D6D; --dop-amber:#FFB703; --dop-mint:#06D6A0; --dop-sky:#4CC9F0;
+  --dop-violet:#9D4EDD; --dop-orange:#FF6B35; --dop-jade:#06A77D;
+  --red:#E5383B; --green:#1B9C5B; --blue:#1D6FE0;
+  --m1:#FFB703; --m2:#06A77D; --m3:#FF6B35; --m4:#9D4EDD;
+  --shadow:0 6px 22px rgba(90,60,20,.09); --shadow2:0 12px 40px rgba(90,60,20,.16);
+  --r:16px; --r2:12px; --r3:999px;
+  --fs:"KaiTi","STKaiti","Kaiti SC",serif;
+  --ff:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--ff); color:var(--ink); background:var(--paper);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(255,183,3,.13), transparent 42%),
+    radial-gradient(circle at 88% 4%, rgba(157,78,221,.11), transparent 40%),
+    radial-gradient(circle at 78% 92%, rgba(6,214,160,.12), transparent 44%),
+    radial-gradient(circle at 8% 88%, rgba(76,201,240,.11), transparent 40%);
+  background-attachment:fixed; font-size:15px; line-height:1.65;
+  padding-bottom:calc(74px + env(safe-area-inset-bottom));
+}
+body.glucose-alarm{background-color:#FFECEC}
+body.glucose-alarm::before{content:"";position:fixed;inset:0;border:6px solid rgba(229,56,59,.55);pointer-events:none;z-index:60;animation:alarmPulse 1.4s ease-in-out infinite}
+@keyframes alarmPulse{0%,100%{opacity:.35}50%{opacity:.9}}
+button,input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink)}
+button{cursor:pointer;border:0;background:none}
+a{color:var(--blue)}
+.hide{display:none !important}
+
+/* ============ 顶栏 ============ */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(255,253,247,.93);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1180px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-badge{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--dop-amber),var(--dop-orange));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);flex:0 0 auto}
+.brand h1{margin:0;font-family:var(--fs);font-size:23px;letter-spacing:3px;font-weight:700;white-space:nowrap}
+.brand .sub{font-size:11px;color:var(--ink3);letter-spacing:1px}
+.topbar-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.stat-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--r3);background:#fff;border:1px solid var(--line);font-size:13px;font-weight:600}
+.stat-chip b{color:var(--dop-rose)}
+
+/* ============ 导航 ============ */
+.nav{max-width:1180px;margin:12px auto 0;padding:0 14px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:var(--r3);background:#fff;border:1px solid var(--line);font-size:15px;font-weight:700;color:var(--ink2);min-height:44px;transition:.18s}
+.nav button svg{width:18px;height:18px}
+.nav button.on{color:#fff;border-color:transparent;box-shadow:var(--shadow)}
+.nav button.on[data-m="dash"]{background:linear-gradient(135deg,#FFC53D,var(--m1))}
+.nav button.on[data-m="path"]{background:linear-gradient(135deg,#2ED8A7,var(--m2))}
+.nav button.on[data-m="sun"]{background:linear-gradient(135deg,#FF8F5E,var(--m3))}
+.nav button.on[data-m="lib"]{background:linear-gradient(135deg,#B57BEA,var(--m4))}
+
+/* ============ 布局 ============ */
+.wrap{max-width:1180px;margin:0 auto;padding:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.card.tight{padding:12px}
+.card-h{display:flex;align-items:center;gap:9px;margin:0 0 12px}
+.card-h h2,.card-h h3{margin:0;font-size:17px;font-family:var(--fs);letter-spacing:1.5px;font-weight:700}
+.card-h .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g5{grid-template-columns:repeat(5,1fr)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--ink3);font-size:13px}
+.tiny{font-size:12px;color:var(--ink3)}
+.sep{height:1px;background:var(--line2);margin:12px 0}
+
+/* ============ 按钮 ============ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:9px 16px;border-radius:var(--r3);background:#fff;border:1.5px solid var(--line);font-size:14px;font-weight:700;color:var(--ink2);transition:.16s}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn svg{width:16px;height:16px}
+.btn.sm{min-height:34px;padding:5px 11px;font-size:13px}
+.btn.sm svg{width:14px;height:14px}
+.btn.p{background:linear-gradient(135deg,#FF7A93,var(--dop-rose));color:#fff;border-color:transparent}
+.btn.a{background:linear-gradient(135deg,#FFC53D,var(--dop-amber));color:#5C3D00;border-color:transparent}
+.btn.g{background:linear-gradient(135deg,#2ED8A7,var(--dop-jade));color:#fff;border-color:transparent}
+.btn.s{background:linear-gradient(135deg,#7FDBFF,var(--dop-sky));color:#03384A;border-color:transparent}
+.btn.v{background:linear-gradient(135deg,#B57BEA,var(--dop-violet));color:#fff;border-color:transparent}
+.btn.o{background:linear-gradient(135deg,#FF9A6C,var(--dop-orange));color:#fff;border-color:transparent}
+.btn.danger{border-color:#F6C4C5;color:var(--red)}
+.btn.danger:hover{background:#FFF1F1}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ============ 表单 ============ */
+input[type=text],input[type=number],input[type=password],input[type=date],input[type=time],input[type=search],select,textarea{
+  width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:var(--r2);background:#FFFEFA;font-size:16px;outline:none;transition:.16s}
+input:focus,select:focus,textarea:focus{border-color:var(--dop-amber);box-shadow:0 0 0 3px rgba(255,183,3,.16)}
+textarea{resize:vertical;min-height:76px;line-height:1.7}
+label.fl{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin:0 0 5px}
+.field{margin-bottom:11px}
+.inline-form{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));align-items:end}
+
+/* ============ 标签 / 徽章 ============ */
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--r3);font-size:12px;font-weight:700;background:var(--paper2);border:1px solid var(--line);color:var(--ink2)}
+.tag.rose{background:#FFEDF1;border-color:#FFC9D6;color:#C81E45}
+.tag.amber{background:#FFF6DF;border-color:#FFE1A3;color:#8A5B00}
+.tag.mint{background:#E3FBF3;border-color:#A9EEDA;color:#046B51}
+.tag.sky{background:#E7F7FE;border-color:#B3E7F8;color:#0A6081}
+.tag.violet{background:#F5EDFE;border-color:#DEC7F7;color:#6423A8}
+.tag.red{background:#FFECEC;border-color:#F8C6C7;color:#B4262A}
+.err{color:var(--red);font-weight:800}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.sync-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--r3);background:#fff;border:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer}
+.sync-chip .dot{margin-right:2px}
+.sync-off{background:#bbb}.sync-ing{background:#F4A261;animation:pulse 1s infinite}.sync-ok{background:#06A77D}.sync-err{background:#E5383B}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ============ 今天要处理 ============ */
+.today{background:linear-gradient(135deg,#FFF7E3,#FFEFF3);border:1.5px solid #FFDCA8;border-radius:var(--r);padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.today h2{margin:0;font-family:var(--fs);font-size:18px;letter-spacing:2px}
+.tl{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.tl li{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:var(--r2);flex-wrap:wrap}
+.tl li.over{border-color:#F6C4C5;background:#FFF6F6}
+.tl li .t{flex:1;min-width:140px}
+.tl li.done .t{text-decoration:line-through;color:var(--ink3)}
+.chk{width:26px;height:26px;flex:0 0 auto;border-radius:8px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center}
+.chk.on{background:var(--dop-mint);border-color:var(--dop-mint)}
+.chk svg{width:15px;height:15px;color:#fff;opacity:0}
+.chk.on svg{opacity:1}
+
+/* ============ 列表 / 条目 ============ */
+.item{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line);border-radius:var(--r2);background:#FFFEFB;margin-bottom:8px;flex-wrap:wrap}
+.item .grow{flex:1;min-width:150px}
+.item .ops{display:flex;gap:6px;flex-wrap:wrap}
+.empty{padding:26px 14px;text-align:center;color:var(--ink3);border:2px dashed var(--line);border-radius:var(--r2);background:#FFFEFA;font-size:14px}
+
+/* ============ 学生名单 ============ */
+.stu-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(158px,1fr))}
+.stu{position:relative;display:flex;flex-direction:column;gap:4px;padding:13px;border-radius:var(--r2);border:1.5px solid var(--line);background:#fff;text-align:left;min-height:76px;transition:.16s}
+.stu:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.stu .nm{font-size:17px;font-weight:800;font-family:var(--fs);letter-spacing:1px;display:flex;align-items:center;gap:5px}
+.stu.warn .nm{color:var(--blue)}
+.stu .mt{font-size:12px;color:var(--ink3)}
+.flower{width:19px;height:19px;flex:0 0 auto}
+.card-hero{border-radius:var(--r);padding:20px 18px;color:#fff;background:linear-gradient(135deg,#2ED8A7 0%,#06A77D 50%,#0B8B93 100%);box-shadow:var(--shadow2);margin-bottom:14px;min-height:20vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.card-hero::after{content:"";position:absolute;right:-28px;bottom:-40px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.13)}
+.card-hero h2{margin:0;font-family:var(--fs);font-size:27px;letter-spacing:4px}
+.hero-stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;position:relative;z-index:1}
+.hero-stats div{background:rgba(255,255,255,.19);border-radius:var(--r2);padding:7px 13px;font-size:13px;font-weight:700}
+.hero-stats b{font-size:19px;display:block;line-height:1.2}
+
+/* ============ 展示台栏目 ============ */
+.zone{border:1.5px solid var(--line);border-radius:var(--r2);overflow:hidden;background:#fff;margin-bottom:12px}
+.zone-h{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--paper2);border-bottom:1px solid var(--line);font-weight:800;font-size:15px;flex-wrap:wrap}
+.zone-h .right{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.zone-b{padding:12px}
+.rec{padding:9px 11px;border-radius:10px;background:#FFFEFA;border:1px solid var(--line2);margin-bottom:7px;font-size:15px;line-height:1.9}
+.rec .meta{font-size:11px;color:var(--ink3);margin-top:3px}
+/* ============ 进修展示台（项目并列 + 竖排详情） ============ */
+.study-cols{display:grid;gap:14px;grid-template-columns:repeat(3,1fr)}
+@media(max-width:980px){ .study-cols{grid-template-columns:repeat(2,1fr)} }
+@media(max-width:680px){ .study-cols{grid-template-columns:1fr} }
+.study-name{background:none;border:0;padding:0;margin:0;font-family:inherit;font-weight:800;font-size:17px;color:var(--ink);cursor:pointer;text-align:left}
+.study-name:hover{color:var(--m4);text-decoration:underline}
+.study-col .card-h{align-items:flex-start}
+.study-rec{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px}
+.study-rec-h{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap}
+.study-rec-h .tiny{font-weight:700;color:var(--ink2)}
+
+/* ============ 模态框 ============ */
+.mask{position:fixed;inset:0;background:rgba(43,33,24,.5);backdrop-filter:blur(3px);z-index:70;display:flex;align-items:center;justify-content:center;padding:14px;overflow-y:auto}
+.modal{background:var(--paper);border-radius:var(--r);width:100%;max-width:560px;box-shadow:var(--shadow2);max-height:92vh;display:flex;flex-direction:column;border:1px solid var(--line)}
+.modal.wide{max-width:880px}
+.modal-h{display:flex;align-items:center;gap:9px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.modal-h h3{margin:0;font-size:17px;font-family:var(--fs);letter-spacing:1.5px}
+.modal-h button{margin-left:auto;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink3)}
+.modal-b{padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal-f{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap}
+
+/* ============ 搜索结果 ============ */
+.sr{padding:11px 12px;border-radius:var(--r2);border:1px solid var(--line);background:#fff;margin-bottom:8px}
+.sr .p{font-size:12px;color:var(--ink3);display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
+.sr .txt{font-size:14px;line-height:1.7}
+mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weight:700}
+
+/* ============ 数据看板 ============ */
+.kpi{border-radius:var(--r2);padding:13px;border:1.5px solid var(--line);background:#fff;text-align:center}
+.kpi .v{font-size:24px;font-weight:800;line-height:1.25}
+.kpi .l{font-size:12px;color:var(--ink3);font-weight:700}
+.bar{height:9px;border-radius:var(--r3);background:var(--line2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:var(--r3);background:linear-gradient(90deg,var(--dop-mint),var(--dop-sky))}
+.chartbox{width:100%;overflow-x:auto}
+
+/* ============ 素材卡 ============ */
+.mat{border:1.5px solid var(--line);border-radius:var(--r2);background:#fff;padding:12px;margin-bottom:9px}
+.mat .t{font-weight:800;font-size:15px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.mat .body{font-size:14px;color:var(--ink2);margin:6px 0;max-height:80px;overflow:hidden;position:relative;line-height:1.75}
+.mat .body.open{max-height:none}
+.thumbs{display:flex;gap:7px;flex-wrap:wrap;margin:7px 0}
+.thumbs img{width:66px;height:66px;object-fit:cover;border-radius:9px;border:1px solid var(--line)}
+.fileicon{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:9px;background:var(--paper2);border:1px solid var(--line);font-size:12px;font-weight:700}
+
+/* ============ 烟花 / 小红花动画 ============ */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:90}
+.spark{position:absolute;width:9px;height:9px;border-radius:50%;animation:fly 1.15s ease-out forwards}
+@keyframes fly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.25);opacity:0}}
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#FFF6E0;padding:11px 20px;border-radius:var(--r3);font-size:14px;font-weight:700;z-index:95;box-shadow:var(--shadow2);max-width:88vw;text-align:center}
+
+/* ============ 门禁 ============ */
+.lock{max-width:420px;margin:32px auto;text-align:center}
+.lock .ring{width:84px;height:84px;border-radius:50%;margin:0 auto 14px;background:linear-gradient(135deg,#FF9A6C,var(--dop-orange));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow2)}
+.pin{display:flex;gap:9px;justify-content:center;margin:14px 0}
+.pin input{width:44px;height:54px;text-align:center;font-size:23px;font-weight:800;padding:0}
+
+/* ============ 移动端 ============ */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:none;background:rgba(255,253,247,.97);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.tabbar div{display:flex}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;min-height:56px;font-size:11px;font-weight:700;color:var(--ink3)}
+.tabbar button svg{width:22px;height:22px}
+.tabbar button.on[data-m="dash"]{color:var(--m1)}
+.tabbar button.on[data-m="path"]{color:var(--m2)}
+.tabbar button.on[data-m="sun"]{color:var(--m3)}
+.tabbar button.on[data-m="lib"]{color:var(--m4)}
+@media(max-width:900px){.g5,.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  .nav{display:none}
+  .tabbar{display:block}
+  .g2,.g3,.g4,.g5{grid-template-columns:1fr}
+  .brand h1{font-size:19px;letter-spacing:2px}
+  .wrap{padding:11px}
+  .card{padding:13px;border-radius:14px}
+  .topbar-actions{width:100%;margin-left:0}
+  .topbar-actions .btn{flex:1}
+  .card-hero h2{font-size:22px}
+  .stu-grid{grid-template-columns:repeat(2,1fr)}
+  .btn{min-height:44px}
+}
+/* ============ PWA 安装引导 ============ */
+.install-tip{display:none;position:fixed;left:12px;right:12px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:96;background:linear-gradient(135deg,#FFB703,#FF6B35);color:#3a2410;padding:12px 14px;border-radius:14px;box-shadow:var(--shadow2);gap:10px;align-items:flex-start;font-size:13px;line-height:1.6;max-width:520px;margin:0 auto}
+.install-tip.show{display:flex}
+.install-tip b{color:#5a2a00}
+.install-tip .x{flex:none;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.12);color:#3a2410;font-weight:800;font-size:16px;line-height:1}
+.install-tip svg{width:22px;height:22px;flex:none;margin-top:1px;stroke:#3a2410}
+@media(min-width:769px){ .install-tip{display:none !important} }
+.topbar{padding-top:max(12px, env(safe-area-inset-top))}
+@media(max-width:768px){ .topbar{padding-top:max(10px, env(safe-area-inset-top))} .card-hero{padding:18px 14px} .wrap{padding:10px} }
+@media(min-width:820px) and (max-width:1100px){ .study-cols{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(3,1fr)} }
+
+@media print{
+  body{background:#fff !important;padding:0}
+  .topbar,.nav,.tabbar,.no-print,.btn,#fx{display:none !important}
+  .card,.zone{box-shadow:none;break-inside:avoid;border-color:#ccc}
+  .print-only{display:block !important}
+}
+.print-only{display:none}
+</style>
+</head>
+<body>
+<div id="fx"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></symbol>
+<symbol id="i-path" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21c0-4 6-5 6-9s-4-4-4-7"/><path d="M5 21h14"/><path d="M6 8c2 0 3-1 3-3"/><path d="M18 13c-2 0-3 1-3 3"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></symbol>
+<symbol id="i-flower" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="2.2"/><path d="M12 6.8c0-2.5-3.5-3-3.5-.6 0 1.1 1.5 1.6 3.5.6zM14.2 9c2.5 0 3-3.5.6-3.5-1.1 0-1.6 1.5-.6 3.5zM12 11.2c0 2.5 3.5 3 3.5.6 0-1.1-1.5-1.6-3.5-.6zM9.8 9c-2.5 0-3 3.5-.6 3.5 1.1 0 1.6-1.5.6-3.5z"/><path d="M12 12v9"/><path d="M12 16c2 0 3.5-1 4-2.5"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v6M14 11v6"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l11-11a2.5 2.5 0 0 0-3.5-3.5L4 16.5V20z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="10" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M3 17l5-4.5 4 3.5 3-2.5 6 5"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 18v2h16v-2"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M4 19v1h16v-1"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7L11.5 5.8"/><path d="M14 11a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 19.7l1.5-1.5"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V4M4 20h16M8 17v-5M12 17V8M16 17v-8"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l2.7 5.6 6.1.8-4.5 4.3 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+<symbol id="i-ai" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 7V4M9 12h.01M15 12h.01M9.5 16h5M2 12h2M20 12h2"/></symbol>
+<symbol id="i-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16"/></symbol>
+<symbol id="i-weight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M8.5 12a3.5 3.5 0 0 1 7 0"/><path d="M12 12l2-2.5"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 10.5a6 6 0 0 1-12 0C6 9.5 12 3 12 3z"/></symbol>
+<symbol id="i-run" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="4.5" r="2"/><path d="M12 21l1.5-6-3-2.5 1-4.5 3.5 2 3 1"/><path d="M10.5 12.5L7 15l-3-.5M13.5 15l2.5 2 .5 4"/></symbol>
+<symbol id="i-food" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3v8a2.5 2.5 0 0 0 5 0V3M8.5 11v10M15 3c-1 3-1 5 0 6.5V21"/><path d="M18.5 3v6.5"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 5.5v15"/></symbol>
+<symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></symbol>
+<symbol id="i-set" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M4.5 7.5l2.6 1.5M16.9 15l2.6 1.5M4.5 16.5L7.1 15M16.9 9l2.6-1.5"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-5.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14 5.5L20 16"/><path d="M20 20v-4h-4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></symbol>
+</defs></svg>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="brand-badge"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg></span>
+      <div>
+        <h1 id="wb-title">幽径通骄阳</h1>
+        <div class="sub" id="wb-sub">康庄幽径 · 骄阳永灿 · 花团锦簇</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span class="stat-chip" id="chip-flower"><svg width="16" height="16" style="color:#E5383B"><use href="#i-flower"/></svg>小红花 <b id="flower-n">0</b></span>
+      <span class="sync-chip" id="sync-chip" onclick="openSettings()" title="账号与同步状态（点击设置）"><span class="dot" id="sync-dot"></span><span id="sync-txt">未同步</span></span>
+      <button class="btn sm" onclick="exportBackup()"><svg><use href="#i-download"/></svg>导出备份</button>
+      <button class="btn sm" onclick="importBackupPick()"><svg><use href="#i-upload"/></svg>导入恢复</button>
+      <button class="btn sm" onclick="openSettings()"><svg><use href="#i-set"/></svg>设置</button>
+    </div>
+  </div>
+  <nav class="nav" id="nav">
+    <button data-m="dash" class="on" onclick="switchModule('dash')"><svg><use href="#i-dash"/></svg><span data-nav="dash">仪表盘</span></button>
+    <button data-m="path" onclick="switchModule('path')"><svg><use href="#i-path"/></svg><span data-nav="path">康庄幽径</span></button>
+    <button data-m="sun" onclick="switchModule('sun')"><svg><use href="#i-sun"/></svg><span data-nav="sun">骄阳永灿</span></button>
+    <button data-m="lib" onclick="switchModule('lib')"><svg><use href="#i-flower"/></svg><span data-nav="lib">花团锦簇</span></button>
+  </nav>
+</header>
+
+<main class="wrap">
+  <!-- ================= 仪表盘 ================= -->
+  <section id="m-dash">
+    <!-- 今天要处理 + 一句话速记 并列在上 -->
+    <div class="grid g2" style="align-items:start">
+      <div class="today" id="today-box"></div>
+
+      <div class="card">
+        <div class="card-h"><svg width="19" height="19" style="color:var(--m4)"><use href="#i-ai"/></svg><h2>一句话速记</h2>
+          <span class="right"><span class="tiny">打字 / 语音 / 图片，自动分析归类</span></span></div>
+        <textarea id="memo" placeholder="例：张三默写黄发垂髫，髫字写错&#10;例：李四今天听写错字有 登记、统计&#10;例：今天体重 62.5 公斤&#10;例：早上血糖 5.6"></textarea>
+        <div class="row" style="margin-top:9px">
+          <button class="btn sm v" id="mic-btn" onclick="toggleVoice()"><svg><use href="#i-mic"/></svg>语音输入</button>
+          <button class="btn sm" onclick="pickMemoImage()"><svg><use href="#i-image"/></svg>图片/扫描</button>
+          <button class="btn sm a" onclick="analyzeMemo()"><svg><use href="#i-ai"/></svg>分析归类</button>
+          <button class="btn sm" onclick="document.getElementById('memo').value=''"><svg><use href="#i-close"/></svg>清空</button>
+        </div>
+        <div id="memo-imgs" class="thumbs"></div>
+        <div id="memo-result" style="margin-top:11px"></div>
+      </div>
+    </div>
+
+    <div class="card tight no-print">
+      <div class="row">
+        <span class="tag amber"><svg width="13" height="13"><use href="#i-bell"/></svg>数据安全</span>
+        <span class="tiny" id="backup-hint">数据存于本机浏览器，建议定期导出备份到 E:\工作台数据保存\backup</span>
+        <span class="right" style="margin-left:auto"></span>
+        <button class="btn sm a" onclick="exportBackup()"><svg><use href="#i-download"/></svg>导出 JSON 备份</button>
+        <button class="btn sm" onclick="importBackupPick()"><svg><use href="#i-upload"/></svg>导入恢复</button>
+        <button class="btn sm" onclick="exportAllCsv()"><svg><use href="#i-file"/></svg>导出 CSV</button>
+        <button class="btn sm danger" onclick="clearDemo()"><svg><use href="#i-trash"/></svg>清空示例数据</button>
+      </div>
+    </div>
+
+    <div class="grid g4" id="quick"></div>
+
+    <div class="grid g2" style="align-items:start">
+      <div class="card">
+        <div class="card-h"><svg width="19" height="19" style="color:var(--m2)"><use href="#i-check"/></svg><h2>待办事项</h2>
+          <span class="right"><span class="tiny">点一下即完成，出现删除线</span></span></div>
+        <div class="row">
+          <input type="text" id="todo-in" placeholder="添加待办…" onkeydown="if(event.key==='Enter')addTodo()" style="flex:1;min-width:130px">
+          <input type="date" id="todo-date" style="max-width:150px">
+          <button class="btn g" onclick="addTodo()"><svg><use href="#i-plus"/></svg>添加</button>
+        </div>
+        <ul class="tl" id="todo-list" style="margin-top:11px"></ul>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><svg width="19" height="19" style="color:var(--m1)"><use href="#i-search"/></svg><h2>全站关键字搜索</h2>
+          <span class="right"><span class="tiny">覆盖四大板块 · 显示所在位置与时间</span></span></div>
+        <div class="row">
+          <input type="search" id="gs" placeholder="输入关键字，如：黄发垂髫 / 张三 / 议论文 / 血糖" oninput="renderSearch()" style="flex:1;min-width:190px">
+          <button class="btn s" onclick="renderSearch()"><svg><use href="#i-search"/></svg>搜索</button>
+        </div>
+        <div id="gs-res" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 康庄幽径 ================= -->
+  <section id="m-path" class="hide">
+    <div id="path-list">
+      <div class="card">
+        <div class="card-h"><svg width="19" height="19" style="color:var(--m2)"><use href="#i-path"/></svg><h2>班级管理</h2>
+          <span class="right">
+            <button class="btn sm g" onclick="addClass()"><svg><use href="#i-plus"/></svg>新增班级</button>
+          </span></div>
+        <div class="row" id="cls-bar"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><svg width="19" height="19" style="color:var(--m2)"><use href="#i-book"/></svg><h2>学生名单</h2>
+          <span class="right">
+            <button class="btn sm g" onclick="addStudent()"><svg><use href="#i-plus"/></svg>添加学生</button>
+            <button class="btn sm" onclick="importStudentsPick()"><svg><use href="#i-upload"/></svg>导入</button>
+            <button class="btn sm" onclick="exportStudentsCsv()"><svg><use href="#i-download"/></svg>Excel/CSV</button>
+            <button class="btn sm" onclick="printExport('stu-print','学生名单')"><svg><use href="#i-file"/></svg>PDF</button>
+            <button class="btn sm danger" onclick="clearZone('students')"><svg><use href="#i-trash"/></svg>清空</button>
+          </span></div>
+        <div class="tiny" style="margin-bottom:9px">规则：每月 25 日自动总结 · 展示台红字 &lt;20 加小红花 · 红字 &gt;80 姓名显示为<span style="color:var(--blue);font-weight:800">蓝色</span></div>
+        <div id="stu-print"><div class="stu-grid" id="stu-list"></div></div>
+      </div>
+    </div>
+    <div id="path-stage" class="hide"></div>
+  </section>
+
+  <!-- ================= 骄阳永灿 ================= -->
+  <section id="m-sun" class="hide">
+    <div id="sun-lock"></div>
+    <div id="sun-main" class="hide">
+      <div id="sun-home">
+        <div class="card-hero" style="background:linear-gradient(135deg,#FFC53D 0%,#FF6B35 55%,#E5383B 100%)">
+          <h2>骄阳永灿</h2>
+          <div class="muted" style="color:rgba(255,255,255,.9);font-size:13px">身心自持 · 日日精进</div>
+          <div class="hero-stats" id="sun-hero"></div>
+        </div>
+        <div class="grid g5" id="sun-cards"></div>
+      </div>
+      <div id="sun-stage" class="hide"></div>
+    </div>
+  </section>
+
+  <!-- ================= 花团锦簇 ================= -->
+  <section id="m-lib" class="hide">
+    <div class="card tight">
+      <div class="row">
+        <button class="btn sm v" id="lib-tab-work" onclick="switchLib('work')"><svg><use href="#i-folder"/></svg>工作素材</button>
+        <button class="btn sm" id="lib-tab-study" onclick="switchLib('study')"><svg><use href="#i-book"/></svg>学习素材</button>
+        <span style="margin-left:auto"></span>
+        <input type="search" id="lib-q" placeholder="库内搜索关键字…" oninput="renderLib()" style="max-width:230px">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><svg width="19" height="19" style="color:var(--m4)"><use href="#i-flower"/></svg><h2 id="lib-title">工作素材</h2>
+        <span class="right">
+          <button class="btn sm v" onclick="addProject()"><svg><use href="#i-plus"/></svg>新增项目</button>
+          <button class="btn sm a" onclick="openMatForm()"><svg><use href="#i-upload"/></svg>添加素材</button>
+        </span></div>
+      <div class="row" id="lib-projects"></div>
+      <div class="sep"></div>
+      <div id="lib-list"></div>
+    </div>
+  </section>
+</main>
+
+<div class="tabbar"><div>
+  <button data-m="dash" class="on" onclick="switchModule('dash')"><svg><use href="#i-dash"/></svg><span data-nav="dash">仪表盘</span></button>
+  <button data-m="path" onclick="switchModule('path')"><svg><use href="#i-path"/></svg><span data-nav="path">康庄幽径</span></button>
+  <button data-m="sun" onclick="switchModule('sun')"><svg><use href="#i-sun"/></svg><span data-nav="sun">骄阳永灿</span></button>
+  <button data-m="lib" onclick="switchModule('lib')"><svg><use href="#i-flower"/></svg><span data-nav="lib">花团锦簇</span></button>
+</div></div>
+
+<div id="modal-root"></div>
+<input type="file" id="hidden-file" class="hide">
+<script>
+/* =======================================================================
+   幽径通骄阳 · 学习工作台
+   架构分层（单向调用，禁止渲染函数互调）：
+   数据层 store  →  计算层 calc  →  渲染层 render*  →  统一入口 refreshAll()
+   ======================================================================= */
+'use strict';
+var KEY = 'wb_yjtjy_v1';
+var DB = null;
+var UI = { module:'dash', stuId:null, sunPanel:null, lib:'work', libProject:'all', sunUnlocked:false, memoImgs:[], pendingAnalysis:null };
+var ZONES = [
+  {k:'dictation', n:'听写', c:'var(--dop-rose)'},
+  {k:'recite',    n:'背诵', c:'var(--dop-amber)'},
+  {k:'write',     n:'默写', c:'var(--dop-jade)'},
+  {k:'annot',     n:'注释', c:'var(--dop-sky)'}
+];
+var SUNP = [
+  {k:'weight',  n:'体重', unit:'kg',     icon:'i-weight', c:'#FF4D6D'},
+  {k:'glucose', n:'血糖', unit:'mmol/L', icon:'i-drop',   c:'#4CC9F0'},
+  {k:'sport',   n:'运动', unit:'分钟',   icon:'i-run',    c:'#06D6A0'},
+  {k:'diet',    n:'餐饮', unit:'内容',   icon:'i-food',   c:'#FFB703'}
+];
+
+/* ============ 基础工具 ============ */
+function $(id){ return document.getElementById(id); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+function pad(n){ return (n<10?'0':'')+n; }
+function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function nowStr(){ var d=new Date(); return todayStr()+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
+function dStr(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function shiftDay(str, n){ var p=String(str).split('-'); var d=new Date(+p[0], +p[1]-1, +p[2]); d.setDate(d.getDate()+n); return dStr(d); }
+function dayDiff(a,b){ var pa=String(a).split('-'), pb=String(b).split('-');
+  var da=new Date(+pa[0],+pa[1]-1,+pa[2]), db=new Date(+pb[0],+pb[1]-1,+pb[2]);
+  return Math.round((da-db)/86400000); }
+function cnDate(str){ if(!str) return ''; var p=String(str).split(' ')[0].split('-'); return p.length<3?str:(p[1]+'月'+p[2]+'日'); }
+function monthKey(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1); }
+
+function toast(msg, ms){
+  var old=document.querySelector('.toast'); if(old) old.remove();
+  var el=document.createElement('div'); el.className='toast'; el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(function(){ if(el.parentNode) el.remove(); }, ms||2400);
+}
+function download(name, content, mime){
+  var blob = content instanceof Blob ? content : new Blob(['\ufeff'+content], {type:(mime||'text/plain')+';charset=utf-8'});
+  var a=document.createElement('a'), url=URL.createObjectURL(blob);
+  a.href=url; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 400);
+}
+function flowerSvg(size){ var s=size||18; return '<svg class="flower" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" aria-label="小红花">'+
+  '<g fill="#E5383B"><circle cx="12" cy="6.4" r="3"/><circle cx="17.2" cy="9.6" r="3"/><circle cx="15.4" cy="15.4" r="3"/><circle cx="8.6" cy="15.4" r="3"/><circle cx="6.8" cy="9.6" r="3"/></g>'+
+  '<circle cx="12" cy="11.4" r="2.5" fill="#FFB703"/><path d="M12 14v8" stroke="#1B9C5B" stroke-width="1.8" stroke-linecap="round"/>'+
+  '<path d="M12 18c2.2 0 3.6-1.1 4.2-2.7" stroke="#1B9C5B" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>'; }
+
+/* ============ 特效 ============ */
+function boom(n, colors){
+  var box=$('fx'); if(!box) return;
+  var cx=window.innerWidth/2, cy=window.innerHeight*0.36;
+  var cs = colors || ['#FF4D6D','#FFB703','#06D6A0','#4CC9F0','#9D4EDD','#FF6B35'];
+  for(var i=0;i<(n||34);i++){
+    var s=document.createElement('i'); s.className='spark';
+    var ang=Math.random()*Math.PI*2, dist=90+Math.random()*180;
+    s.style.left=cx+'px'; s.style.top=cy+'px';
+    s.style.background=cs[i%cs.length];
+    s.style.setProperty('--dx', Math.cos(ang)*dist+'px');
+    s.style.setProperty('--dy', Math.sin(ang)*dist+'px');
+    s.style.animationDelay=(Math.random()*0.25)+'s';
+    box.appendChild(s);
+    (function(el){ setTimeout(function(){ if(el.parentNode) el.remove(); }, 1600); })(s);
+  }
+}
+
+/* ============ 模态框 ============ */
+function openModal(title, bodyHtml, footHtml, wide){
+  var root=$('modal-root'); if(!root) return;
+  root.innerHTML =
+    '<div class="mask" onclick="if(event.target===this)closeModal()"><div class="modal'+(wide?' wide':'')+'">'+
+    '<div class="modal-h"><svg width="18" height="18" style="color:var(--dop-amber)"><use href="#i-star"/></svg><h3>'+esc(title)+'</h3>'+
+    '<button onclick="closeModal()" aria-label="关闭"><svg width="20" height="20"><use href="#i-close"/></svg></button></div>'+
+    '<div class="modal-b">'+bodyHtml+'</div>'+
+    (footHtml?'<div class="modal-f">'+footHtml+'</div>':'')+'</div></div>';
+}
+function closeModal(){ var r=$('modal-root'); if(r) r.innerHTML=''; }
+var _confirmCb=null;
+function askConfirm(title, msg, cb, okText){
+  _confirmCb = cb;
+  openModal(title,
+    '<div style="font-size:15px;line-height:1.85">'+msg+'</div>',
+    '<button class="btn" onclick="closeModal()">取消</button>'+
+    '<button class="btn p" onclick="runConfirm()">'+esc(okText||'确定')+'</button>');
+}
+function runConfirm(){ var cb=_confirmCb; _confirmCb=null; closeModal(); if(typeof cb==='function') cb(); }
+function askPrompt(title, label, def, cb){
+  _confirmCb = function(){ };
+  openModal(title,
+    '<div class="field"><label class="fl">'+esc(label)+'</label><input type="text" id="prompt-in" value="'+esc(def||'')+'"></div>',
+    '<button class="btn" onclick="closeModal()">取消</button>'+
+    '<button class="btn g" id="prompt-ok">确定</button>');
+  var ok=$('prompt-ok'), inp=$('prompt-in');
+  if(inp){ inp.focus(); inp.onkeydown=function(e){ if(e.key==='Enter' && ok) ok.click(); }; }
+  if(ok) ok.onclick=function(){ var v=inp?inp.value.trim():''; closeModal(); if(v) cb(v); };
+}
+
+/* ============ 数据层 ============ */
+function blankDB(){
+  return {
+    meta:{ created: nowStr(), lastOpen: nowStr(), summaryMonth:'', demo:true, ver:1, title:'幽径通骄阳', modules:{dash:'仪表盘', path:'康庄幽径', sun:'骄阳永灿', lib:'花团锦簇'} },
+    security:{ pin:'123456', q:'我最喜欢的花是什么？', a:'木棉' },
+    todos:[], memos:[],
+    classes:[], students:[], records:[], reading:[],
+    health:{ weight:[], glucose:[], sport:[], diet:[] },
+    study:{ projects:[], items:[] },
+    lib:{ work:{projects:[]}, study:{projects:[]}, mats:[] },
+    flowers:{ total:0, log:[] }
+  };
+}
+var STUDY_COLORS=['#FFB703','#06A77D','#FF6B35','#9D4EDD','#2A9D8F','#E76F51','#457B9D','#F4A261','#E07A5F','#3D5A80'];
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(DB)); }
+  catch(e){ toast('保存失败：本地空间可能已满，请导出备份后清理图片'); }
+  if(window.SYNC && window.SYNC.token && !window.SYNC.pulling && typeof schedulePush==='function') schedulePush();
+}
+function load(){
+  var raw=null;
+  try{ raw=localStorage.getItem(KEY); }catch(e){}
+  if(!raw){ DB=blankDB(); seedDemo(); save(); return; }
+  try{ DB=JSON.parse(raw); }catch(e){ DB=blankDB(); seedDemo(); }
+  var b=blankDB(), k;
+  for(k in b){ if(DB[k]==null) DB[k]=b[k]; }
+  if(!DB.meta.title) DB.meta.title='幽径通骄阳';
+  if(!DB.meta.modules) DB.meta.modules=b.meta.modules;
+  for(var mk in b.meta.modules){ if(!DB.meta.modules[mk]) DB.meta.modules[mk]=b.meta.modules[mk]; }
+  if(!DB.health) DB.health=b.health;
+  for(k in b.health){ if(!Array.isArray(DB.health[k])) DB.health[k]=[]; }
+  if(!DB.study||!DB.study.projects) DB.study=b.study;
+  if(!DB.lib||!DB.lib.mats) DB.lib=b.lib;
+  if(!DB.lib.work) DB.lib.work={projects:[]};
+  if(!DB.lib.study) DB.lib.study={projects:[]};
+  DB.study.projects.forEach(function(p,i){ if(!p.color) p.color=STUDY_COLORS[i%STUDY_COLORS.length]; });
+  if(!DB.flowers) DB.flowers=b.flowers;
+  if(!DB.security||!DB.security.pin) DB.security=b.security;
+  DB.meta.lastOpen = nowStr();
+}
+
+/* ============ 示例数据（首次打开必有内容，含 1 条逾期） ============ */
+function seedDemo(){
+  var c1={id:uid(), name:'五年级(1)班'}, c2={id:uid(), name:'五年级(2)班'};
+  DB.classes=[c1,c2];
+  var s1={id:uid(),name:'张三',classId:c1.id,note:'示例',createdAt:nowStr(),flowers:0};
+  var s2={id:uid(),name:'李四',classId:c1.id,note:'示例',createdAt:nowStr(),flowers:0};
+  var s3={id:uid(),name:'王小雨',classId:c1.id,note:'示例',createdAt:nowStr(),flowers:0};
+  var s4={id:uid(),name:'赵芸',classId:c2.id,note:'示例',createdAt:nowStr(),flowers:0};
+  DB.students=[s1,s2,s3,s4];
+  DB.records=[
+    {id:uid(),studentId:s1.id,zone:'write',content:'黄发垂髫',errs:['髫'],at:nowStr(),src:'示例'},
+    {id:uid(),studentId:s1.id,zone:'dictation',content:'登记 统计 慷慨',errs:['慨'],at:nowStr(),src:'示例'},
+    {id:uid(),studentId:s2.id,zone:'dictation',content:'登记 统计',errs:['登','统'],at:nowStr(),src:'示例'},
+    {id:uid(),studentId:s3.id,zone:'recite',content:'《爱莲说》全篇 · 无误',errs:[],at:nowStr(),src:'示例'},
+    {id:uid(),studentId:s1.id,zone:'annot',content:'落英缤纷：坠落的花瓣繁多交杂',errs:['缤'],at:nowStr(),src:'示例'}
+  ];
+  DB.todos=[
+    {id:uid(),text:'批改五年级(1)班默写本',date:shiftDay(todayStr(),-1),done:false,createdAt:nowStr()},
+    {id:uid(),text:'录入张三阅读错题到素材库',date:todayStr(),done:false,createdAt:nowStr()},
+    {id:uid(),text:'测量早餐后血糖',date:todayStr(),done:false,createdAt:nowStr()},
+    {id:uid(),text:'整理《桃花源记》注释讲义',date:shiftDay(todayStr(),2),done:false,createdAt:nowStr()}
+  ];
+  var p=todayStr().split('-');
+  function hrec(v,n,dayOff){ var ds=shiftDay(todayStr(),dayOff||0).split('-');
+    return {id:uid(),y:+ds[0],m:+ds[1],d:+ds[2],t:'07:30',val:v,note:n||'',at:nowStr()}; }
+  DB.health.weight=[ hrec(63.2,'示例·晨起',-2), hrec(62.6,'示例·晨起',0) ];
+  DB.health.glucose=[ hrec(6.4,'示例·空腹',-2), hrec(5.6,'示例·空腹',0) ];
+  DB.health.sport=[ hrec(40,'示例·快走 4 公里',-1) ];
+  DB.health.diet=[ {id:uid(),y:+p[0],m:+p[1],d:+p[2],t:'12:00',val:'杂粮饭+清蒸鱼+时蔬',note:'示例·七分饱',at:nowStr()} ];
+  var sp1={id:uid(),name:'教师资格进修',color:'#FFB703'}, sp2={id:uid(),name:'古诗文精读',color:'#06A77D'};
+  DB.study.projects=[sp1,sp2];
+  DB.study.items=[
+    {id:uid(),projectId:sp1.id,y:+p[0],m:+p[1],d:+p[2],t:'20:00',hours:1.5,result:'完成《教育心理学》第三章笔记',
+     questions:['建构主义与行为主义的教学启示差异？'],links:[{name:'国家中小学智慧教育平台',url:'https://basic.smartedu.cn'}],at:nowStr()},
+    {id:uid(),projectId:sp2.id,y:+p[0],m:+p[1],d:+p[2],t:'21:30',hours:0.8,result:'精读《桃花源记》，梳理虚词用法',
+     questions:['“乃”“遂”在文中的语义分工？'],links:[],at:nowStr()}
+  ];
+  DB.lib.work.projects=[{id:uid(),name:'试卷'},{id:uid(),name:'阅读'},{id:uid(),name:'作文'},{id:uid(),name:'佳词佳句'}];
+  DB.lib.study.projects=[{id:uid(),name:'教案'},{id:uid(),name:'课件'},{id:uid(),name:'教研笔记'}];
+  var wp=DB.lib.work.projects;
+  DB.lib.mats=[
+    {id:uid(),lib:'work',projects:[wp[0].id,wp[1].id,wp[2].id],title:'五年级语文期中卷（含阅读+作文）',
+     text:'一、基础积累……三、阅读理解：《父亲的自行车》，请分析文中“那辆自行车吱呀作响，像父亲的脊背”一句的修辞及作用。四、作文：以《我的那束光》为题，写一篇不少于500字的记叙文。',
+     files:[],images:[],links:[],at:nowStr(),analysis:null,src:'示例'},
+    {id:uid(),lib:'work',projects:[wp[1].id],title:'阅读材料《父亲的自行车》',
+     text:'那辆自行车吱呀作响，像父亲的脊背。清晨的雾还没散尽，他把我架在前梁上，一路铃声清脆。我忽然明白，所谓长大，就是把父亲的背影，一点点走成自己的模样。',
+     files:[],images:[],links:[],at:nowStr(),analysis:null,src:'示例'},
+    {id:uid(),lib:'work',projects:[wp[3].id],title:'佳句摘抄·比喻类',
+     text:'月光如流水一般，静静地泻在这一片叶子和花上。',
+     files:[],images:[],links:[],at:nowStr(),analysis:null,src:'示例'}
+  ];
+  DB.reading=[
+    {id:uid(),studentId:DB.students[0].id,matId:DB.lib.mats[0].id,qno:'第三大题第2小题',
+     question:'分析“那辆自行车吱呀作响，像父亲的脊背”的修辞及作用',wrong:'只答出比喻，未答出情感作用',at:nowStr()}
+  ];
+  DB.flowers={ total:1, log:[{delta:1,reason:'示例：血糖降至 5.6（理想区间）',at:nowStr()}] };
+  DB.meta.demo=true;
+}
+</script>
+<script>
+/* =======================================================================
+   计算层 calc：只读数据、只做计算，不碰 DOM
+   ======================================================================= */
+function clsName(id){ for(var i=0;i<DB.classes.length;i++){ if(DB.classes[i].id===id) return DB.classes[i].name; } return '未分班'; }
+function stuById(id){ for(var i=0;i<DB.students.length;i++){ if(DB.students[i].id===id) return DB.students[i]; } return null; }
+function matById(id){ for(var i=0;i<DB.lib.mats.length;i++){ if(DB.lib.mats[i].id===id) return DB.lib.mats[i]; } return null; }
+function zoneName(k){ for(var i=0;i<ZONES.length;i++){ if(ZONES[i].k===k) return ZONES[i].n; } return k; }
+function projName(lib,id){ var ps=DB.lib[lib].projects; for(var i=0;i<ps.length;i++){ if(ps[i].id===id) return ps[i].name; } return '未分类'; }
+function studyProjName(id){ var ps=DB.study.projects; for(var i=0;i<ps.length;i++){ if(ps[i].id===id) return ps[i].name; } return '未分类'; }
+
+/* 学生红字总数（展示台四栏 + 阅读错题） */
+function errCount(sid){
+  var n=0, i;
+  for(i=0;i<DB.records.length;i++){ if(DB.records[i].studentId===sid) n += (DB.records[i].errs||[]).length; }
+  return n;
+}
+function errCountByZone(sid, zone){
+  var n=0; for(var i=0;i<DB.records.length;i++){ var r=DB.records[i];
+    if(r.studentId===sid && r.zone===zone) n += (r.errs||[]).length; }
+  return n;
+}
+function stuRecords(sid, zone){
+  var out=[]; for(var i=0;i<DB.records.length;i++){ var r=DB.records[i];
+    if(r.studentId===sid && (!zone || r.zone===zone)) out.push(r); }
+  return out.sort(function(a,b){ return a.at<b.at?1:-1; });
+}
+function totalFlowers(){
+  var n = DB.flowers.total||0;
+  for(var i=0;i<DB.students.length;i++){ n += (DB.students[i].flowers||0); }
+  return n;
+}
+/* 高亮错字：把 errs 里的字包成红色 */
+function markErr(content, errs){
+  var html = esc(content||'');
+  if(!errs || !errs.length) return html;
+  var uniq = {}, list=[];
+  for(var i=0;i<errs.length;i++){ var e=String(errs[i]).trim(); if(e && !uniq[e]){ uniq[e]=1; list.push(e); } }
+  for(var j=0;j<list.length;j++){
+    var ch = esc(list[j]);
+    html = html.split(ch).join('<span class="err">'+ch+'</span>');
+  }
+  return html;
+}
+/* 逾期 / 今日待处理（昨天未完成自动顺延显示在今天） */
+function pendingItems(){
+  var t=todayStr(), out=[], i;
+  for(i=0;i<DB.todos.length;i++){
+    var td=DB.todos[i]; if(td.done) continue;
+    var diff = dayDiff(t, td.date||t);
+    if(diff>=0) out.push({kind:'todo', id:td.id, text:td.text, date:td.date, over:diff>0, days:diff});
+  }
+  var g = DB.health.glucose, w = DB.health.weight;
+  if(g.length){ var last=g[g.length-1]; if(+last.val>7.5)
+    out.push({kind:'alert', id:'g', text:'血糖偏高（'+last.val+' mmol/L），需复测并调整饮食', date:t, over:true, days:0}); }
+  for(i=0;i<DB.students.length;i++){ var s=DB.students[i];
+    if(errCount(s.id)>80) out.push({kind:'stu', id:s.id, text:s.name+' 红字已达 '+errCount(s.id)+' 个，需重点辅导', date:t, over:true, days:0}); }
+  out.sort(function(a,b){ return (b.days||0)-(a.days||0); });
+  return out;
+}
+
+/* ============ 全站搜索索引 ============ */
+function buildIndex(){
+  var ix=[], i, j;
+  for(i=0;i<DB.todos.length;i++){ var t=DB.todos[i];
+    ix.push({mod:'仪表盘', pos:'待办事项', text:t.text, time:t.date||t.createdAt, go:['dash']}); }
+  for(i=0;i<DB.memos.length;i++){ var m=DB.memos[i];
+    ix.push({mod:'仪表盘', pos:'一句话速记', text:m.text, time:m.at, go:['dash']}); }
+  for(i=0;i<DB.students.length;i++){ var s=DB.students[i];
+    ix.push({mod:'康庄幽径', pos:clsName(s.classId)+' · 学生名单', text:s.name+(s.note?('（'+s.note+'）'):''), time:s.createdAt, go:['stu',s.id]}); }
+  for(i=0;i<DB.records.length;i++){ var r=DB.records[i]; var st=stuById(r.studentId); if(!st) continue;
+    ix.push({mod:'康庄幽径', pos:st.name+'展示台 · '+zoneName(r.zone), text:r.content+((r.errs&&r.errs.length)?('　错字：'+r.errs.join('、')):''), time:r.at, go:['stu',r.studentId]}); }
+  for(i=0;i<DB.reading.length;i++){ var rd=DB.reading[i]; var st2=stuById(rd.studentId);
+    ix.push({mod:'康庄幽径', pos:(st2?st2.name:'')+'展示台 · 阅读专区'+(rd.qno?(' · '+rd.qno):''), text:(rd.question||'')+' '+(rd.wrong||''), time:rd.at, go:['stu',rd.studentId]}); }
+  for(i=0;i<SUNP.length;i++){ var p=SUNP[i], arr=DB.health[p.k]||[];
+    for(j=0;j<arr.length;j++){ var a=arr[j];
+      ix.push({mod:'骄阳永灿', pos:p.n+'展示台', text:p.n+' '+a.val+(p.unit==='内容'?'':(' '+p.unit))+(a.note?('　'+a.note):''),
+        time:a.y+'-'+pad(a.m)+'-'+pad(a.d)+' '+(a.t||''), go:['sun',p.k], lock:true}); } }
+  for(i=0;i<DB.study.items.length;i++){ var it=DB.study.items[i];
+    ix.push({mod:'骄阳永灿', pos:'进修 · '+studyProjName(it.projectId), text:(it.result||'')+' '+((it.questions||[]).join('；')),
+      time:it.y+'-'+pad(it.m)+'-'+pad(it.d)+' '+(it.t||''), go:['sun','study'], lock:true}); }
+  for(i=0;i<DB.lib.mats.length;i++){ var mt=DB.lib.mats[i];
+    var pns=[]; for(j=0;j<(mt.projects||[]).length;j++) pns.push(projName(mt.lib, mt.projects[j]));
+    ix.push({mod:'花团锦簇', pos:(mt.lib==='work'?'工作素材':'学习素材')+' · '+(pns.join('/')||'未分类'),
+      text:mt.title+'　'+(mt.text||''), time:mt.at, go:['mat',mt.id]}); }
+  return ix;
+}
+function doSearch(q){
+  if(!q) return [];
+  var kw = q.trim().toLowerCase(), ix=buildIndex(), out=[];
+  for(var i=0;i<ix.length;i++){
+    var hay=((ix[i].text||'')+' '+ix[i].pos+' '+ix[i].mod).toLowerCase();
+    if(hay.indexOf(kw)>=0) out.push(ix[i]);
+  }
+  return out;
+}
+function hl(text, q){
+  var s=esc(text||''); if(!q) return s;
+  var k=esc(q.trim()); if(!k) return s;
+  var re=new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi');
+  return s.replace(re, function(m){ return '<mark>'+m+'</mark>'; });
+}
+
+/* =======================================================================
+   内置离线分析引擎（关键词规则库，无需联网，无外部依赖）
+   ======================================================================= */
+var LEX = {
+  narr:['我','他','她','那天','清晨','傍晚','小时候','回忆','父亲','母亲','奶奶','爷爷','忽然','于是','眼泪','背影','笑','走','跑','说','望着'],
+  argu:['观点','认为','因此','所以','首先','其次','再者','综上','由此可见','反之','论点','论据','论证','正如','可见','难道','应当','必须'],
+  expo:['特点','构造','种类','分为','例如','据统计','约','占','用于','原理','功能','组成'],
+  lyric:['啊','赞美','热爱','抒发','怀念','眷恋','沉醉','心潮'],
+  desc:[['外貌描写',['头发','脸','眼睛','皱纹','衣裳','个子','身影']],
+        ['神态描写',['神情','笑容','眉头','目光','脸色','愣','呆']],
+        ['动作描写',['伸手','转身','抬起','跑','推','拉','蹲','攥','捧']],
+        ['心理描写',['心想','暗暗','忽然明白','觉得','忐忑','犹豫','念头']],
+        ['语言描写',['说','问','答','喊','嘱咐','念叨','“']],
+        ['环境描写',['雾','月光','风','雨','阳光','街道','田野','天空','夜色']],
+        ['细节描写',['吱呀','一点点','微微','轻轻','缝','纹路']]],
+  rhet:[['比喻',['像','好像','仿佛','似','如同','宛如','犹如']],
+        ['拟人',['低语','点头','微笑着','诉说','沉睡','歌唱','招手','害羞']],
+        ['夸张',['万','千','一瞬间','铺天盖地','山呼海啸','恨不得']],
+        ['反问',['难道','岂','怎能','何尝']],
+        ['设问',['是什么呢','为什么呢','谁','？']],
+        ['排比',['也','又','还','一会儿']],
+        ['引用',['《','曰','有云','名言']],
+        ['反复',['又一次','一遍又一遍','再','再一次']],
+        ['对偶',['，','、']]],
+  skill:[['借景抒情',['月光','夜色','秋风','落叶','思念','怅然']],
+         ['对比衬托',['而','相比','却','昔日','如今']],
+         ['以小见大',['一件','小小的','那辆','那盏','一枚']],
+         ['首尾呼应',['依旧','仍然','还是那']],
+         ['伏笔照应',['后来','原来','这才明白','早已']],
+         ['象征',['光','路','灯','根','桥']]]
+};
+function scoreHit(text, words){ var n=0; for(var i=0;i<words.length;i++){ if(text.indexOf(words[i])>=0) n++; } return n; }
+function analyzeArticle(text){
+  var t=String(text||''), res={genre:'', genreScore:{}, desc:[], rhet:[], skill:[], advice:[], qtypes:[]};
+  if(t.length<8){ res.genre='文本过短，暂无法判定'; return res; }
+  var sc={ '记叙文':scoreHit(t,LEX.narr), '议论文':scoreHit(t,LEX.argu)*1.2, '说明文':scoreHit(t,LEX.expo)*1.1, '抒情散文':scoreHit(t,LEX.lyric)*1.3 };
+  res.genreScore=sc;
+  var best='记叙文', bv=-1, k;
+  for(k in sc){ if(sc[k]>bv){ bv=sc[k]; best=k; } }
+  res.genre = bv<=0 ? '记叙文（特征不明显，按叙事文本处理）' : best;
+  var i;
+  if(res.genre.indexOf('记叙')>=0 || res.genre.indexOf('抒情')>=0){
+    for(i=0;i<LEX.desc.length;i++){ if(scoreHit(t,LEX.desc[i][1])>=1) res.desc.push(LEX.desc[i][0]); }
+  }
+  for(i=0;i<LEX.rhet.length;i++){ var name=LEX.rhet[i][0], hits=scoreHit(t,LEX.rhet[i][1]);
+    if(name==='排比'&&hits<3) continue;
+    if(name==='对偶') continue;
+    if(name==='设问'&&t.indexOf('？')<0) continue;
+    if(hits>=1) res.rhet.push(name); }
+  for(i=0;i<LEX.skill.length;i++){ if(scoreHit(t,LEX.skill[i][1])>=2) res.skill.push(LEX.skill[i][0]); }
+  if(res.genre.indexOf('记叙')>=0||res.genre.indexOf('抒情')>=0){
+    res.qtypes=['词句赏析题（修辞+内容+情感三段式）','人物形象概括题','段落作用题（内容+结构）','标题含义与作用题','情感变化梳理题'];
+    res.advice=['赏析句子按「手法 → 写出了什么 → 表达了什么情感」三步作答，缺一步就扣分。',
+      '概括人物形象要「性格词 + 文中依据」成对出现，不能只写性格词。',
+      '段落作用分内容与结构两条线：内容写什么，结构上承上启下/铺垫/照应。'];
+  }else if(res.genre.indexOf('议论')>=0){
+    res.qtypes=['中心论点提炼题','论证方法及作用题','论据补充与替换题','段落顺序能否调换题','议论语言分析题'];
+    res.advice=['先圈出首段末句与末段首句，中心论点常在此二处。',
+      '论证方法答题模板：举例/道理/对比/比喻论证 + 具体论证了什么 + 使论证更有力。',
+      '补写论据要与论点同向、体裁一致（名人事例优先）。'];
+  }else{
+    res.qtypes=['说明对象及特征题','说明方法及作用题','说明顺序题','说明语言准确性题'];
+    res.advice=['说明方法要精确命名：举例子、列数字、作比较、打比方、分类别、下定义。',
+      '「大约」「左右」这类词考查语言准确性，答题要点是「体现说明的科学严谨」。'];
+  }
+  if(!res.rhet.length) res.rhet.push('未检出显著修辞（可人工复核）');
+  return res;
+}
+/* 速记分析：识别学生 / 栏目 / 错字 / 健康数值 / 待办 / 素材 */
+function analyzeMemoText(raw){
+  var t=String(raw||'').trim(), sug=[], i;
+  if(!t) return sug;
+  var stu=null;
+  for(i=0;i<DB.students.length;i++){ if(t.indexOf(DB.students[i].name)>=0){ stu=DB.students[i]; break; } }
+  var zone=null;
+  if(/听写/.test(t)) zone='dictation';
+  else if(/默写/.test(t)) zone='write';
+  else if(/背诵|背书/.test(t)) zone='recite';
+  else if(/注释|释义|解释/.test(t)) zone='annot';
+  var errs=[], m;
+  var re1=/([\u4e00-\u9fa5])字(?:写|念|读)?错/g;
+  while((m=re1.exec(t))!==null){ errs.push(m[1]); }
+  var re2=/(?:错字|错别字|写错的?字?|错的?字)(?:有|是|为|：|:)?\s*([\u4e00-\u9fa5、，,\s]+)/g;
+  while((m=re2.exec(t))!==null){
+    var parts=m[1].split(/[、，,\s]+/);
+    for(i=0;i<parts.length;i++){ var p=parts[i].trim(); if(p && p.length<=4 && !/写|错|字|有|的/.test(p)) errs.push(p); }
+  }
+  var re3=/([\u4e00-\u9fa5]{1,3})\s*字?\s*(?:写|默)错/g;
+  while((m=re3.exec(t))!==null){ if(m[1].length<=2) errs.push(m[1]); }
+  var uq={}, ue=[];
+  for(i=0;i<errs.length;i++){ var e=errs[i].trim(); if(e&&!uq[e]){ uq[e]=1; ue.push(e); } }
+  var content='';
+  var cm = t.match(/《([^》]+)》/) || t.match(/[“"]([^”"]{2,20})[”"]/);
+  if(cm) content = cm[1];
+  if(!content){
+    var kw = t.match(/(?:听写|默写|背诵|注释)\s*[了]?\s*([\u4e00-\u9fa5]{2,12})/);
+    if(kw) content = kw[1].replace(/(的|时|中|里|错|字)$/,'');
+  }
+  if(!content && ue.length) content = ue.join('、');
+  if(stu && zone){
+    sug.push({type:'record', title:stu.name+' · '+zoneName(zone), studentId:stu.id, zone:zone,
+      content:content||t.slice(0,30), errs:ue,
+      desc:'内容「'+(content||t.slice(0,30))+'」'+(ue.length?('，错字标红：'+ue.join('、')):'，无错字')});
+  }else if(stu && ue.length){
+    sug.push({type:'record', title:stu.name+' · 听写（默认栏目，可改）', studentId:stu.id, zone:'dictation',
+      content:content||ue.join('、'), errs:ue, desc:'未指明栏目，默认归入听写；错字：'+ue.join('、')});
+  }
+  var g=t.match(/血糖\s*[:：]?\s*([\d.]+)/);
+  if(g) sug.push({type:'health', panel:'glucose', title:'骄阳永灿 · 血糖', val:parseFloat(g[1]), desc:'记录血糖 '+g[1]+' mmol/L'});
+  var w=t.match(/体重\s*[:：]?\s*([\d.]+)/);
+  if(w) sug.push({type:'health', panel:'weight', title:'骄阳永灿 · 体重', val:parseFloat(w[1]), desc:'记录体重 '+w[1]+' kg'});
+  var sp=t.match(/(?:运动|跑步|快走|健走|骑行|游泳|瑜伽)\s*[了]?\s*([\d.]+)\s*(分钟|公里|km|小时)?/);
+  if(sp) sug.push({type:'health', panel:'sport', title:'骄阳永灿 · 运动', val:parseFloat(sp[1]),
+    note:(sp[0]||'').replace(/[\d.]+.*$/,'')+(sp[2]||'分钟'), desc:'记录运动 '+sp[1]+' '+(sp[2]||'分钟')});
+  if(/早餐|午餐|晚餐|吃了|加餐|饮食/.test(t)) sug.push({type:'health', panel:'diet', title:'骄阳永灿 · 餐饮', val:t.slice(0,40), desc:'记入餐饮记录'});
+  if(/学习|进修|听课|读了|看完|课程/.test(t) && DB.study.projects.length)
+    sug.push({type:'study', title:'骄阳永灿 · 进修（'+DB.study.projects[0].name+'）', projectId:DB.study.projects[0].id, result:t.slice(0,60), desc:'记入进修成果'});
+  if(/记得|提醒|明天|待办|要交|截止|别忘/.test(t))
+    sug.push({type:'todo', title:'仪表盘 · 待办事项', text:t.slice(0,40), desc:'新增一条待办（默认今天）'});
+  if(/文章|试卷|阅读|作文|佳句|素材|摘抄/.test(t))
+    sug.push({type:'mat', title:'花团锦簇 · 素材库', text:t, desc:'存入素材库并做文体解析'});
+  if(!sug.length) sug.push({type:'memo', title:'仅存为速记', text:t, desc:'未识别到明确归属，先存速记流水，稍后可手动分配'});
+  return sug;
+}
+
+/* =======================================================================
+   月度自动总结（每月 25 日）：红字<20 加小红花，>80 姓名变蓝
+   ======================================================================= */
+function runMonthlySummary(force){
+  var d=new Date(), mk=monthKey();
+  if(!force){ if(d.getDate()<25) return null; if(DB.meta.summaryMonth===mk) return null; }
+  var good=[], warn=[], i;
+  for(i=0;i<DB.students.length;i++){
+    var s=DB.students[i], n=errCount(s.id);
+    if(n<20){ s.flowers=(s.flowers||0)+1; good.push(s.name+'（'+n+'）'); }
+    if(n>80) warn.push(s.name+'（'+n+'）');
+  }
+  DB.meta.summaryMonth=mk; save();
+  return {month:mk, good:good, warn:warn};
+}
+</script>
+<script>
+/* =======================================================================
+   渲染层：仪表盘（只读 DB + 写 DOM，绝不调用其它 render*）
+   ======================================================================= */
+function switchModule(m){
+  UI.module=m;
+  var ids={dash:'m-dash', path:'m-path', sun:'m-sun', lib:'m-lib'}, k;
+  for(k in ids){ var el=$(ids[k]); if(el){ if(k===m) el.classList.remove('hide'); else el.classList.add('hide'); } }
+  var btns=document.querySelectorAll('.nav button, .tabbar button');
+  for(var i=0;i<btns.length;i++){ if(btns[i].getAttribute('data-m')===m) btns[i].classList.add('on'); else btns[i].classList.remove('on'); }
+  window.scrollTo(0,0);
+  refreshAll();
+}
+function renderChips(){
+  var el=$('flower-n'); if(el) el.textContent=totalFlowers();
+  var g=DB.health.glucose;
+  if(g.length && +g[g.length-1].val>7.5) document.body.classList.add('glucose-alarm');
+  else document.body.classList.remove('glucose-alarm');
+}
+function renderToday(){
+  var box=$('today-box'); if(!box) return;
+  var list=pendingItems(), h='';
+  h += '<div class="row"><svg width="21" height="21" style="color:#E5383B"><use href="#i-bell"/></svg>'+
+       '<h2>今天要处理</h2><span class="tag red">'+list.length+' 项</span>'+
+       '<span style="margin-left:auto" class="tiny">'+nowStr()+' · 昨日未完成自动顺延至今日</span></div>';
+  if(!list.length){ h += '<div class="empty" style="margin-top:10px">今日清朗，无待处理事项。</div>'; box.innerHTML=h; return; }
+  h += '<ul class="tl">';
+  for(var i=0;i<list.length;i++){
+    var it=list[i];
+    h += '<li class="'+(it.over?'over':'')+'">';
+    if(it.kind==='todo'){
+      h += '<button class="chk" onclick="toggleTodo(\''+it.id+'\')" aria-label="完成"><svg><use href="#i-check"/></svg></button>';
+    }else{
+      h += '<span class="chk" style="border-color:#F6C4C5"><svg style="color:#E5383B;opacity:1"><use href="#i-bell"/></svg></span>';
+    }
+    h += '<span class="t">'+esc(it.text)+
+         (it.over&&it.kind==='todo'?(' <span class="tag red">逾期 '+it.days+' 天</span>'):'')+
+         (it.kind!=='todo'?' <span class="tag red">需关注</span>':'')+
+         '<div class="tiny">'+esc(cnDate(it.date))+'</div></span>';
+    if(it.kind==='todo') h += '<button class="btn sm g" onclick="toggleTodo(\''+it.id+'\')"><svg><use href="#i-check"/></svg>处理完</button>';
+    else if(it.kind==='stu') h += '<button class="btn sm" onclick="openStu(\''+it.id+'\')"><svg><use href="#i-eye"/></svg>看展示台</button>';
+    else h += '<button class="btn sm o" onclick="switchModule(\'sun\')"><svg><use href="#i-drop"/></svg>去记录</button>';
+    h += '</li>';
+  }
+  h += '</ul>';
+  box.innerHTML=h;
+}
+function renderQuick(){
+  var box=$('quick'); if(!box) return;
+  var items=[
+    {t:'录错字/记录',  d:'听写默写注释',  c:'var(--m2)', ic:'i-edit',   fn:"quickRecord()"},
+    {t:'加待办',      d:'今天要做的事',  c:'var(--m1)', ic:'i-check',  fn:"document.getElementById('todo-in').focus()"},
+    {t:'记血糖体重',   d:'骄阳永灿',      c:'var(--m3)', ic:'i-drop',   fn:"switchModule('sun')"},
+    {t:'加素材',      d:'花团锦簇',      c:'var(--m4)', ic:'i-upload', fn:"quickMat()"}
+  ], h='';
+  for(var i=0;i<items.length;i++){ var it=items[i];
+    h += '<button class="card tight" style="text-align:left;margin:0;border-left:4px solid '+it.c+'" onclick="'+it.fn+'">'+
+      '<div class="row" style="gap:9px"><svg width="21" height="21" style="color:'+it.c+'"><use href="#'+it.ic+'"/></svg>'+
+      '<div><div style="font-weight:800;font-size:15px">'+it.t+'</div><div class="tiny">'+it.d+'</div></div></div></button>';
+  }
+  box.innerHTML=h;
+}
+/* ---------- 待办 ---------- */
+function addTodo(){
+  var i=$('todo-in'), d=$('todo-date'); if(!i) return;
+  var v=i.value.trim(); if(!v){ toast('请先输入待办内容'); return; }
+  DB.todos.push({id:uid(), text:v, date:(d&&d.value)||todayStr(), done:false, createdAt:nowStr()});
+  i.value=''; if(d) d.value=''; save(); refreshAll(); toast('待办已添加');
+}
+function toggleTodo(id){
+  for(var i=0;i<DB.todos.length;i++){ if(DB.todos[i].id===id){
+    DB.todos[i].done=!DB.todos[i].done;
+    DB.todos[i].doneAt=DB.todos[i].done?nowStr():'';
+    if(DB.todos[i].done) boom(16,['#06D6A0','#FFB703']);
+    break; } }
+  save(); refreshAll();
+}
+function delTodo(id){
+  askConfirm('删除待办','确定删除这条待办吗？此操作不可恢复。', function(){
+    DB.todos=DB.todos.filter(function(t){ return t.id!==id; }); save(); refreshAll(); toast('已删除');
+  }, '删除');
+}
+function renderTodos(){
+  var box=$('todo-list'); if(!box) return;
+  var arr=DB.todos.slice().sort(function(a,b){
+    if(a.done!==b.done) return a.done?1:-1;
+    return (a.date||'')<(b.date||'')?-1:1; });
+  if(!arr.length){ box.innerHTML='<div class="empty">暂无待办，添加第一条吧。</div>'; return; }
+  var h='';
+  for(var i=0;i<arr.length;i++){ var t=arr[i];
+    var over=!t.done && dayDiff(todayStr(), t.date||todayStr())>0;
+    h += '<li class="'+(t.done?'done':'')+(over?' over':'')+'">'+
+      '<button class="chk '+(t.done?'on':'')+'" onclick="toggleTodo(\''+t.id+'\')" aria-label="切换完成"><svg><use href="#i-check"/></svg></button>'+
+      '<span class="t" onclick="toggleTodo(\''+t.id+'\')" style="cursor:pointer">'+esc(t.text)+
+      '<div class="tiny">'+esc(cnDate(t.date))+(over?' · <span style="color:var(--red);font-weight:700">逾期</span>':'')+(t.done?(' · 完成于 '+esc(t.doneAt||'')):'')+'</div></span>'+
+      '<button class="btn sm danger" onclick="delTodo(\''+t.id+'\')"><svg><use href="#i-trash"/></svg></button></li>';
+  }
+  box.innerHTML=h;
+}
+/* ---------- 全站搜索 ---------- */
+function renderSearch(){
+  var inp=$('gs'), box=$('gs-res'); if(!inp||!box) return;
+  var q=inp.value.trim();
+  if(!q){ box.innerHTML='<div class="empty">输入关键字，可一次搜遍「仪表盘 / 康庄幽径 / 骄阳永灿 / 花团锦簇」，结果会标明所在板块、具体位置与时间。</div>'; return; }
+  var res=doSearch(q);
+  if(!res.length){ box.innerHTML='<div class="empty">没有找到包含「'+esc(q)+'」的内容。</div>'; return; }
+  var h='<div class="tiny" style="margin-bottom:8px">共 '+res.length+' 条结果</div>';
+  for(var i=0;i<res.length && i<80;i++){ var r=res[i];
+    var cls = r.mod==='仪表盘'?'amber':(r.mod==='康庄幽径'?'mint':(r.mod==='骄阳永灿'?'rose':'violet'));
+    h += '<div class="sr"><div class="p"><span class="tag '+cls+'">'+esc(r.mod)+'</span>'+
+      '<span>'+esc(r.pos)+'</span><span>·</span><span>'+esc(r.time||'')+'</span>'+
+      (r.lock?'<span class="tag red">需密码</span>':'')+
+      '<span style="margin-left:auto"></span>'+
+      '<button class="btn sm" onclick="jumpTo(\''+r.go[0]+'\',\''+(r.go[1]||'')+'\')"><svg><use href="#i-eye"/></svg>定位</button></div>'+
+      '<div class="txt">'+hl((r.text||'').slice(0,180), q)+'</div></div>';
+  }
+  box.innerHTML=h;
+}
+function jumpTo(type, id){
+  if(type==='dash'){ switchModule('dash'); return; }
+  if(type==='stu'){ openStu(id); return; }
+  if(type==='mat'){ var m=matById(id); if(m){ UI.lib=m.lib; UI.libProject='all'; } switchModule('lib'); return; }
+  if(type==='sun'){
+    if(!UI.sunUnlocked){ switchModule('sun'); toast('该内容在骄阳永灿内，请先解锁'); return; }
+    UI.sunPanel=id; switchModule('sun'); return;
+  }
+}
+/* ---------- 一句话速记 ---------- */
+var recog=null, recogOn=false;
+function toggleVoice(){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ toast('当前浏览器不支持语音输入，建议用 Chrome / Edge，或直接打字'); return; }
+  var btn=$('mic-btn');
+  if(recogOn && recog){ recog.stop(); return; }
+  recog = new SR(); recog.lang='zh-CN'; recog.continuous=true; recog.interimResults=true;
+  var base = $('memo').value;
+  recog.onstart=function(){ recogOn=true; if(btn){ btn.classList.add('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>正在聆听…点此结束'; } };
+  recog.onresult=function(e){
+    var txt='';
+    for(var i=0;i<e.results.length;i++){ txt += e.results[i][0].transcript; }
+    $('memo').value = (base?base+' ':'')+txt;
+  };
+  recog.onerror=function(){ toast('语音识别中断，请检查麦克风权限'); };
+  recog.onend=function(){ recogOn=false; if(btn){ btn.classList.remove('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>语音输入'; } };
+  try{ recog.start(); }catch(e){ toast('无法启动语音识别'); }
+}
+function compressImage(file, maxW, cb){
+  var fr=new FileReader();
+  fr.onload=function(){
+    var img=new Image();
+    img.onload=function(){
+      var w=img.width, h=img.height, mw=maxW||800;
+      if(w>mw){ h=Math.round(h*mw/w); w=mw; }
+      var cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      cb(cv.toDataURL('image/jpeg',0.72));
+    };
+    img.onerror=function(){ cb(null); };
+    img.src=fr.result;
+  };
+  fr.onerror=function(){ cb(null); };
+  fr.readAsDataURL(file);
+}
+function pickFiles(accept, multiple, cb){
+  var el=$('hidden-file'); if(!el) return;
+  el.value=''; el.accept=accept||''; el.multiple=!!multiple;
+  el.onchange=function(){ var fs=el.files; if(fs&&fs.length) cb(fs); };
+  el.click();
+}
+function pickMemoImage(){
+  pickFiles('image/*', true, function(fs){
+    var n=Math.min(fs.length, 9-UI.memoImgs.length);
+    if(n<=0){ toast('最多 9 张图片'); return; }
+    var done=0;
+    for(var i=0;i<n;i++){
+      compressImage(fs[i], 800, function(data){
+        if(data) UI.memoImgs.push(data);
+        done++;
+        if(done===n){ renderMemoImgs(); toast('图片已附加。提示：本地方案不含联网 OCR，请把图上文字念出来或打字补录，系统会自动归类'); }
+      });
+    }
+  });
+}
+function renderMemoImgs(){
+  var box=$('memo-imgs'); if(!box) return;
+  var h='';
+  for(var i=0;i<UI.memoImgs.length;i++){
+    h += '<span style="position:relative;display:inline-block"><img src="'+UI.memoImgs[i]+'" alt="附图">'+
+      '<button class="btn sm danger" style="position:absolute;top:-6px;right:-6px;min-height:22px;padding:0 6px;border-radius:50%;background:#fff" onclick="delMemoImg('+i+')">×</button></span>';
+  }
+  box.innerHTML=h;
+}
+function delMemoImg(i){ UI.memoImgs.splice(i,1); renderMemoImgs(); }
+function analyzeMemo(){
+  var t=$('memo').value.trim();
+  if(!t){ toast('请先输入、语音或补录文字内容'); return; }
+  var sug=analyzeMemoText(t);
+  UI.pendingAnalysis={ text:t, sug:sug, imgs:UI.memoImgs.slice() };
+  renderMemoResult();
+}
+function renderMemoResult(){
+  var box=$('memo-result'); if(!box) return;
+  var pa=UI.pendingAnalysis;
+  if(!pa){ box.innerHTML='<div class="tiny">写完一句话后点「分析归类」，系统会判断它该进哪个板块的哪个项目，确认后一键写入。</div>'; return; }
+  var h='<div class="row" style="margin-bottom:8px"><span class="tag violet"><svg width="13" height="13"><use href="#i-ai"/></svg>分析结果</span>'+
+        '<span class="tiny">共 '+pa.sug.length+' 个建议归属，点「分配」写入</span></div>';
+  for(var i=0;i<pa.sug.length;i++){ var s=pa.sug[i];
+    h += '<div class="item"><div class="grow"><div style="font-weight:800">'+esc(s.title)+'</div>'+
+      '<div class="tiny">'+esc(s.desc)+'</div></div>'+
+      '<div class="ops"><button class="btn sm g" onclick="applySuggestion('+i+')"><svg><use href="#i-check"/></svg>分配</button></div></div>';
+  }
+  h += '<div class="row" style="margin-top:8px"><button class="btn sm" onclick="saveMemoOnly()"><svg><use href="#i-file"/></svg>仅存速记</button>'+
+       '<button class="btn sm" onclick="UI.pendingAnalysis=null;renderMemoResult()"><svg><use href="#i-close"/></svg>放弃</button></div>';
+  box.innerHTML=h;
+}
+function saveMemoOnly(){
+  var pa=UI.pendingAnalysis; if(!pa) return;
+  DB.memos.unshift({id:uid(), text:pa.text, at:nowStr(), images:pa.imgs||[], assigned:''});
+  UI.pendingAnalysis=null; UI.memoImgs=[]; $('memo').value='';
+  save(); renderMemoImgs(); refreshAll(); toast('已存入速记流水');
+}
+function applySuggestion(i){
+  var pa=UI.pendingAnalysis; if(!pa||!pa.sug[i]) return;
+  var s=pa.sug[i];
+  if(s.type==='record'){ addRecordChecked(s.studentId, s.zone, s.content, s.errs, '速记归类'); }
+  else if(s.type==='health'){ addHealthRecord(s.panel, s.val, s.note||'速记归类', null); }
+  else if(s.type==='study'){
+    var d=new Date();
+    DB.study.items.unshift({id:uid(),projectId:s.projectId,y:d.getFullYear(),m:d.getMonth()+1,d:d.getDate(),
+      t:pad(d.getHours())+':'+pad(d.getMinutes()),hours:0,result:s.result,questions:[],links:[],at:nowStr()});
+    toast('已记入进修');
+  }
+  else if(s.type==='todo'){ DB.todos.push({id:uid(),text:s.text,date:todayStr(),done:false,createdAt:nowStr()}); toast('已加入待办'); }
+  else if(s.type==='mat'){
+    var pid = DB.lib.work.projects.length?DB.lib.work.projects[0].id:null;
+    var an = analyzeArticle(s.text);
+    DB.lib.mats.unshift({id:uid(),lib:'work',projects:pid?[pid]:[],title:s.text.slice(0,18)+'…',text:s.text,
+      files:[],images:(pa.imgs||[]).slice(),links:[],at:nowStr(),analysis:an,src:'速记'});
+    toast('已存入素材库并完成文体解析');
+  }
+  else { saveMemoOnly(); return; }
+  DB.memos.unshift({id:uid(), text:pa.text, at:nowStr(), images:pa.imgs||[], assigned:s.title});
+  UI.pendingAnalysis=null; UI.memoImgs=[]; $('memo').value='';
+  save(); renderMemoImgs(); refreshAll();
+}
+function quickRecord(){
+  if(!DB.students.length){ toast('请先在康庄幽径添加学生'); switchModule('path'); return; }
+  openRecordForm(DB.students[0].id, 'dictation');
+}
+function quickMat(){ switchModule('lib'); setTimeout(openMatForm, 60); }
+</script>
+<script>
+/* =======================================================================
+   通用导出：PDF（打印）/ Word / 图片 / CSV
+   ======================================================================= */
+function printExport(elId, title){
+  var el=$(elId);
+  if(!el){ toast('没有可导出的内容'); return; }
+  var w=window.open('', '_blank');
+  if(!w){ toast('浏览器拦截了新窗口，请允许弹窗后重试'); return; }
+  w.document.write('<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>'+esc(title)+'</title><style>'+
+    'body{font-family:-apple-system,"Microsoft YaHei",sans-serif;padding:24px;color:#221a12;line-height:1.8}'+
+    'h1{font-family:"KaiTi",serif;letter-spacing:3px;border-bottom:2px solid #E5C07B;padding-bottom:8px}'+
+    '.err{color:#E5383B;font-weight:800}.tag{display:inline-block;padding:2px 8px;border:1px solid #ddd;border-radius:20px;font-size:12px;margin-right:4px}'+
+    '.zone{border:1px solid #ddd;border-radius:10px;margin-bottom:12px;overflow:hidden}'+
+    '.zone-h{background:#FBF5E9;padding:8px 12px;font-weight:700;border-bottom:1px solid #eee}.zone-b{padding:10px 12px}'+
+    '.rec{padding:6px 0;border-bottom:1px dashed #eee}.stu-grid{display:flex;flex-wrap:wrap;gap:8px}'+
+    '.stu{border:1px solid #ddd;border-radius:8px;padding:8px 12px;min-width:130px}.btn,.no-print,button{display:none !important}'+
+    '.tiny,.meta{font-size:12px;color:#888}img{max-width:200px;border-radius:6px}'+
+    '</style></head><body><h1>'+esc(title)+'</h1><div class="tiny">导出时间：'+nowStr()+' · 幽径通骄阳</div><hr>'+
+    el.innerHTML+'</body></html>');
+  w.document.close();
+  setTimeout(function(){ try{ w.focus(); w.print(); }catch(e){} }, 420);
+}
+function exportWord(title, innerHtml){
+  var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8">'+
+    '<title>'+esc(title)+'</title><style>body{font-family:"Microsoft YaHei";line-height:1.9}.err{color:#E5383B;font-weight:bold}h1{font-family:"KaiTi"}</style></head><body>'+
+    '<h1>'+esc(title)+'</h1><p style="color:#888;font-size:12px">导出时间：'+nowStr()+' · 幽径通骄阳</p>'+innerHtml+'</body></html>';
+  download(title+'.doc', html, 'application/msword');
+  toast('Word 文档已导出');
+}
+function exportPng(title, lines){
+  var W=820, pad=40, lh=34, H=pad*2+70+lines.length*lh;
+  var cv=document.createElement('canvas'); cv.width=W; cv.height=Math.max(H,340);
+  var x=cv.getContext('2d');
+  var gd=x.createLinearGradient(0,0,W,0); gd.addColorStop(0,'#FFF8ED'); gd.addColorStop(1,'#FFFDF7');
+  x.fillStyle=gd; x.fillRect(0,0,W,cv.height);
+  x.fillStyle='#FFB703'; x.fillRect(0,0,W,8);
+  x.fillStyle='#2B2118'; x.font='bold 30px "KaiTi","Microsoft YaHei",serif';
+  x.fillText(title, pad, pad+34);
+  x.fillStyle='#8B7A66'; x.font='14px "Microsoft YaHei",sans-serif';
+  x.fillText('导出时间：'+nowStr()+'  ·  幽径通骄阳', pad, pad+60);
+  x.strokeStyle='#EADFCD'; x.beginPath(); x.moveTo(pad,pad+74); x.lineTo(W-pad,pad+74); x.stroke();
+  for(var i=0;i<lines.length;i++){
+    var ln=lines[i]; var isRed = ln.charAt(0)==='!';
+    x.fillStyle = isRed ? '#E5383B' : '#2B2118';
+    x.font=(isRed?'bold ':'')+'17px "Microsoft YaHei",sans-serif';
+    x.fillText((isRed?ln.slice(1):ln).slice(0,44), pad, pad+104+i*lh);
+  }
+  cv.toBlob(function(b){ download(title+'.png', b); toast('图片已导出'); });
+}
+function csvCell(v){ var s=String(v==null?'':v).replace(/"/g,'""'); return '"'+s+'"'; }
+function toCsv(rows){ var out=[]; for(var i=0;i<rows.length;i++){ var r=[]; for(var j=0;j<rows[i].length;j++) r.push(csvCell(rows[i][j])); out.push(r.join(',')); } return out.join('\r\n'); }
+
+/* =======================================================================
+   康庄幽径
+   ======================================================================= */
+function renderPath(){
+  var list=$('path-list'), stage=$('path-stage');
+  if(!list||!stage) return;
+  if(UI.stuId && stuById(UI.stuId)){
+    list.classList.add('hide'); stage.classList.remove('hide');
+    renderClsBar(); renderStuStage();
+  }else{
+    UI.stuId=null;
+    stage.classList.add('hide'); list.classList.remove('hide');
+    renderClsBar(); renderStuList();
+  }
+}
+function renderClsBar(){
+  var box=$('cls-bar'); if(!box) return;
+  var h='';
+  if(!DB.classes.length) h='<span class="muted">还没有班级，点「新增班级」创建。</span>';
+  for(var i=0;i<DB.classes.length;i++){ var c=DB.classes[i];
+    var n=0; for(var j=0;j<DB.students.length;j++){ if(DB.students[j].classId===c.id) n++; }
+    h += '<span class="tag mint" style="padding:7px 12px;font-size:13px">'+
+      '<svg width="13" height="13"><use href="#i-book"/></svg>'+esc(c.name)+' · '+n+' 人'+
+      '<button class="btn sm" style="min-height:22px;padding:0 6px;margin-left:5px;border:0" onclick="renameClass(\''+c.id+'\')" title="改名"><svg><use href="#i-edit"/></svg></button>'+
+      '<button class="btn sm danger" style="min-height:22px;padding:0 6px;border:0" onclick="delClass(\''+c.id+'\')" title="删除班级"><svg><use href="#i-minus"/></svg></button></span>';
+  }
+  box.innerHTML=h;
+}
+function addClass(){ askPrompt('新增班级','班级名称','', function(v){
+  DB.classes.push({id:uid(), name:v}); save(); refreshAll(); toast('班级已添加'); }); }
+function renameClass(id){
+  var c=null; for(var i=0;i<DB.classes.length;i++){ if(DB.classes[i].id===id) c=DB.classes[i]; }
+  if(!c) return;
+  askPrompt('修改班级名称','班级名称', c.name, function(v){ c.name=v; save(); refreshAll(); toast('已修改'); });
+}
+function delClass(id){
+  var n=0; for(var i=0;i<DB.students.length;i++){ if(DB.students[i].classId===id) n++; }
+  askConfirm('删除班级','删除后该班 <b>'+n+'</b> 名学生将变为「未分班」，学生记录不会丢失。确定删除？', function(){
+    DB.classes=DB.classes.filter(function(c){ return c.id!==id; });
+    for(var i=0;i<DB.students.length;i++){ if(DB.students[i].classId===id) DB.students[i].classId=''; }
+    save(); refreshAll(); toast('班级已删除');
+  }, '删除');
+}
+function addStudent(){
+  var opts='<option value="">未分班</option>';
+  for(var i=0;i<DB.classes.length;i++) opts += '<option value="'+DB.classes[i].id+'">'+esc(DB.classes[i].name)+'</option>';
+  openModal('添加学生',
+    '<div class="field"><label class="fl">姓名（可一次输入多个，用顿号或逗号分隔）</label><input type="text" id="sf-name" placeholder="张三、李四"></div>'+
+    '<div class="field"><label class="fl">班级</label><select id="sf-cls">'+opts+'</select></div>'+
+    '<div class="field"><label class="fl">备注</label><input type="text" id="sf-note" placeholder="选填"></div>',
+    '<button class="btn" onclick="closeModal()">取消</button><button class="btn g" onclick="saveStudent()">保存</button>');
+}
+function saveStudent(){
+  var nm=$('sf-name').value.trim(), cls=$('sf-cls').value, note=$('sf-note').value.trim();
+  if(!nm){ toast('请填写姓名'); return; }
+  var arr=nm.split(/[、，,\s]+/), added=0;
+  for(var i=0;i<arr.length;i++){ var n=arr[i].trim(); if(!n) continue;
+    DB.students.push({id:uid(), name:n, classId:cls, note:note, createdAt:nowStr(), flowers:0}); added++; }
+  closeModal(); save(); refreshAll(); toast('已添加 '+added+' 名学生');
+}
+function delStudent(id){
+  var s=stuById(id); if(!s) return;
+  askConfirm('删除学生','确定删除 <b>'+esc(s.name)+'</b> 及其全部展示台记录、阅读错题？此操作不可恢复。', function(){
+    DB.students=DB.students.filter(function(x){ return x.id!==id; });
+    DB.records=DB.records.filter(function(r){ return r.studentId!==id; });
+    DB.reading=DB.reading.filter(function(r){ return r.studentId!==id; });
+    UI.stuId=null; save(); refreshAll(); toast('已删除');
+  }, '删除');
+}
+function openStu(id){ UI.stuId=id; switchModule('path'); }
+function closeStu(){ UI.stuId=null; renderPath(); window.scrollTo(0,0); }
+function renderStuList(){
+  var box=$('stu-list'); if(!box) return;
+  if(!DB.students.length){ box.innerHTML='<div class="empty">还没有学生，点「添加学生」或「导入」。</div>'; return; }
+  var groups={}, i;
+  for(i=0;i<DB.students.length;i++){ var s=DB.students[i], k=s.classId||'';
+    if(!groups[k]) groups[k]=[]; groups[k].push(s); }
+  var h='', order=DB.classes.map(function(c){ return c.id; });
+  if(groups['']) order.push('');
+  for(var gi=0; gi<order.length; gi++){
+    var cid=order[gi], arr=groups[cid]; if(!arr||!arr.length) continue;
+    h += '<div style="grid-column:1/-1;margin:6px 0 2px;font-weight:800;font-family:var(--fs);letter-spacing:2px;font-size:15px">'+
+         '<svg width="15" height="15" style="color:var(--m2)"><use href="#i-book"/></svg> '+esc(cid?clsName(cid):'未分班')+'</div>';
+    for(i=0;i<arr.length;i++){ var st=arr[i], n=errCount(st.id), fl=st.flowers||0;
+      h += '<button class="stu'+(n>80?' warn':'')+'" onclick="openStu(\''+st.id+'\')">'+
+        '<span class="nm">'+esc(st.name)+(fl>0?flowerSvg(18):'')+(fl>1?('<span class="tiny">×'+fl+'</span>'):'')+'</span>'+
+        '<span class="mt">红字 '+n+' 个 · '+(n<20?'优等':(n>80?'需重点辅导':'正常'))+'</span>'+
+        '<span class="mt">'+esc(st.note||clsName(st.classId))+'</span></button>';
+    }
+  }
+  box.innerHTML=h;
+}
+function renderStuStage(){
+  var box=$('path-stage'); if(!box) return;
+  var s=stuById(UI.stuId); if(!s){ box.innerHTML=''; return; }
+  var total=errCount(s.id), i;
+  var h='<div class="row no-print" style="margin-bottom:11px">'+
+    '<button class="btn sm" onclick="closeStu()"><svg><use href="#i-back"/></svg>返回名单</button>'+
+    '<span style="margin-left:auto"></span>'+
+    '<button class="btn sm g" onclick="openRecordForm(\''+s.id+'\',\'dictation\')"><svg><use href="#i-plus"/></svg>录入记录</button>'+
+    '<button class="btn sm" onclick="printExport(\'stage-print\',\''+esc(s.name)+'展示台\')"><svg><use href="#i-file"/></svg>整台导 PDF</button>'+
+    '<button class="btn sm danger" onclick="delStudent(\''+s.id+'\')"><svg><use href="#i-trash"/></svg>删除学生</button></div>';
+  h += '<div id="stage-print">';
+  h += '<div class="card-hero"><h2>'+esc(s.name)+'展示台'+(s.flowers>0?flowerSvg(26):'')+'</h2>'+
+    '<div style="font-size:13px;opacity:.92">'+esc(clsName(s.classId))+(s.note?(' · '+esc(s.note)):'')+' · 建档 '+esc(s.createdAt||'')+'</div>'+
+    '<div class="hero-stats">';
+  h += '<div>红字总计<b>'+total+'</b></div>';
+  for(i=0;i<ZONES.length;i++) h += '<div>'+ZONES[i].n+'<b>'+errCountByZone(s.id, ZONES[i].k)+'</b></div>';
+  h += '<div>小红花<b>'+(s.flowers||0)+'</b></div></div></div>';
+  h += '<div class="grid g2">';
+  for(i=0;i<ZONES.length;i++){
+    var z=ZONES[i], recs=stuRecords(s.id, z.k);
+    h += '<div class="zone"><div class="zone-h"><span class="dot" style="background:'+z.c+'"></span>'+z.n+
+      '<span class="tag red">红字 '+errCountByZone(s.id,z.k)+'</span><span class="right no-print">'+
+      '<button class="btn sm" onclick="openRecordForm(\''+s.id+'\',\''+z.k+'\')"><svg><use href="#i-plus"/></svg>加</button>'+
+      '<button class="btn sm" onclick="printExport(\'zone-'+z.k+'\',\''+esc(s.name)+'·'+z.n+'\')"><svg><use href="#i-file"/></svg>PDF</button>'+
+      '<button class="btn sm danger" onclick="clearStuZone(\''+s.id+'\',\''+z.k+'\')"><svg><use href="#i-trash"/></svg></button></span></div>'+
+      '<div class="zone-b" id="zone-'+z.k+'">';
+    if(!recs.length) h += '<div class="empty" style="padding:15px">暂无'+z.n+'记录</div>';
+    for(var j=0;j<recs.length;j++){ var r=recs[j];
+      h += '<div class="rec">'+markErr(r.content, r.errs)+
+        '<div class="meta">'+esc(r.at)+(r.src?(' · '+esc(r.src)):'')+
+        ((r.errs&&r.errs.length)?(' · 错字 '+r.errs.length+' 个'):' · 全对')+
+        ' <button class="btn sm danger no-print" style="min-height:20px;padding:0 6px" onclick="delRecord(\''+r.id+'\')">删</button></div></div>';
+    }
+    h += '</div></div>';
+  }
+  h += '</div>';
+  h += renderReadingZone(s);
+  h += '</div>';
+  box.innerHTML=h;
+}
+function clearStuZone(sid, zone){
+  askConfirm('清空栏目','确定清空 <b>'+esc(stuById(sid).name)+'</b> 的「'+zoneName(zone)+'」全部记录？点击确定即刻删除。', function(){
+    DB.records=DB.records.filter(function(r){ return !(r.studentId===sid && r.zone===zone); });
+    save(); refreshAll(); toast('已清空');
+  }, '确定清空');
+}
+function openRecordForm(sid, zone){
+  var s=stuById(sid); if(!s) return;
+  var opts='';
+  for(var i=0;i<ZONES.length;i++) opts += '<option value="'+ZONES[i].k+'"'+(ZONES[i].k===zone?' selected':'')+'>'+ZONES[i].n+'</option>';
+  var sopts='';
+  for(i=0;i<DB.students.length;i++) sopts += '<option value="'+DB.students[i].id+'"'+(DB.students[i].id===sid?' selected':'')+'>'+esc(DB.students[i].name)+'</option>';
+  openModal('录入记录',
+    '<div class="inline-form"><div class="field"><label class="fl">学生</label><select id="rf-stu">'+sopts+'</select></div>'+
+    '<div class="field"><label class="fl">栏目</label><select id="rf-zone">'+opts+'</select></div></div>'+
+    '<div class="field"><label class="fl">内容（原句/词组/篇目）</label><textarea id="rf-content" placeholder="例：黄发垂髫，并怡然自乐"></textarea></div>'+
+    '<div class="field"><label class="fl">错字（多个用顿号分隔，将自动标红）</label><input type="text" id="rf-errs" placeholder="例：髫、缤"></div>'+
+    '<div class="tiny">写入前会检查重复字，若此前记录过会提示你确认。</div>',
+    '<button class="btn" onclick="closeModal()">取消</button><button class="btn g" onclick="saveRecordForm()">保存</button>');
+}
+function saveRecordForm(){
+  var sid=$('rf-stu').value, zone=$('rf-zone').value, c=$('rf-content').value.trim(), e=$('rf-errs').value.trim();
+  if(!c && !e){ toast('请填写内容或错字'); return; }
+  var errs = e? e.split(/[、，,\s]+/).filter(function(x){ return x; }) : [];
+  closeModal();
+  addRecordChecked(sid, zone, c||errs.join('、'), errs, '手动录入');
+}
+/* 重复字提示 → 确认后写入 */
+function addRecordChecked(sid, zone, content, errs, src){
+  errs = errs||[];
+  var dup=[], i, j;
+  for(i=0;i<errs.length;i++){
+    for(j=0;j<DB.records.length;j++){
+      var r=DB.records[j];
+      if(r.studentId===sid && (r.errs||[]).indexOf(errs[i])>=0){ dup.push(errs[i]); break; }
+    }
+  }
+  var write=function(){
+    DB.records.unshift({id:uid(), studentId:sid, zone:zone, content:content, errs:errs, at:nowStr(), src:src||''});
+    save(); refreshAll();
+    toast('已写入 '+(stuById(sid)?stuById(sid).name:'')+' 的'+zoneName(zone));
+  };
+  if(dup.length){
+    askConfirm('发现重复字',
+      '「<span class="err">'+esc(dup.join('、'))+'</span>」在该学生此前的记录中已出现过。<br>是否仍要储存这条记录？',
+      write, '仍要储存');
+  }else write();
+}
+function delRecord(id){
+  askConfirm('删除记录','确定删除这条记录？', function(){
+    DB.records=DB.records.filter(function(r){ return r.id!==id; }); save(); refreshAll(); toast('已删除');
+  }, '删除');
+}
+</script>
+<script>
+/* =======================================================================
+   康庄幽径 · 阅读专区（模板函数，由 renderStuStage 单向调用）
+   ======================================================================= */
+function stuReadings(sid){
+  var out=[]; for(var i=0;i<DB.reading.length;i++){ if(DB.reading[i].studentId===sid) out.push(DB.reading[i]); }
+  return out.sort(function(a,b){ return a.at<b.at?1:-1; });
+}
+function renderReadingZone(s){
+  var arr=stuReadings(s.id);
+  var h='<div class="zone"><div class="zone-h"><span class="dot" style="background:var(--dop-violet)"></span>阅读专区'+
+    '<span class="tag violet">'+arr.length+' 条</span>'+
+    '<span class="right no-print">'+
+    '<button class="btn sm v" onclick="openReadingForm(\''+s.id+'\')"><svg><use href="#i-plus"/></svg>加错题</button>'+
+    '<button class="btn sm" onclick="printExport(\'read-zone\',\''+esc(s.name)+'·阅读专区\')"><svg><use href="#i-file"/></svg>PDF</button>'+
+    '<button class="btn sm danger" onclick="clearReading(\''+s.id+'\')"><svg><use href="#i-trash"/></svg></button></span></div>'+
+    '<div class="zone-b" id="read-zone">';
+  if(!arr.length) h += '<div class="empty" style="padding:16px">暂无阅读错题。点「加错题」并链接到花团锦簇素材库，可定位到具体是哪套卷子的哪道题。</div>';
+  for(var i=0;i<arr.length;i++){
+    var r=arr[i], m=matById(r.matId);
+    var pns=[]; if(m){ for(var j=0;j<(m.projects||[]).length;j++) pns.push(projName(m.lib, m.projects[j])); }
+    h += '<div class="mat"><div class="t"><svg width="15" height="15" style="color:var(--dop-violet)"><use href="#i-book"/></svg>'+
+      esc(r.question||'（未填题干）')+'</div>';
+    h += '<div class="tiny">'+esc(r.at)+(r.qno?(' · '+esc(r.qno)):'')+'</div>';
+    if(r.wrong) h += '<div style="font-size:14px;margin-top:5px">错因：<span class="err">'+esc(r.wrong)+'</span></div>';
+    if(m) h += '<div class="row" style="margin-top:7px"><span class="tag violet"><svg width="12" height="12"><use href="#i-link"/></svg>素材库定位</span>'+
+      '<span class="tiny">花团锦簇 · '+(m.lib==='work'?'工作素材':'学习素材')+' · '+esc(pns.join('/')||'未分类')+' · 《'+esc(m.title)+'》'+(r.qno?(' · '+esc(r.qno)):'')+'</span></div>';
+    else h += '<div class="tiny" style="margin-top:6px">（未链接素材库）</div>';
+    if((r.subs||[]).length){
+      h += '<div class="zone" style="margin-top:9px"><div class="zone-h"><span class="dot" style="background:var(--dop-violet)"></span>细分方向<span class="tag violet">'+(r.subs||[]).length+'</span>'+
+        '<span class="right no-print"><button class="btn sm" onclick="openSubForm(\''+r.id+'\')"><svg><use href="#i-plus"/></svg>加子项目</button></span></div><div class="zone-b">';
+      for(var si=0; si<(r.subs||[]).length; si++){ var su=r.subs[si];
+        h += '<div class="rec" style="border-left:4px solid var(--dop-violet)"><div style="font-weight:700">'+esc(su.name||'（未命名）')+
+          ' <span class="tag violet" style="font-size:11px">'+esc(su.cat||'自定义')+'</span></div>'+
+          (su.note?'<div class="tiny" style="margin-top:3px;white-space:pre-wrap">'+esc(su.note)+'</div>':'')+
+          '<div class="row no-print" style="margin-top:5px"><button class="btn sm" onclick="openSubForm(\''+r.id+'\',\''+su.id+'\')"><svg><use href="#i-edit"/></svg>改名</button>'+
+          '<button class="btn sm danger" onclick="delSub(\''+r.id+'\',\''+su.id+'\')"><svg><use href="#i-trash"/></svg>删</button></div></div>';
+      }
+      h += '</div></div>';
+    } else {
+      h += '<div class="row no-print" style="margin-top:8px"><button class="btn sm" onclick="openSubForm(\''+r.id+'\')"><svg><use href="#i-plus"/></svg>加子项目（按修辞/表现手法/表达方式/描写手法细分）</button></div>';
+    }
+    h += '<div class="row no-print" style="margin-top:8px">'+
+      (m?'<button class="btn sm v" onclick="openMatAnalysis(\''+m.id+'\',\''+r.id+'\')"><svg><use href="#i-ai"/></svg>AI 解读文章</button>':'')+
+      (m?'<button class="btn sm" onclick="openMatDetail(\''+m.id+'\')"><svg><use href="#i-eye"/></svg>看原文</button>':'')+
+      '<button class="btn sm" onclick="openExportPack(\''+r.id+'\')"><svg><use href="#i-download"/></svg>导出题目/练习</button>'+
+      '<button class="btn sm danger" onclick="delReading(\''+r.id+'\')"><svg><use href="#i-trash"/></svg>删</button></div>';
+    h += '</div>';
+  }
+  h += '</div></div>';
+  return h;
+}
+function openReadingForm(sid){
+  var mopts='<option value="">（不链接素材）</option>', i;
+  for(i=0;i<DB.lib.mats.length;i++){ var m=DB.lib.mats[i];
+    mopts += '<option value="'+m.id+'">'+esc((m.lib==='work'?'工作·':'学习·')+m.title)+'</option>'; }
+  openModal('添加阅读错题',
+    '<div class="field"><label class="fl">题干 / 考查点</label><textarea id="rd-q" placeholder="例：分析“那辆自行车吱呀作响，像父亲的脊背”的修辞及作用"></textarea></div>'+
+    '<div class="inline-form"><div class="field"><label class="fl">链接素材库（哪套卷子/文章）</label><select id="rd-mat">'+mopts+'</select></div>'+
+    '<div class="field"><label class="fl">题号定位</label><input type="text" id="rd-no" placeholder="例：第三大题第2小题"></div></div>'+
+    '<div class="field"><label class="fl">错因</label><input type="text" id="rd-w" placeholder="例：只答出比喻，未答情感作用"></div>',
+    '<button class="btn" onclick="closeModal()">取消</button><button class="btn v" onclick="saveReading(\''+sid+'\')">保存</button>');
+}
+function saveReading(sid){
+  var q=$('rd-q').value.trim();
+  if(!q){ toast('请填写题干'); return; }
+  DB.reading.unshift({id:uid(), studentId:sid, matId:$('rd-mat').value, qno:$('rd-no').value.trim(),
+    question:q, wrong:$('rd-w').value.trim(), at:nowStr()});
+  closeModal(); save(); refreshAll(); toast('阅读错题已记录');
+}
+function delReading(id){
+  askConfirm('删除错题','确定删除这条阅读错题？', function(){
+    DB.reading=DB.reading.filter(function(r){ return r.id!==id; }); save(); refreshAll(); toast('已删除');
+  }, '删除');
+}
+function clearReading(sid){
+  askConfirm('清空阅读专区','确定清空该学生阅读专区的全部错题？点击确定即刻删除。', function(){
+    DB.reading=DB.reading.filter(function(r){ return r.studentId!==sid; }); save(); refreshAll(); toast('已清空');
+  }, '确定清空');
+}
+function openSubForm(rid, subId){
+  var r=null; for(var i=0;i<DB.reading.length;i++){ if(DB.reading[i].id===rid) r=DB.reading[i]; }
+  if(!r) return;
+  var su = subId ? (r.subs||[]).filter(function(x){ return x.id===subId;})[0] : null;
+  var cats=['修辞','表现手法','表达方式','描写手法','自定义'];
+  var opts=''; for(var c=0;c<cats.length;c++) opts += '<option value="'+cats[c]+'"'+(su&&su.cat===cats[c]?' selected':'')+'>'+cats[c]+'</option>';
+  openModal(su?'重命名 / 编辑子项目':'为阅读素材加子项目',
+    '<div class="tiny" style="margin-bottom:9px">按考查维度细分，例如：修辞、表现手法、表达方式、描写手法；子项目命名可自由编辑，可随时增删。</div>'+
+    '<div class="field"><label class="fl">细分维度</label><select id="sub-cat">'+opts+'</select></div>'+
+    '<div class="field"><label class="fl">子项目名称（可编辑）</label><input type="text" id="sub-name" placeholder="例：比喻的作用、借景抒情、记叙顺序" value="'+esc(su?su.name:'')+'"></div>'+
+    '<div class="field"><label class="fl">内容 / 备注</label><textarea id="sub-note" placeholder="例：本体喻体、情感作用……">'+esc(su?su.note:'')+'</textarea></div>',
+    '<button class="btn" onclick="closeModal()">取消</button><button class="btn v" onclick="saveSub(\''+rid+'\''+(subId?',\''+subId+'\'':'')+')">保存</button>');
+}
+function saveSub(rid, subId){
+  var r=null; for(var i=0;i<DB.reading.length;i++){ if(DB.reading[i].id===rid) r=DB.reading[i]; }
+  if(!r) return;
+  var name=$('sub-name').value.trim(), cat=$('sub-cat').value, note=$('sub-note').value.trim();
+  if(!name){ toast('请填写子项目名称'); return; }
+  if(!r.subs) r.subs=[];
+  if(subId){ for(var i=0;i<r.subs.length;i++){ if(r.subs[i].id===subId){ r.subs[i].name=name; r.subs[i].cat=cat; r.subs[i].note=note; } } }
+  else { r.subs.push({id:uid(), name:name, cat:cat, note:note}); }
+  closeModal(); save(); refreshAll(); toast('已保存子项目');
+}
+function delSub(rid, subId){
+  askConfirm('删除子项目','确定删除这个细分方向？', function(){
+    var r=null; for(var i=0;i<DB.reading.length;i++){ if(DB.reading[i].id===rid) r=DB.reading[i]; }
+    if(r&&r.subs) r.subs=r.subs.filter(function(x){ return x.id!==subId; });
+    save(); refreshAll(); toast('已删除');
+  }, '删除');
+}
+/* ---------- 文章解析弹窗 ---------- */
+function analysisHtml(m, an){
+  var h='<div class="row" style="margin-bottom:9px"><span class="tag violet"><svg width="13" height="13"><use href="#i-ai"/></svg>解析引擎（本地词库规则，离线可用）</span></div>';
+  h += '<div class="zone"><div class="zone-h">体裁判定</div><div class="zone-b"><div style="font-size:17px;font-weight:800">'+esc(an.genre)+'</div>';
+  var sc=an.genreScore||{}, k, parts=[];
+  for(k in sc) parts.push(k+'：'+Math.round(sc[k]*10)/10);
+  h += '<div class="tiny" style="margin-top:5px">特征命中值 → '+esc(parts.join('　'))+'</div></div></div>';
+  if(an.desc && an.desc.length){
+    h += '<div class="zone"><div class="zone-h">描写手法</div><div class="zone-b"><div class="row">';
+    for(var i=0;i<an.desc.length;i++) h += '<span class="tag mint">'+esc(an.desc[i])+'</span>';
+    h += '</div></div></div>';
+  }
+  h += '<div class="zone"><div class="zone-h">修辞识别</div><div class="zone-b"><div class="row">';
+  for(i=0;i<an.rhet.length;i++) h += '<span class="tag rose">'+esc(an.rhet[i])+'</span>';
+  h += '</div></div></div>';
+  if(an.skill && an.skill.length){
+    h += '<div class="zone"><div class="zone-h">表现手法</div><div class="zone-b"><div class="row">';
+    for(i=0;i<an.skill.length;i++) h += '<span class="tag sky">'+esc(an.skill[i])+'</span>';
+    h += '</div></div></div>';
+  }
+  h += '<div class="zone"><div class="zone-h">题型划分</div><div class="zone-b">';
+  for(i=0;i<an.qtypes.length;i++) h += '<div class="rec">'+(i+1)+'. '+esc(an.qtypes[i])+'</div>';
+  h += '</div></div>';
+  h += '<div class="zone"><div class="zone-h">针对性建议</div><div class="zone-b">';
+  for(i=0;i<an.advice.length;i++) h += '<div class="rec">· '+esc(an.advice[i])+'</div>';
+  h += '</div></div>';
+  var kw = encodeURIComponent(an.genre.replace(/（.*?）/g,'') + ' ' + (an.rhet[0]||'') + ' ' + (an.qtypes[0]||'') + ' 阅读练习题 含答案');
+  h += '<div class="zone no-print"><div class="zone-h">同类型题目练习（全网检索）</div><div class="zone-b"><div class="row">'+
+    '<a class="btn sm s" target="_blank" rel="noopener" href="https://www.bing.com/search?q='+kw+'"><svg><use href="#i-search"/></svg>必应检索</a>'+
+    '<a class="btn sm s" target="_blank" rel="noopener" href="https://www.baidu.com/s?wd='+kw+'"><svg><use href="#i-search"/></svg>百度检索</a>'+
+    '<a class="btn sm s" target="_blank" rel="noopener" href="https://www.zxxk.com/search/?q='+kw+'"><svg><use href="#i-link"/></svg>学科网</a>'+
+    '</div><div class="tiny" style="margin-top:6px">检索关键词：'+esc(decodeURIComponent(kw))+'</div></div></div>';
+  return h;
+}
+function openMatAnalysis(matId, readingId){
+  var m=matById(matId); if(!m){ toast('素材不存在'); return; }
+  var an = analyzeArticle(m.text||m.title);
+  m.analysis=an; save();
+  var body='<div class="tiny" style="margin-bottom:8px">素材：《'+esc(m.title)+'》 · '+esc(m.at)+'</div>'+
+    '<div id="an-print">'+analysisHtml(m, an)+'</div>';
+  openModal('AI 文章解读 · '+m.title, body,
+    '<button class="btn sm" onclick="printExport(\'an-print\',\'文章解读·'+esc(m.title)+'\')"><svg><use href="#i-file"/></svg>PDF</button>'+
+    '<button class="btn sm" onclick="exportAnalysisWord(\''+matId+'\')"><svg><use href="#i-download"/></svg>Word</button>'+
+    '<button class="btn sm" onclick="exportAnalysisPng(\''+matId+'\')"><svg><use href="#i-image"/></svg>图片</button>'+
+    (readingId?'<button class="btn sm v" onclick="openExportPack(\''+readingId+'\')"><svg><use href="#i-download"/></svg>题目+练习包</button>':'')+
+    '<button class="btn" onclick="closeModal()">关闭</button>', true);
+}
+function exportAnalysisWord(matId){
+  var m=matById(matId); if(!m) return;
+  var an=m.analysis||analyzeArticle(m.text||m.title);
+  var h='<h2>原文</h2><p>'+esc(m.text||'')+'</p><h2>解析</h2>'+
+    '<p><b>体裁：</b>'+esc(an.genre)+'</p>'+
+    '<p><b>描写手法：</b>'+esc((an.desc||[]).join('、')||'—')+'</p>'+
+    '<p><b>修辞：</b>'+esc((an.rhet||[]).join('、'))+'</p>'+
+    '<p><b>表现手法：</b>'+esc((an.skill||[]).join('、')||'—')+'</p>'+
+    '<h2>题型划分</h2><ol><li>'+(an.qtypes||[]).map(esc).join('</li><li>')+'</li></ol>'+
+    '<h2>针对性建议</h2><ul><li>'+(an.advice||[]).map(esc).join('</li><li>')+'</li></ul>';
+  exportWord('文章解读·'+m.title, h);
+}
+function exportAnalysisPng(matId){
+  var m=matById(matId); if(!m) return;
+  var an=m.analysis||analyzeArticle(m.text||m.title);
+  var lines=['【素材】'+m.title, '【体裁】'+an.genre];
+  if((an.desc||[]).length) lines.push('【描写手法】'+an.desc.join('、'));
+  lines.push('【修辞】'+(an.rhet||[]).join('、'));
+  if((an.skill||[]).length) lines.push('【表现手法】'+an.skill.join('、'));
+  lines.push('【题型划分】');
+  for(var i=0;i<(an.qtypes||[]).length;i++) lines.push('  '+(i+1)+'. '+an.qtypes[i]);
+  lines.push('【建议】');
+  for(i=0;i<(an.advice||[]).length;i++) lines.push('!  · '+an.advice[i]);
+  exportPng('文章解读·'+m.title, lines);
+}
+/* ---------- 题目 + 同类练习 导出包 ---------- */
+function packHtml(r){
+  var m=matById(r.matId), st=stuById(r.studentId);
+  var an = m? (m.analysis||analyzeArticle(m.text||m.title)) : null;
+  var h='<h2>一、原题</h2><p><b>题干：</b>'+esc(r.question||'')+'</p>'+
+    '<p><b>题号：</b>'+esc(r.qno||'—')+'　<b>学生：</b>'+esc(st?st.name:'—')+'　<b>记录时间：</b>'+esc(r.at)+'</p>'+
+    '<p><b>错因：</b><span class="err">'+esc(r.wrong||'—')+'</span></p>';
+  if((r.subs||[]).length){ h += '<h2>二、细分方向</h2><ol>'; for(var z=0; z<r.subs.length; z++){ h += '<li><b>'+esc(r.subs[z].cat||'自定义')+' · '+esc(r.subs[z].name||'')+'</b>'+(r.subs[z].note?'：'+esc(r.subs[z].note):'')+'</li>'; } h += '</ol>'; }
+  if(m) h += '<h2>三、原文材料（'+esc(m.title)+'）</h2><p>'+esc(m.text||'')+'</p>';
+  if(an){
+    h += '<h2>四、解析</h2><p><b>体裁：</b>'+esc(an.genre)+'　<b>修辞：</b>'+esc((an.rhet||[]).join('、'))+
+      '　<b>描写：</b>'+esc((an.desc||[]).join('、')||'—')+'</p>'+
+      '<p><b>题型划分：</b>'+esc((an.qtypes||[]).join('；'))+'</p>'+
+      '<h2>五、同类型练习建议</h2><ol>';
+    var qt=an.qtypes||[];
+    for(var i=0;i<qt.length;i++){
+      h += '<li>'+esc(qt[i])+'：请就本文再自拟一题并作答，答题需包含「手法—内容—情感/作用」三要素。</li>';
+    }
+    h += '</ol><p class="tiny">在线同类题检索关键词：'+esc(an.genre+' '+((an.rhet||[])[0]||'')+' 阅读练习题 含答案')+'</p>';
+  }
+  return h;
+}
+function openExportPack(rid){
+  var r=null; for(var i=0;i<DB.reading.length;i++){ if(DB.reading[i].id===rid) r=DB.reading[i]; }
+  if(!r) return;
+  var body='<div id="pack-print">'+packHtml(r)+'</div>';
+  openModal('阅读题目 + 同类练习 · 导出', body,
+    '<button class="btn sm" onclick="printExport(\'pack-print\',\'阅读题目与练习包\')"><svg><use href="#i-file"/></svg>PDF</button>'+
+    '<button class="btn sm" onclick="exportPackWord(\''+rid+'\')"><svg><use href="#i-download"/></svg>Word</button>'+
+    '<button class="btn sm" onclick="exportPackPng(\''+rid+'\')"><svg><use href="#i-image"/></svg>图片</button>'+
+    '<button class="btn" onclick="closeModal()">关闭</button>', true);
+}
+function exportPackWord(rid){
+  var r=null; for(var i=0;i<DB.reading.length;i++){ if(DB.reading[i].id===rid) r=DB.reading[i]; }
+  if(r) exportWord('阅读题目与练习包', packHtml(r));
+}
+function exportPackPng(rid){
+  var r=null; for(var i=0;i<DB.reading.length;i++){ if(DB.reading[i].id===rid) r=DB.reading[i]; }
+  if(!r) return;
+  var m=matById(r.matId), an=m?(m.analysis||analyzeArticle(m.text||m.title)):null;
+  var lines=['【题干】'+(r.question||''), '【题号】'+(r.qno||'—'), '!【错因】'+(r.wrong||'—')];
+  if(m) lines.push('【材料】'+m.title);
+  if(an){ lines.push('【体裁】'+an.genre); lines.push('【修辞】'+(an.rhet||[]).join('、'));
+    lines.push('【同类题型】');
+    for(var i=0;i<(an.qtypes||[]).length;i++) lines.push('  '+(i+1)+'. '+an.qtypes[i]); }
+  exportPng('阅读题目与练习包', lines);
+}
+/* ---------- 学生名单导入导出 ---------- */
+function exportStudentsCsv(){
+  var rows=[['姓名','班级','备注','红字数','小红花','建档时间']];
+  for(var i=0;i<DB.students.length;i++){ var s=DB.students[i];
+    rows.push([s.name, clsName(s.classId), s.note||'', errCount(s.id), s.flowers||0, s.createdAt||'']); }
+  download('学生名单_'+todayStr()+'.csv', toCsv(rows), 'text/csv');
+  toast('CSV 已导出（Excel 可直接打开）');
+}
+function importStudentsPick(){
+  openModal('导入学生名单',
+    '<div class="tiny" style="line-height:1.9">支持两种方式：<br>'+
+    '<b>1. 文件导入</b>：CSV / TXT（Excel 请先「另存为 CSV」）或本工作台导出的 JSON 备份。每行格式：<code>姓名,班级,备注</code><br>'+
+    '<b>2. 直接粘贴</b>：把名单粘到下面文本框，一行一个，或用顿号分隔。<br>'+
+    '<span style="color:var(--red)">说明：PDF / xlsx 是二进制格式，纯本地网页无法解析其内容，请转成 CSV 或粘贴文字。</span></div>'+
+    '<div class="field" style="margin-top:11px"><label class="fl">粘贴名单</label>'+
+    '<textarea id="imp-txt" placeholder="张三,五年级(1)班,住宿&#10;李四,五年级(1)班&#10;王小雨"></textarea></div>',
+    '<button class="btn sm" onclick="importStudentsFile()"><svg><use href="#i-upload"/></svg>选择 CSV/TXT/JSON</button>'+
+    '<button class="btn" onclick="closeModal()">取消</button>'+
+    '<button class="btn g" onclick="importStudentsText()">导入粘贴内容</button>');
+}
+function classIdByName(name){
+  if(!name) return '';
+  for(var i=0;i<DB.classes.length;i++){ if(DB.classes[i].name===name) return DB.classes[i].id; }
+  var c={id:uid(), name:name}; DB.classes.push(c); return c.id;
+}
+function importStudentLines(text){
+  var lines=String(text).replace(/\r/g,'').split('\n'), added=0;
+  for(var i=0;i<lines.length;i++){
+    var ln=lines[i].trim(); if(!ln) continue;
+    if(/^姓名/.test(ln)) continue;
+    var cells = ln.indexOf(',')>=0 ? ln.split(',') : (ln.indexOf('\t')>=0 ? ln.split('\t') : [ln]);
+    if(cells.length===1 && /[、，]/.test(cells[0])){
+      var names=cells[0].split(/[、，]/);
+      for(var j=0;j<names.length;j++){ var n2=names[j].trim().replace(/^"|"$/g,'');
+        if(n2){ DB.students.push({id:uid(),name:n2,classId:'',note:'',createdAt:nowStr(),flowers:0}); added++; } }
+      continue;
+    }
+    var nm=(cells[0]||'').trim().replace(/^"|"$/g,'');
+    if(!nm) continue;
+    var cls=(cells[1]||'').trim().replace(/^"|"$/g,'');
+    var note=(cells[2]||'').trim().replace(/^"|"$/g,'');
+    DB.students.push({id:uid(), name:nm, classId:classIdByName(cls), note:note, createdAt:nowStr(), flowers:0});
+    added++;
+  }
+  return added;
+}
+function importStudentsText(){
+  var t=$('imp-txt'); if(!t) return;
+  var n=importStudentLines(t.value);
+  closeModal(); save(); refreshAll();
+  toast(n? ('已导入 '+n+' 名学生') : '没有解析到有效姓名');
+}
+function importStudentsFile(){
+  pickFiles('.csv,.txt,.json,text/csv,text/plain,application/json', false, function(fs){
+    var fr=new FileReader();
+    fr.onload=function(){
+      var txt=String(fr.result), n=0;
+      if(/^\s*[\[{]/.test(txt)){
+        try{ var j=JSON.parse(txt);
+          var arr = Array.isArray(j) ? j : (j.students||[]);
+          for(var i=0;i<arr.length;i++){ var s=arr[i];
+            if(!s || !s.name) continue;
+            DB.students.push({id:uid(), name:s.name, classId: s.className? classIdByName(s.className) : (s.classId||''),
+              note:s.note||'', createdAt:nowStr(), flowers:s.flowers||0}); n++; }
+        }catch(e){ toast('JSON 解析失败'); return; }
+      }else n=importStudentLines(txt);
+      closeModal(); save(); refreshAll();
+      toast(n? ('已导入 '+n+' 名学生') : '没有解析到有效姓名');
+    };
+    fr.readAsText(fs[0], 'utf-8');
+  });
+}
+/* ---------- 分区清空 ---------- */
+function clearZone(what){
+  var map={ students:'学生名单（含全部展示台记录与阅读错题）', todos:'待办事项', memos:'速记流水' };
+  askConfirm('一键清空','确定清空 <b>'+map[what]+'</b>？点击确定即刻删除相关数据，不可恢复。', function(){
+    if(what==='students'){ DB.students=[]; DB.records=[]; DB.reading=[]; UI.stuId=null; }
+    if(what==='todos') DB.todos=[];
+    if(what==='memos') DB.memos=[];
+    save(); refreshAll(); toast('已清空');
+  }, '确定清空');
+}
+</script>
+<script>
+/* =======================================================================
+   骄阳永灿：门禁 + 体重 / 血糖 / 运动 / 餐饮 / 进修
+   ======================================================================= */
+function renderSun(){
+  var lock=$('sun-lock'), main=$('sun-main');
+  if(!lock||!main) return;
+  if(!UI.sunUnlocked){ main.classList.add('hide'); lock.classList.remove('hide'); renderSunLock(); return; }
+  lock.classList.add('hide'); lock.innerHTML=''; main.classList.remove('hide');
+  var home=$('sun-home'), stage=$('sun-stage');
+  if(UI.sunPanel){ home.classList.add('hide'); stage.classList.remove('hide'); renderSunStage(); }
+  else { stage.classList.add('hide'); home.classList.remove('hide'); renderSunHome(); }
+}
+function renderSunLock(){
+  var box=$('sun-lock');
+  box.innerHTML='<div class="card lock">'+
+    '<div class="ring"><svg width="38" height="38" style="color:#fff"><use href="#i-lock"/></svg></div>'+
+    '<h2 style="font-family:var(--fs);letter-spacing:3px;margin:0 0 4px">骄阳永灿</h2>'+
+    '<div class="muted" style="font-size:13px">私密板块 · 请输入 6 位密码，或回答密保问题</div>'+
+    '<div class="pin">'+
+      '<input type="password" inputmode="numeric" maxlength="1" id="pin0" oninput="pinStep(0)">'+
+      '<input type="password" inputmode="numeric" maxlength="1" id="pin1" oninput="pinStep(1)">'+
+      '<input type="password" inputmode="numeric" maxlength="1" id="pin2" oninput="pinStep(2)">'+
+      '<input type="password" inputmode="numeric" maxlength="1" id="pin3" oninput="pinStep(3)">'+
+      '<input type="password" inputmode="numeric" maxlength="1" id="pin4" oninput="pinStep(4)">'+
+      '<input type="password" inputmode="numeric" maxlength="1" id="pin5" oninput="pinStep(5)">'+
+    '</div>'+
+    '<button class="btn o" style="width:100%" onclick="trySunPin()"><svg><use href="#i-lock"/></svg>解锁进入</button>'+
+    '<div class="sep"></div>'+
+    '<div class="field" style="text-align:left"><label class="fl">密保问题：'+esc(DB.security.q)+'</label>'+
+    '<input type="text" id="sec-a" placeholder="输入答案后回车" onkeydown="if(event.key===\'Enter\')trySunAnswer()"></div>'+
+    '<button class="btn" style="width:100%" onclick="trySunAnswer()"><svg><use href="#i-check"/></svg>用密保答案进入</button>'+
+    '<div class="tiny" style="margin-top:11px">默认密码 123456 · 默认答案「木棉」；进入后可在「设置」中修改。<br>提示：此机制用于防误触，数据仅存在你本机浏览器中，并非加密保护。</div>'+
+    '</div>';
+}
+function pinStep(i){
+  var el=$('pin'+i); if(!el) return;
+  el.value=el.value.replace(/\D/g,'');
+  if(el.value && i<5){ var nx=$('pin'+(i+1)); if(nx) nx.focus(); }
+  if(i===5 && el.value) trySunPin();
+}
+function readPin(){ var s=''; for(var i=0;i<6;i++){ var el=$('pin'+i); s += el?el.value:''; } return s; }
+function trySunPin(){
+  var v=readPin();
+  if(v.length<6){ toast('请输入完整的 6 位密码'); return; }
+  if(v===String(DB.security.pin)){ UI.sunUnlocked=true; toast('已解锁'); boom(20,['#FFB703','#FF6B35']); refreshAll(); }
+  else { toast('密码不正确'); for(var i=0;i<6;i++){ var el=$('pin'+i); if(el) el.value=''; } var f=$('pin0'); if(f) f.focus(); }
+}
+function trySunAnswer(){
+  var el=$('sec-a'); if(!el) return;
+  if(el.value.trim() && el.value.trim()===String(DB.security.a).trim()){
+    UI.sunUnlocked=true; toast('密保验证通过'); refreshAll();
+  }else toast('答案不正确');
+}
+function lockSun(){ UI.sunUnlocked=false; UI.sunPanel=null; refreshAll(); toast('已重新锁定'); }
+function healthLast(k){ var a=DB.health[k]; return a.length? a[a.length-1] : null; }
+function renderSunHome(){
+  var hero=$('sun-hero'), cards=$('sun-cards');
+  if(hero){
+    var w=healthLast('weight'), g=healthLast('glucose'), sp=DB.health.sport, sh=0, i;
+    for(i=0;i<sp.length;i++) sh += (+sp[i].val||0);
+    var studyH=0; for(i=0;i<DB.study.items.length;i++) studyH += (+DB.study.items[i].hours||0);
+    hero.innerHTML =
+      '<div>体重<b>'+(w?w.val+' kg':'—')+'</b></div>'+
+      '<div>血糖<b>'+(g?g.val:'—')+'</b></div>'+
+      '<div>运动累计<b>'+sh+' 分</b></div>'+
+      '<div>进修累计<b>'+(Math.round(studyH*10)/10)+' h</b></div>'+
+      '<div>健康小红花<b>'+(DB.flowers.total||0)+'</b></div>';
+  }
+  if(!cards) return;
+  var h='', i2;
+  for(i2=0;i2<SUNP.length;i2++){
+    var p=SUNP[i2], last=healthLast(p.k), n=DB.health[p.k].length;
+    var alarm = (p.k==='glucose' && last && +last.val>7.5);
+    h += '<button class="card tight" style="text-align:left;margin:0;border-top:4px solid '+p.c+(alarm?';background:#FFF2F2':'')+'" onclick="openSunPanel(\''+p.k+'\')">'+
+      '<div class="row"><svg width="22" height="22" style="color:'+p.c+'"><use href="#'+p.icon+'"/></svg>'+
+      '<div style="font-weight:800;font-size:16px">'+p.n+'</div>'+
+      (alarm?'<span class="tag red">偏高</span>':'')+'</div>'+
+      '<div style="font-size:22px;font-weight:800;margin-top:6px">'+(last? esc(String(last.val)) : '—')+
+      '<span class="tiny" style="font-weight:600"> '+(p.unit==='内容'?'':p.unit)+'</span></div>'+
+      '<div class="tiny">共 '+n+' 条 · '+(last?(last.m+'月'+last.d+'日 '+(last.t||'')):'暂无记录')+'</div></button>';
+  }
+  h += '<button class="card tight" style="text-align:left;margin:0;border-top:4px solid #9D4EDD" onclick="openSunPanel(\'study\')">'+
+    '<div class="row"><svg width="22" height="22" style="color:#9D4EDD"><use href="#i-book"/></svg>'+
+    '<div style="font-weight:800;font-size:16px">进修</div></div>'+
+    '<div style="font-size:22px;font-weight:800;margin-top:6px">'+DB.study.projects.length+'<span class="tiny" style="font-weight:600"> 个项目</span></div>'+
+    '<div class="tiny">'+DB.study.items.length+' 条学习记录</div></button>';
+  cards.innerHTML=h;
+}
+function openSunPanel(k){ UI.sunPanel=k; renderSun(); window.scrollTo(0,0); }
+function closeSunPanel(){ UI.sunPanel=null; renderSun(); window.scrollTo(0,0); }
+/* ---------- 折线图（手写内联 SVG） ---------- */
+function lineChart(vals, labels, color){
+  if(!vals.length) return '<div class="empty" style="padding:16px">暂无数据</div>';
+  var W=Math.max(320, vals.length*54), H=170, pl=38, pb=26, pt=14;
+  var mx=Math.max.apply(null, vals), mn=Math.min.apply(null, vals);
+  if(mx===mn){ mx=mx+1; mn=mn-1; }
+  var sx=function(i){ return pl + (vals.length===1? (W-pl-14)/2 : i*(W-pl-14)/(vals.length-1)); };
+  var sy=function(v){ return pt + (H-pt-pb) * (1-(v-mn)/(mx-mn)); };
+  var pts=[], i;
+  for(i=0;i<vals.length;i++) pts.push(sx(i).toFixed(1)+','+sy(vals[i]).toFixed(1));
+  var g='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" role="img">';
+  for(i=0;i<=3;i++){ var y=pt+(H-pt-pb)*i/3;
+    g += '<line x1="'+pl+'" y1="'+y.toFixed(1)+'" x2="'+(W-8)+'" y2="'+y.toFixed(1)+'" stroke="#F3EADB" stroke-width="1"/>'+
+      '<text x="4" y="'+(y+4).toFixed(1)+'" font-size="10" fill="#8B7A66">'+(mx-(mx-mn)*i/3).toFixed(1)+'</text>'; }
+  g += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+  for(i=0;i<vals.length;i++){
+    g += '<circle cx="'+sx(i).toFixed(1)+'" cy="'+sy(vals[i]).toFixed(1)+'" r="4" fill="#fff" stroke="'+color+'" stroke-width="2.5"/>'+
+      '<text x="'+sx(i).toFixed(1)+'" y="'+(sy(vals[i])-9).toFixed(1)+'" font-size="10" text-anchor="middle" fill="#5C4B3A" font-weight="700">'+vals[i]+'</text>'+
+      '<text x="'+sx(i).toFixed(1)+'" y="'+(H-8)+'" font-size="10" text-anchor="middle" fill="#8B7A66">'+esc(labels[i])+'</text>';
+  }
+  return '<div class="chartbox">'+g+'</svg></div>';
+}
+function renderSunStage(){
+  var box=$('sun-stage'); if(!box) return;
+  if(UI.sunPanel==='study'){ box.innerHTML=studyStageHtml(); return; }
+  var p=null; for(var i=0;i<SUNP.length;i++){ if(SUNP[i].k===UI.sunPanel) p=SUNP[i]; }
+  if(!p){ UI.sunPanel=null; return; }
+  var arr=DB.health[p.k].slice();
+  var h='<div class="row no-print" style="margin-bottom:11px">'+
+    '<button class="btn sm" onclick="closeSunPanel()"><svg><use href="#i-back"/></svg>返回</button>'+
+    '<span style="margin-left:auto"></span>'+
+    '<button class="btn sm o" onclick="openHealthForm(\''+p.k+'\')"><svg><use href="#i-plus"/></svg>新增记录</button>'+
+    '<button class="btn sm" onclick="importHealthPick(\''+p.k+'\')"><svg><use href="#i-upload"/></svg>导入</button>'+
+    '<button class="btn sm" onclick="exportHealthCsv(\''+p.k+'\')"><svg><use href="#i-download"/></svg>CSV</button>'+
+    '<button class="btn sm" onclick="printExport(\'health-print\',\''+p.n+'记录\')"><svg><use href="#i-file"/></svg>PDF</button>'+
+    '<button class="btn sm danger" onclick="clearHealth(\''+p.k+'\')"><svg><use href="#i-trash"/></svg>清空</button></div>';
+  h += '<div class="card-hero" style="background:linear-gradient(135deg,'+p.c+',#FF9A6C);min-height:0;padding:16px">'+
+    '<h2>'+p.n+'展示台</h2><div class="hero-stats"><div>记录数<b>'+arr.length+'</b></div>'+
+    '<div>最新<b>'+(arr.length?esc(String(arr[arr.length-1].val)):'—')+'</b></div>'+
+    (p.k==='glucose'?'<div>理想区间<b>5–6</b></div>':'')+
+    (p.k==='weight'?'<div>规则<b>降↓加花</b></div>':'')+'</div></div>';
+  if(p.unit!=='内容'){
+    var vals=[], labs=[];
+    for(i=Math.max(0,arr.length-10);i<arr.length;i++){ vals.push(+arr[i].val||0); labs.push(arr[i].m+'/'+arr[i].d); }
+    h += '<div class="card"><div class="card-h"><svg width="18" height="18" style="color:'+p.c+'"><use href="#i-chart"/></svg><h3>近期趋势</h3></div>'+
+      lineChart(vals, labs, p.c)+'</div>';
+  }
+  h += '<div class="card"><div class="card-h"><svg width="18" height="18" style="color:'+p.c+'"><use href="#i-cal"/></svg><h3>全部记录</h3>'+
+    '<span class="right tiny">年 / 月 / 日 / 时间 / '+(p.unit==='内容'?'内容':'数值')+'</span></div><div id="health-print">';
+  if(!arr.length) h += '<div class="empty">暂无记录，点「新增记录」。</div>';
+  for(i=arr.length-1;i>=0;i--){
+    var r=arr[i], prev=i>0?arr[i-1]:null, trend='';
+    if(prev && p.unit!=='内容'){
+      var d=(+r.val)-(+prev.val);
+      if(d<0) trend='<span class="tag mint">↓'+Math.abs(Math.round(d*100)/100)+'</span>';
+      else if(d>0) trend='<span class="tag red">↑'+(Math.round(d*100)/100)+'</span>';
+      else trend='<span class="tag">持平</span>';
+    }
+    var bad = (p.k==='glucose' && +r.val>7.5);
+    var good = (p.k==='glucose' && +r.val>=5 && +r.val<=6);
+    h += '<div class="item"'+(bad?' style="border-color:#F6C4C5;background:#FFF6F6"':'')+'>'+
+      '<div class="grow"><div style="font-weight:800;font-size:16px'+(bad?';color:var(--red)':'')+'">'+
+      esc(String(r.val))+(p.unit==='内容'?'':(' '+p.unit))+' '+trend+
+      (good?'<span class="tag mint">理想区间</span>':'')+(bad?'<span class="tag red">偏高</span>':'')+'</div>'+
+      '<div class="tiny">'+r.y+' 年 '+r.m+' 月 '+r.d+' 日 '+esc(r.t||'')+(r.note?(' · '+esc(r.note)):'')+'</div></div>'+
+      '<div class="ops no-print"><button class="btn sm danger" onclick="delHealth(\''+p.k+'\',\''+r.id+'\')"><svg><use href="#i-trash"/></svg></button></div></div>';
+  }
+  h += '</div></div>';
+  box.innerHTML=h;
+}
+function openHealthForm(k){
+  var p=null; for(var i=0;i<SUNP.length;i++){ if(SUNP[i].k===k) p=SUNP[i]; }
+  var d=new Date();
+  openModal('新增'+p.n+'记录',
+    '<div class="inline-form">'+
+    '<div class="field"><label class="fl">日期</label><input type="date" id="hf-date" value="'+todayStr()+'"></div>'+
+    '<div class="field"><label class="fl">时间</label><input type="time" id="hf-time" value="'+pad(d.getHours())+':'+pad(d.getMinutes())+'"></div></div>'+
+    '<div class="field"><label class="fl">'+(p.unit==='内容'?'内容':'数值（'+p.unit+'）')+'</label>'+
+    (p.unit==='内容'? '<textarea id="hf-val" placeholder="例：杂粮饭+清蒸鱼+时蔬，七分饱"></textarea>'
+                    : '<input type="number" step="0.01" inputmode="decimal" id="hf-val" placeholder="例：'+(k==='glucose'?'5.6':(k==='weight'?'62.5':'40'))+'">')+'</div>'+
+    '<div class="field"><label class="fl">备注</label><input type="text" id="hf-note" placeholder="选填，如：空腹 / 快走4公里"></div>'+
+    (k==='glucose'?'<div class="tiny">规则：下降且落在 5–6 → 放烟花 + 加小红花；超过 7.5 → 扣花并整页标红提醒。</div>':'')+
+    (k==='weight'?'<div class="tiny">规则：比上一条下降 → 加小红花；上升 → 扣除小红花。</div>':''),
+    '<button class="btn" onclick="closeModal()">取消</button><button class="btn o" onclick="saveHealthForm(\''+k+'\')">保存</button>');
+}
+function saveHealthForm(k){
+  var v=$('hf-val').value, note=$('hf-note').value.trim(), ds=$('hf-date').value||todayStr(), t=$('hf-time').value||'';
+  if(v===''||v==null){ toast('请填写内容'); return; }
+  closeModal();
+  addHealthRecord(k, (k==='diet'? v : parseFloat(v)), note, {ds:ds, t:t});
+}
+function addHealthRecord(k, val, note, when){
+  var arr=DB.health[k]; if(!arr) return;
+  var ds=(when&&when.ds)||todayStr(), t=(when&&when.t)||nowStr().split(' ')[1];
+  var p=ds.split('-'), prev=arr.length?arr[arr.length-1]:null;
+  arr.push({id:uid(), y:+p[0], m:+p[1], d:+p[2], t:t, val:val, note:note||'', at:nowStr()});
+  arr.sort(function(a,b){
+    var ka=a.y*10000+a.m*100+a.d, kb=b.y*10000+b.m*100+b.d;
+    if(ka!==kb) return ka-kb; return (a.t||'')<(b.t||'')?-1:1; });
+  var msg='已记录';
+  if(k==='weight' && prev){
+    if(+val < +prev.val){ addFlower(1, '体重下降至 '+val+' kg'); msg='体重下降，奖励小红花 +1'; boom(24,['#FF4D6D','#FFB703','#06D6A0']); }
+    else if(+val > +prev.val){ addFlower(-1, '体重上升至 '+val+' kg'); msg='体重上升，扣除小红花 -1'; }
+  }
+  if(k==='glucose'){
+    if(+val>7.5){ addFlower(-1, '血糖偏高 '+val); msg='血糖 '+val+' 偏高，扣除小红花并标红提醒'; }
+    else if(+val>=5 && +val<=6 && prev && +val < +prev.val){
+      addFlower(1, '血糖下降至理想区间 '+val); msg='血糖降入理想区间，放烟花 + 小红花 +1'; boom(46);
+    }
+  }
+  save(); refreshAll(); toast(msg);
+}
+function addFlower(delta, reason){
+  DB.flowers.total = Math.max(0, (DB.flowers.total||0) + delta);
+  DB.flowers.log.unshift({delta:delta, reason:reason, at:nowStr()});
+  if(DB.flowers.log.length>200) DB.flowers.log.length=200;
+}
+function delHealth(k, id){
+  askConfirm('删除记录','确定删除这条记录？', function(){
+    DB.health[k]=DB.health[k].filter(function(r){ return r.id!==id; }); save(); refreshAll(); toast('已删除');
+  }, '删除');
+}
+function clearHealth(k){
+  var p=null; for(var i=0;i<SUNP.length;i++){ if(SUNP[i].k===k) p=SUNP[i]; }
+  askConfirm('一键清空','确定清空「'+p.n+'」全部记录？点击确定即刻删除。', function(){
+    DB.health[k]=[]; save(); refreshAll(); toast('已清空');
+  }, '确定清空');
+}
+function exportHealthCsv(k){
+  var p=null; for(var i=0;i<SUNP.length;i++){ if(SUNP[i].k===k) p=SUNP[i]; }
+  var rows=[['年','月','日','时间',(p.unit==='内容'?'内容':'数值('+p.unit+')'),'备注','录入时间']], arr=DB.health[k];
+  for(i=0;i<arr.length;i++){ var r=arr[i]; rows.push([r.y,r.m,r.d,r.t,r.val,r.note||'',r.at]); }
+  download(p.n+'记录_'+todayStr()+'.csv', toCsv(rows), 'text/csv'); toast('CSV 已导出');
+}
+function importHealthPick(k){
+  openModal('导入记录',
+    '<div class="tiny" style="line-height:1.9">支持 <b>CSV / TXT</b>（Excel 请另存为 CSV），每行：<code>日期,时间,数值,备注</code>，例：<br>'+
+    '<code>2026-08-20,07:30,62.6,晨起</code><br>也可直接粘贴多行文本导入。<br>'+
+    '<span style="color:var(--red)">图片 / PDF 属于二进制或影像格式，纯本地网页无法自动读出其中数字；可作为原稿附在素材库，数值请粘贴或手填。</span></div>'+
+    '<div class="field" style="margin-top:11px"><textarea id="hi-txt" placeholder="2026-08-20,07:30,62.6,晨起&#10;2026-08-22,07:20,62.1"></textarea></div>',
+    '<button class="btn sm" onclick="importHealthFile(\''+k+'\')"><svg><use href="#i-upload"/></svg>选择 CSV/TXT</button>'+
+    '<button class="btn" onclick="closeModal()">取消</button>'+
+    '<button class="btn o" onclick="importHealthText(\''+k+'\')">导入粘贴内容</button>');
+}
+function parseHealthLines(k, text){
+  var lines=String(text).replace(/\r/g,'').split('\n'), n=0;
+  for(var i=0;i<lines.length;i++){
+    var ln=lines[i].trim(); if(!ln || /^年|^日期/.test(ln)) continue;
+    var c=ln.split(/[,\t]/);
+    var ds=(c[0]||'').trim().replace(/[\/年月]/g,'-').replace(/日/,'');
+    if(!/^\d{4}-\d{1,2}-\d{1,2}$/.test(ds)) continue;
+    var t=(c[1]||'').trim(), v=(c[2]||'').trim(), note=(c[3]||'').trim();
+    if(v==='') continue;
+    var p=ds.split('-');
+    DB.health[k].push({id:uid(), y:+p[0], m:+p[1], d:+p[2], t:t, val:(k==='diet'?v:parseFloat(v)), note:note, at:nowStr()});
+    n++;
+  }
+  DB.health[k].sort(function(a,b){ var ka=a.y*10000+a.m*100+a.d, kb=b.y*10000+b.m*100+b.d;
+    if(ka!==kb) return ka-kb; return (a.t||'')<(b.t||'')?-1:1; });
+  return n;
+}
+function importHealthText(k){
+  var n=parseHealthLines(k, $('hi-txt').value);
+  closeModal(); save(); refreshAll(); toast(n? ('已导入 '+n+' 条'):'没有解析到有效数据');
+}
+function importHealthFile(k){
+  pickFiles('.csv,.txt,text/csv,text/plain', false, function(fs){
+    var fr=new FileReader();
+    fr.onload=function(){ var n=parseHealthLines(k, String(fr.result));
+      closeModal(); save(); refreshAll(); toast(n? ('已导入 '+n+' 条'):'没有解析到有效数据'); };
+    fr.readAsText(fs[0],'utf-8');
+  });
+}
+</script>
+<script>
+/* =======================================================================
+   骄阳永灿 · 进修（模板函数，由 renderSunStage 单向调用）
+   ======================================================================= */
+function studyItems(pid){
+  var out=[]; for(var i=0;i<DB.study.items.length;i++){
+    if(!pid || pid==='all' || DB.study.items[i].projectId===pid) out.push(DB.study.items[i]); }
+  return out.sort(function(a,b){ return a.at<b.at?1:-1; });
+}
+
+function studyStageHtml(){
+  var totalH=0, i;
+  for(i=0;i<DB.study.items.length;i++) totalH += (+DB.study.items[i].hours||0);
+  /* 第一层：操作条 + 抬头（保持最初版本格局） */
+  var h='<div class="row no-print" style="margin-bottom:11px">'+
+    '<button class="btn sm" onclick="closeSunPanel()"><svg><use href="#i-back"/></svg>返回</button>'+
+    '<span style="margin-left:auto"></span>'+
+    '<button class="btn sm v" onclick="addStudyProject()"><svg><use href="#i-plus"/></svg>新增学习项目</button>'+
+    '<button class="btn sm o" onclick="openStudyForm()"><svg><use href="#i-plus"/></svg>新增学习记录</button>'+
+    '<button class="btn sm" onclick="openStudyTrend()"><svg><use href="#i-chart"/></svg>时长趋势</button>'+
+    '<button class="btn sm" onclick="printExport(\'study-print\',\'进修记录\')"><svg><use href="#i-file"/></svg>PDF</button></div>';
+  h += '<div class="card-hero" style="background:linear-gradient(135deg,#B57BEA,#9D4EDD,#6423A8);min-height:0;padding:16px">'+
+    '<h2>进修展示台</h2><div class="hero-stats"><div>学习项目<b>'+DB.study.projects.length+'</b></div>'+
+    '<div>学习记录<b>'+DB.study.items.length+'</b></div><div>累计时长<b>'+(Math.round(totalH*10)/10)+' h</b></div></div></div>';
+  /* 第二层：学习项目列表（保持最初版本） */
+  h += '<div class="card"><div class="card-h"><svg width="18" height="18" style="color:var(--m4)"><use href="#i-folder"/></svg><h3>学习项目</h3>'+
+    '<span class="right"><span class="tiny">点击项目名可重命名；删项目会连同其记录一起删除</span></span></div><div class="row">';
+  if(!DB.study.projects.length) h += '<span class="muted">还没有学习项目，点上方「新增学习项目」开始。</span>';
+  for(i=0;i<DB.study.projects.length;i++){ var pl=DB.study.projects[i], nl=studyItems(pl.id).length, cl=(pl.color||'#9D4EDD');
+    h += '<span class="tag violet" style="padding:7px 12px;font-size:13px;border-left:4px solid '+cl+';cursor:pointer" onclick="renameStudyProject(\''+pl.id+'\')" title="点击重命名">'+esc(pl.name)+' · '+nl+' 条'+
+      '<button class="btn sm danger" style="min-height:22px;padding:0 6px;border:0" onclick="event.stopPropagation();delStudyProject(\''+pl.id+'\')"><svg><use href="#i-minus"/></svg></button></span>'; }
+  h += '</div></div>';
+  /* 第三层：学习项目内容（三列并列，多层顺延） */
+  if(!DB.study.projects.length){
+    h += '<div class="empty" style="padding:18px">还没有学习项目，点上方「新增学习项目」开始记录。</div>';
+    return h;
+  }
+  h += '<div id="study-print" class="study-cols">';
+  for(i=0;i<DB.study.projects.length;i++){
+    var pp=DB.study.projects[i], recs=studyItems(pp.id), ph=0, k, pcol=(pp.color||'#9D4EDD');
+    for(k=0;k<recs.length;k++) ph += (+recs[k].hours||0);
+    h += '<div class="card study-col" style="border-top:4px solid '+pcol+'"><div class="card-h">'+
+      '<button class="study-name" onclick="renameStudyProject(\''+pp.id+'\')" title="点击重命名">'+esc(pp.name)+'</button>'+
+      '<span class="tag violet">'+(Math.round(ph*10)/10)+' h</span>'+
+      '<span class="right"><button class="btn sm g" onclick="openStudyForm(\''+pp.id+'\')"><svg><use href="#i-plus"/></svg>加记录</button>'+
+      '<button class="btn sm danger no-print" onclick="delStudyProject(\''+pp.id+'\')"><svg><use href="#i-trash"/></svg></button></span></div>';
+    if(!recs.length) h += '<div class="muted" style="padding:6px 0">暂无记录，点「加记录」开始。</div>';
+    for(var j=0;j<recs.length;j++){
+      var it=recs[j], q;
+      h += '<div class="study-rec"><div class="study-rec-h"><span class="tiny">'+it.y+' 年 '+it.m+' 月 '+it.d+' 日 '+(it.t||'')+'</span>'+
+        '<span class="tag violet">时长 '+(it.hours||0)+' h</span>'+
+        '<span style="margin-left:auto"></span>'+
+        '<button class="btn sm danger no-print" onclick="delStudyItem(\''+it.id+'\')"><svg><use href="#i-trash"/></svg></button></div>';
+      h += '<div class="zone"><div class="zone-h">学习成果</div><div class="zone-b">'+(esc(it.result||'—'))+'</div></div>';
+      h += '<div class="zone"><div class="zone-h">问题集锦<span class="right no-print">'+
+        '<button class="btn sm" onclick="addStudyQuestion(\''+it.id+'\')"><svg><use href="#i-plus"/></svg>加问题</button></span></div><div class="zone-b">';
+      if(!(it.questions||[]).length) h += '<div class="tiny">暂无问题</div>';
+      for(q=0;q<(it.questions||[]).length;q++)
+        h += '<div class="rec">Q'+(q+1)+'. '+esc(it.questions[q])+
+          ' <button class="btn sm danger no-print" style="min-height:20px;padding:0 6px" onclick="delStudyQuestion(\''+it.id+'\','+q+')">删</button></div>';
+      h += '</div></div>';
+      h += '<div class="zone"><div class="zone-h">知识链接<span class="right no-print">'+
+        '<button class="btn sm" onclick="addStudyLink(\''+it.id+'\')"><svg><use href="#i-link"/></svg>加链接</button></span></div><div class="zone-b"><div class="row">';
+      if(!(it.links||[]).length) h += '<span class="tiny">暂无链接</span>';
+      for(var q2=0;q2<(it.links||[]).length;q2++){ var lk=it.links[q2];
+        h += '<a class="btn sm s" target="_blank" rel="noopener" href="'+esc(lk.url)+'"><svg><use href="#i-link"/></svg>'+esc(lk.name||lk.url)+'</a>'+
+          '<button class="btn sm danger no-print" onclick="delStudyLink(\''+it.id+'\','+q2+')"><svg><use href="#i-minus"/></svg></button>'; }
+      h += '</div></div></div>';
+    }
+    h += '</div>';
+  }
+  h += '</div>';
+  return h;
+}
+/* 进修时长趋势（累计，按周/按月） */
+function studyTrendData(mode){
+  var its=DB.study.items.slice().sort(function(a,b){
+    return (a.y*10000+a.m*100+a.d)-(b.y*10000+b.m*100+b.d) || (a.t||'').localeCompare(b.t||'');
+  });
+  var map={}, order=[], i;
+  for(i=0;i<its.length;i++){ var it=its[i], key;
+    if(mode==='month'){ key=it.y+'-'+pad(it.m); }
+    else { var dt=new Date(it.y, it.m-1, it.d), dow=(dt.getDay()+6)%7, mon=new Date(dt); mon.setDate(dt.getDate()-dow);
+      key=mon.getFullYear()+'-'+pad(mon.getMonth()+1)+'-'+pad(mon.getDate()); }
+    if(!map[key]){ map[key]=0; order.push(key); }
+    map[key]+=(+it.hours||0);
+  }
+  var cum=0, pts=[];
+  for(i=0;i<order.length;i++){ cum+=map[order[i]]; pts.push({key:order[i], val:cum}); }
+  return pts;
+}
+function studyTrendSvg(pts, mode){
+  if(!pts.length) return '<div class="muted">暂无学习记录，无法生成趋势。</div>';
+  var W=640,H=260, pl=46,pr=16,pt=18,pb=34, iw=W-pl-pr, ih=H-pt-pb;
+  var maxV=0; for(var i=0;i<pts.length;i++){ if(pts[i].val>maxV) maxV=pts[i].val; } maxV=Math.max(maxV,1);
+  var n=pts.length;
+  var xf=function(i){ return pl+(n<=1?iw/2:iw*i/(n-1)); };
+  var yf=function(v){ return pt+ih*(1-v/maxV); };
+  var path='', dots='', grid='', glabel='', xlab='', i;
+  for(i=0;i<n;i++){ var x=xf(i), y=yf(pts[i].val);
+    path += (i?' L':'M')+x.toFixed(1)+' '+y.toFixed(1);
+    dots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.5" fill="#9D4EDD"><title>'+esc(pts[i].key)+' · 累计 '+pts[i].val.toFixed(1)+' h</title></circle>';
+  }
+  var area=path+' L'+xf(n-1).toFixed(1)+' '+(pt+ih).toFixed(1)+' L'+xf(0).toFixed(1)+' '+(pt+ih).toFixed(1)+' Z';
+  for(var g=0; g<=4; g++){ var v=maxV*g/4, y=yf(v);
+    grid += '<line x1="'+pl+'" y1="'+y.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+y.toFixed(1)+'" stroke="#EEE" stroke-width="1"/>';
+    glabel += '<text x="'+(pl-6)+'" y="'+(y+4).toFixed(1)+'" font-size="10" fill="#9AA" text-anchor="end">'+v.toFixed(0)+'</text>';
+  }
+  var idxs = n<=6 ? pts.map(function(_,i){return i;}) : [0, Math.floor(n/2), n-1];
+  idxs.forEach(function(i){ var x=xf(i); var lab=pts[i].key;
+    if(mode==='month') lab=lab.slice(2);
+    xlab += '<text x="'+x.toFixed(1)+'" y="'+(H-12)+'" font-size="10" fill="#678" text-anchor="middle">'+esc(lab.length>8?lab.slice(0,8):lab)+'</text>';
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" preserveAspectRatio="xMidYMid meet" style="max-width:660px">'+
+    grid+glabel+'<path d="'+area+'" fill="#9D4EDD" fill-opacity="0.10"/>'+
+    '<path d="'+path+'" fill="none" stroke="#9D4EDD" stroke-width="2.5" stroke-linejoin="round"/>'+dots+xlab+'</svg>';
+}
+function renderStudyTrend(m){
+  var el=document.getElementById('st-trend'); if(!el) return;
+  var mode=m?'month':'week';
+  el.innerHTML=studyTrendSvg(studyTrendData(mode), mode);
+  var b1=document.getElementById('st-tw'), b2=document.getElementById('st-tm');
+  if(b1) b1.className='btn sm'+(m?'':' v');
+  if(b2) b2.className='btn sm'+(m?' v':'');
+}
+function openStudyTrend(){
+  openModal('学习时长趋势（累计）',
+    '<div class="row no-print" style="margin-bottom:10px"><span class="tiny">横轴为时段，纵轴为截至该时段的累计学习时长（小时）</span>'+
+    '<span style="margin-left:auto"></span>'+
+    '<button id="st-tw" class="btn sm v" onclick="renderStudyTrend(0)">按周</button>'+
+    '<button id="st-tm" class="btn sm" onclick="renderStudyTrend(1)">按月</button></div>'+
+    '<div id="st-trend"></div>',
+    '<button class="btn" onclick="closeModal()">关闭</button>');
+  renderStudyTrend(1);
+}
+
+function studyItemById(id){ for(var i=0;i<DB.study.items.length;i++){ if(DB.study.items[i].id===id) return DB.study.items[i]; } return null; }
+function addStudyProject(){ askPrompt('新增学习项目','项目名称，如：教师资格进修','', function(v){
+  DB.study.projects.push({id:uid(), name:v, color:STUDY_COLORS[DB.study.projects.length%STUDY_COLORS.length]}); save(); refreshAll(); toast('项目已添加'); }); }
+function delStudyProject(id){
+  var n=studyItems(id).length;
+  askConfirm('删除学习项目','该项目下有 <b>'+n+'</b> 条记录，删除项目会同时删除这些记录。确定？', function(){
+    DB.study.projects=DB.study.projects.filter(function(p){ return p.id!==id; });
+    DB.study.items=DB.study.items.filter(function(it){ return it.projectId!==id; });
+    save(); refreshAll(); toast('已删除');
+  }, '删除');
+}
+function renameStudyProject(id){
+  var p=null; for(var i=0;i<DB.study.projects.length;i++){ if(DB.study.projects[i].id===id){ p=DB.study.projects[i]; break; } }
+  if(!p) return;
+  askPrompt('重命名学习项目','项目名称', p.name, function(v){
+    v=(v||'').trim(); if(!v){ toast('名称不能为空'); return; }
+    p.name=v; save(); refreshAll(); toast('已重命名');
+  });
+}
+function openStudyForm(presetPid){
+  if(!DB.study.projects.length){ toast('请先新增一个学习项目'); return; }
+  var opts='', i, d=new Date(), sel=(presetPid||DB.study.projects[0].id);
+  for(i=0;i<DB.study.projects.length;i++) opts += '<option value="'+DB.study.projects[i].id+'"'+(DB.study.projects[i].id===sel?' selected':'')+'>'+esc(DB.study.projects[i].name)+'</option>';
+  openModal('新增学习记录',
+    '<div class="inline-form"><div class="field"><label class="fl">学习项目</label><select id="st-p">'+opts+'</select></div>'+
+    '<div class="field"><label class="fl">日期</label><input type="date" id="st-date" value="'+todayStr()+'"></div>'+
+    '<div class="field"><label class="fl">时间</label><input type="time" id="st-time" value="'+pad(d.getHours())+':'+pad(d.getMinutes())+'"></div>'+
+    '<div class="field"><label class="fl">学习时长（小时）</label><input type="number" step="0.1" inputmode="decimal" id="st-h" placeholder="1.5"></div></div>'+
+    '<div class="field"><label class="fl">学习成果</label><textarea id="st-r" placeholder="例：完成《教育心理学》第三章笔记"></textarea></div>'+
+    '<div class="field"><label class="fl">问题集锦（一行一个）</label><textarea id="st-q" placeholder="建构主义与行为主义的教学启示差异？"></textarea></div>'+
+    '<div class="inline-form"><div class="field"><label class="fl">知识链接名称</label><input type="text" id="st-ln" placeholder="国家中小学智慧教育平台"></div>'+
+    '<div class="field"><label class="fl">链接地址</label><input type="text" id="st-lu" placeholder="https://…（也可填 APP 唤起地址）"></div></div>',
+    '<button class="btn" onclick="closeModal()">取消</button><button class="btn v" onclick="saveStudy()">保存</button>');
+}
+function saveStudy(){
+  var ds=($('st-date').value||todayStr()).split('-');
+  var qs=$('st-q').value.split('\n').map(function(x){ return x.trim(); }).filter(function(x){ return x; });
+  var links=[]; var ln=$('st-ln').value.trim(), lu=$('st-lu').value.trim();
+  if(lu) links.push({name:ln||lu, url:lu});
+  DB.study.items.unshift({id:uid(), projectId:$('st-p').value, y:+ds[0], m:+ds[1], d:+ds[2],
+    t:$('st-time').value||'', hours:parseFloat($('st-h').value)||0, result:$('st-r').value.trim(),
+    questions:qs, links:links, at:nowStr()});
+  closeModal(); save(); refreshAll(); toast('学习记录已保存');
+}
+function delStudyItem(id){
+  askConfirm('删除记录','确定删除这条学习记录？', function(){
+    DB.study.items=DB.study.items.filter(function(it){ return it.id!==id; }); save(); refreshAll(); toast('已删除');
+  }, '删除');
+}
+function addStudyQuestion(id){ var it=studyItemById(id); if(!it) return;
+  askPrompt('添加问题','问题内容','', function(v){ if(!it.questions) it.questions=[]; it.questions.push(v); save(); refreshAll(); }); }
+function delStudyQuestion(id, idx){ var it=studyItemById(id); if(!it) return;
+  it.questions.splice(idx,1); save(); refreshAll(); }
+function addStudyLink(id){ var it=studyItemById(id); if(!it) return;
+  askPrompt('添加知识链接','格式：名称|网址（也可只填网址）','', function(v){
+    var p=v.split('|'); var url=(p[1]||p[0]).trim(), nm=(p[1]?p[0]:url).trim();
+    if(!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(url)) url='https://'+url;
+    if(!it.links) it.links=[]; it.links.push({name:nm, url:url}); save(); refreshAll(); }); }
+function delStudyLink(id, idx){ var it=studyItemById(id); if(!it) return;
+  it.links.splice(idx,1); save(); refreshAll(); }
+
+/* =======================================================================
+   花团锦簇 · 素材库
+   ======================================================================= */
+function switchLib(l){ UI.lib=l; UI.libProject='all'; renderLib(); }
+function libMats(){
+  var out=[], q=($('lib-q')?$('lib-q').value.trim().toLowerCase():'');
+  for(var i=0;i<DB.lib.mats.length;i++){
+    var m=DB.lib.mats[i];
+    if(m.lib!==UI.lib) continue;
+    if(UI.libProject!=='all' && (m.projects||[]).indexOf(UI.libProject)<0) continue;
+    if(q){
+      var pns=[]; for(var j=0;j<(m.projects||[]).length;j++) pns.push(projName(m.lib,m.projects[j]));
+      var hay=((m.title||'')+' '+(m.text||'')+' '+pns.join(' ')).toLowerCase();
+      if(hay.indexOf(q)<0) continue;
+    }
+    out.push(m);
+  }
+  return out.sort(function(a,b){ return a.at<b.at?1:-1; });
+}
+function renderLib(){
+  var t=$('lib-title'), pbox=$('lib-projects'), lbox=$('lib-list');
+  var bw=$('lib-tab-work'), bs=$('lib-tab-study');
+  if(bw&&bs){
+    if(UI.lib==='work'){ bw.classList.add('v'); bs.classList.remove('v'); }
+    else { bs.classList.add('v'); bw.classList.remove('v'); }
+  }
+  if(t) t.textContent = UI.lib==='work'?'工作素材':'学习素材';
+  var ps=DB.lib[UI.lib].projects, i, h='';
+  if(pbox){
+    var allN=0;
+    for(i=0;i<DB.lib.mats.length;i++){ if(DB.lib.mats[i].lib===UI.lib) allN++; }
+    h += '<button class="btn sm'+(UI.libProject==='all'?' v':'')+'" onclick="pickProject(\'all\')">全部 · '+allN+'</button>';
+    for(i=0;i<ps.length;i++){
+      var p=ps[i], n=0;
+      for(var j=0;j<DB.lib.mats.length;j++){ var m=DB.lib.mats[j];
+        if(m.lib===UI.lib && (m.projects||[]).indexOf(p.id)>=0) n++; }
+      h += '<span class="tag'+(UI.libProject===p.id?' violet':'')+'" style="padding:6px 10px">'+
+        '<button class="btn sm" style="min-height:20px;padding:0;border:0;background:none;font-size:13px" onclick="pickProject(\''+p.id+'\')">'+esc(p.name)+' · '+n+'</button>'+
+        '<button class="btn sm" style="min-height:20px;padding:0 4px;border:0" onclick="renameProject(\''+p.id+'\')" title="改名"><svg><use href="#i-edit"/></svg></button>'+
+        '<button class="btn sm danger" style="min-height:20px;padding:0 4px;border:0" onclick="clearProject(\''+p.id+'\')" title="清空该项目"><svg><use href="#i-trash"/></svg></button>'+
+        '<button class="btn sm danger" style="min-height:20px;padding:0 4px;border:0" onclick="delProject(\''+p.id+'\')" title="删除项目"><svg><use href="#i-minus"/></svg></button></span>';
+    }
+    if(!ps.length) h += '<span class="muted">还没有项目，点「新增项目」。</span>';
+    pbox.innerHTML=h;
+  }
+  if(!lbox) return;
+  var mats=libMats(), out='';
+  if(!mats.length){ lbox.innerHTML='<div class="empty">这里还没有素材。点「添加素材」，可粘贴扫描文字、上传图片或原稿文件。</div>'; return; }
+  out += '<div class="tiny" style="margin-bottom:8px">共 '+mats.length+' 条素材 · 一份素材可同时归属多个项目，无需重复储存</div>';
+  for(i=0;i<mats.length;i++){
+    var mt=mats[i], pns=[];
+    for(var k=0;k<(mt.projects||[]).length;k++) pns.push(projName(mt.lib, mt.projects[k]));
+    out += '<div class="mat"><div class="t"><svg width="15" height="15" style="color:var(--m4)"><use href="#i-file"/></svg>'+esc(mt.title)+'</div>';
+    out += '<div class="row" style="margin:5px 0">';
+    for(k=0;k<pns.length;k++) out += '<span class="tag violet">'+esc(pns[k])+'</span>';
+    out += '<span class="tiny">'+esc(mt.at)+'</span>';
+    if(mt.analysis) out += '<span class="tag mint">已解析：'+esc(mt.analysis.genre)+'</span>';
+    out += '</div>';
+    if(mt.text) out += '<div class="body" id="mb-'+mt.id+'">'+esc(mt.text)+'</div>';
+    if((mt.images||[]).length){
+      out += '<div class="thumbs">';
+      for(k=0;k<mt.images.length;k++) out += '<img src="'+mt.images[k]+'" alt="素材图" onclick="viewImg(\''+mt.id+'\','+k+')">';
+      out += '</div>';
+    }
+    if((mt.files||[]).length){
+      out += '<div class="row">';
+      for(k=0;k<mt.files.length;k++) out += '<button class="fileicon" onclick="dlMatFile(\''+mt.id+'\','+k+')"><svg width="13" height="13"><use href="#i-download"/></svg>'+esc(mt.files[k].name)+'</button>';
+      out += '</div>';
+    }
+    if((mt.links||[]).length){
+      out += '<div class="row" style="margin-top:5px">';
+      for(k=0;k<mt.links.length;k++) out += '<a class="btn sm s" target="_blank" rel="noopener" href="'+esc(mt.links[k].url)+'"><svg><use href="#i-link"/></svg>'+esc(mt.links[k].name||'链接')+'</a>';
+      out += '</div>';
+    }
+    out += '<div class="row no-print" style="margin-top:8px">'+
+      '<button class="btn sm v" onclick="openMatAnalysis(\''+mt.id+'\',\'\')"><svg><use href="#i-ai"/></svg>AI 解析</button>'+
+      '<button class="btn sm" onclick="openMatDetail(\''+mt.id+'\')"><svg><use href="#i-eye"/></svg>详情</button>'+
+      '<button class="btn sm" onclick="editMatProjects(\''+mt.id+'\')"><svg><use href="#i-folder"/></svg>归属项目</button>'+
+      '<button class="btn sm" onclick="exportMatWord(\''+mt.id+'\')"><svg><use href="#i-download"/></svg>Word</button>'+
+      '<button class="btn sm danger" onclick="delMat(\''+mt.id+'\')"><svg><use href="#i-trash"/></svg>删除</button></div></div>';
+  }
+  lbox.innerHTML=out;
+}
+function pickProject(id){ UI.libProject=id; renderLib(); }
+function addProject(){ askPrompt('新增项目','项目名称，如：试卷 / 阅读 / 作文 / 佳词佳句','', function(v){
+  DB.lib[UI.lib].projects.push({id:uid(), name:v}); save(); renderLib(); toast('项目已添加'); }); }
+function renameProject(id){
+  var ps=DB.lib[UI.lib].projects, p=null;
+  for(var i=0;i<ps.length;i++){ if(ps[i].id===id) p=ps[i]; }
+  if(!p) return;
+  askPrompt('修改项目名称','项目名称', p.name, function(v){ p.name=v; save(); renderLib(); toast('已修改'); });
+}
+function delProject(id){
+  var cnt=0, only=0, i;
+  for(i=0;i<DB.lib.mats.length;i++){ var m=DB.lib.mats[i];
+    if((m.projects||[]).indexOf(id)>=0){ cnt++; if(m.projects.length===1) only++; } }
+  askConfirm('删除项目','该项目下有 <b>'+cnt+'</b> 条素材，其中 <b>'+only+'</b> 条仅归属本项目（删除后会变为「未分类」，内容不会丢失）。确定删除项目？', function(){
+    DB.lib[UI.lib].projects=DB.lib[UI.lib].projects.filter(function(p){ return p.id!==id; });
+    for(var i2=0;i2<DB.lib.mats.length;i2++){
+      DB.lib.mats[i2].projects=(DB.lib.mats[i2].projects||[]).filter(function(x){ return x!==id; }); }
+    if(UI.libProject===id) UI.libProject='all';
+    save(); renderLib(); toast('项目已删除');
+  }, '删除');
+}
+function clearProject(id){
+  var del=0, un=0, i;
+  for(i=0;i<DB.lib.mats.length;i++){ var m=DB.lib.mats[i];
+    if(m.lib===UI.lib && (m.projects||[]).indexOf(id)>=0){ if(m.projects.length===1) del++; else un++; } }
+  askConfirm('一键清空项目',
+    '将清空「'+esc(projName(UI.lib,id))+'」下的素材：<br>· 仅属于本项目的 <b>'+del+'</b> 条将被<span class="err">彻底删除</span><br>· 与其他项目共用的 <b>'+un+'</b> 条只移除本项目归属（内容保留）<br>点击确定即刻执行。',
+    function(){
+      var keep=[];
+      for(var i2=0;i2<DB.lib.mats.length;i2++){ var m2=DB.lib.mats[i2];
+        if(m2.lib===UI.lib && (m2.projects||[]).indexOf(id)>=0){
+          if(m2.projects.length===1) continue;
+          m2.projects=m2.projects.filter(function(x){ return x!==id; });
+        }
+        keep.push(m2); }
+      DB.lib.mats=keep; save(); renderLib(); toast('已清空');
+    }, '确定清空');
+}
+</script>
+<script>
+/* =======================================================================
+   花团锦簇 · 素材录入 / 重复比对 / 详情 / 导出
+   ======================================================================= */
+var MF = { imgs:[], files:[] };
+function openMatForm(){
+  MF.imgs=[]; MF.files=[];
+  var ps=DB.lib[UI.lib].projects, i, chk='';
+  if(!ps.length){ toast('请先在当前库新增一个项目'); return; }
+  for(i=0;i<ps.length;i++){
+    var on = (UI.libProject===ps[i].id) || (UI.libProject==='all' && i===0);
+    chk += '<label class="tag" style="padding:7px 11px;cursor:pointer"><input type="checkbox" class="mf-p" value="'+ps[i].id+'"'+(on?' checked':'')+
+      ' style="width:auto;margin-right:5px">'+esc(ps[i].name)+'</label>';
+  }
+  openModal('添加素材 · '+(UI.lib==='work'?'工作素材':'学习素材'),
+    '<div class="field"><label class="fl">标题</label><input type="text" id="mf-title" placeholder="例：五年级语文期中卷（含阅读+作文）"></div>'+
+    '<div class="field"><label class="fl">归属项目（可多选，一份素材多处通用，不必重复储存）</label><div class="row">'+chk+'</div></div>'+
+    '<div class="field"><label class="fl">正文 / 扫描识别后的文字</label>'+
+    '<textarea id="mf-text" style="min-height:130px" placeholder="可直接粘贴文字；若是纸质材料，先用手机相册或扫描 App 识别文字后粘到此处，原稿可一并上传保存"></textarea></div>'+
+    '<div class="field"><label class="fl">外部链接（网站 / 软件，可添加多个，名称|网址）</label><div id="mf-links"></div>'+
+    '<button class="btn sm" type="button" onclick="addLinkRow()"><svg><use href="#i-plus"/></svg>再加一个链接</button>'+
+    '<div class="row"><button class="btn sm" onclick="pickMatImages()"><svg><use href="#i-image"/></svg>上传图片/扫描件</button>'+
+    '<button class="btn sm" onclick="pickMatFiles()"><svg><use href="#i-upload"/></svg>上传原稿（word/pdf/excel）</button></div>'+
+    '<div id="mf-thumbs" class="thumbs"></div><div id="mf-files" class="row" style="margin-top:6px"></div>'+
+    '<div class="tiny" style="margin-top:9px">保存时会自动与库内已有素材比对，内容重复会先提示你对比后再决定是否储存。</div>',
+    '<button class="btn" onclick="closeModal()">取消</button><button class="btn v" onclick="saveMat()">保存素材</button>', true);
+  renderLinkRows([]);
+}
+function renderMFThumbs(){
+  var t=$('mf-thumbs'), f=$('mf-files'); if(!t||!f) return;
+  var h='', i;
+  for(i=0;i<MF.imgs.length;i++) h += '<img src="'+MF.imgs[i]+'" alt="图">';
+  t.innerHTML=h;
+  h='';
+  for(i=0;i<MF.files.length;i++) h += '<span class="fileicon"><svg width="13" height="13"><use href="#i-file"/></svg>'+esc(MF.files[i].name)+'</span>';
+  f.innerHTML=h;
+}
+function linkRowHtml(name,url){
+  return '<div class="link-row" style="display:flex;gap:6px;margin-bottom:6px"><input type="text" class="lk-name" placeholder="名称（如：学科网 / 扫描全能王）" value="'+esc(name)+'" style="flex:1;min-width:0">'+
+    '<input type="text" class="lk-url" placeholder="网址 https://..." value="'+esc(url)+'" style="flex:2;min-width:0">'+
+    '<button class="btn sm danger" type="button" onclick="this.parentNode.remove()"><svg><use href="#i-minus"/></svg></button></div>';
+}
+function renderLinkRows(links){
+  var box=$('mf-links'); if(!box) return;
+  var h=''; (links||[]).forEach(function(l){ h += linkRowHtml(l.name||'', l.url||''); });
+  if(!(links&&links.length)) h += linkRowHtml('','');
+  box.innerHTML=h;
+}
+function addLinkRow(){ var box=$('mf-links'); if(box) box.insertAdjacentHTML('beforeend', linkRowHtml('','')); }
+function collectLinks(){
+  var rows=document.querySelectorAll('.link-row'), links=[], i;
+  for(i=0;i<rows.length;i++){ var n=rows[i].querySelector('.lk-name').value.trim(), u=rows[i].querySelector('.lk-url').value.trim();
+    if(!n&&!u) continue;
+    if(!u){ links.push({name:n,url:''}); continue; }
+    if(!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(u)) u='https://'+u;
+    links.push({name:n||u,url:u}); }
+  return links;
+}
+function pickMatImages(){
+  pickFiles('image/*', true, function(fs){
+    var n=Math.min(fs.length, 9-MF.imgs.length);
+    if(n<=0){ toast('最多 9 张'); return; }
+    var done=0;
+    for(var i=0;i<n;i++) compressImage(fs[i], 800, function(d){ if(d) MF.imgs.push(d); done++; if(done===n) renderMFThumbs(); });
+  });
+}
+function pickMatFiles(){
+  pickFiles('.doc,.docx,.pdf,.xls,.xlsx,.csv,.txt,.ppt,.pptx', true, function(fs){
+    var n=Math.min(fs.length, 5), done=0;
+    for(var i=0;i<n;i++){
+      (function(f){
+        if(f.size > 2*1024*1024){ toast('「'+f.name+'」超过 2MB，为避免本地空间被占满已跳过；建议只存文字+图片'); done++; return; }
+        var fr=new FileReader();
+        fr.onload=function(){ MF.files.push({name:f.name, type:f.type, size:f.size, data:String(fr.result)}); done++; if(done>=n) renderMFThumbs(); };
+        fr.onerror=function(){ done++; };
+        fr.readAsDataURL(f);
+      })(fs[i]);
+    }
+    setTimeout(renderMFThumbs, 900);
+  });
+}
+function similarity(a,b){
+  a=String(a||'').replace(/\s/g,''); b=String(b||'').replace(/\s/g,'');
+  if(!a||!b) return 0;
+  var setA={}, i, inter=0, uniqA=0, uniqB=0, setB={};
+  for(i=0;i<a.length;i++){ if(!setA[a[i]]){ setA[a[i]]=1; uniqA++; } }
+  for(i=0;i<b.length;i++){ if(!setB[b[i]]){ setB[b[i]]=1; uniqB++; if(setA[b[i]]) inter++; } }
+  return inter/Math.max(1,(uniqA+uniqB-inter));
+}
+var PENDING_MAT=null;
+function saveMat(){
+  var title=$('mf-title').value.trim(), text=$('mf-text').value.trim();
+  if(!title && !text){ toast('请至少填写标题或正文'); return; }
+  var boxes=document.querySelectorAll('.mf-p'), pj=[], i;
+  for(i=0;i<boxes.length;i++){ if(boxes[i].checked) pj.push(boxes[i].value); }
+  var links=collectLinks();
+  var obj={id:uid(), lib:UI.lib, projects:pj, title:title||text.slice(0,18), text:text,
+    files:MF.files.slice(), images:MF.imgs.slice(), links:links, at:nowStr(), analysis:null};
+  var dup=null, score=0;
+  for(i=0;i<DB.lib.mats.length;i++){
+    var m=DB.lib.mats[i];
+    var s1=similarity(m.title, obj.title), s2=similarity(m.text, obj.text);
+    var s=Math.max(s1*0.6+s2*0.4, s2);
+    if(m.title===obj.title) s=1;
+    if(s>score){ score=s; dup=m; }
+  }
+  if(dup && score>=0.62){ PENDING_MAT=obj; openDupCompare(dup, obj, score); return; }
+  doSaveMat(obj);
+}
+function openDupCompare(oldM, newM, score){
+  var pns=[]; for(var j=0;j<(oldM.projects||[]).length;j++) pns.push(projName(oldM.lib, oldM.projects[j]));
+  openModal('内容重复提示 · 文件对比',
+    '<div class="row" style="margin-bottom:9px"><span class="tag red">相似度约 '+Math.round(score*100)+'%</span>'+
+    '<span class="tiny">库内已存在高度相似的素材，请对比后决定</span></div>'+
+    '<div class="grid g2">'+
+    '<div class="zone"><div class="zone-h">已存在（'+esc(oldM.at)+'）</div><div class="zone-b">'+
+      '<div style="font-weight:800">'+esc(oldM.title)+'</div>'+
+      '<div class="tiny">归属：'+esc(pns.join('/')||'未分类')+' · 字数 '+String(oldM.text||'').length+' · 图 '+(oldM.images||[]).length+' · 附件 '+(oldM.files||[]).length+'</div>'+
+      '<div class="sep"></div><div style="font-size:14px;max-height:190px;overflow:auto">'+esc((oldM.text||'').slice(0,600))+'</div></div></div>'+
+    '<div class="zone"><div class="zone-h">本次新增</div><div class="zone-b">'+
+      '<div style="font-weight:800">'+esc(newM.title)+'</div>'+
+      '<div class="tiny">字数 '+String(newM.text||'').length+' · 图 '+(newM.images||[]).length+' · 附件 '+(newM.files||[]).length+'</div>'+
+      '<div class="sep"></div><div style="font-size:14px;max-height:190px;overflow:auto">'+esc((newM.text||'').slice(0,600))+'</div></div></div>'+
+    '</div>'+
+    '<div class="tiny" style="margin-top:10px">推荐：若只是归属项目不同，选「并入已有素材」——同一份素材可同时属于试卷/阅读/作文，搜任一关键字都能找到，不必重复储存。</div>',
+    '<button class="btn" onclick="PENDING_MAT=null;closeModal()">取消</button>'+
+    '<button class="btn g" onclick="mergeIntoOld(\''+oldM.id+'\')"><svg><use href="#i-copy"/></svg>并入已有素材</button>'+
+    '<button class="btn p" onclick="forceSaveMat()">仍然新建一条</button>', true);
+}
+function mergeIntoOld(oldId){
+  var o=matById(oldId), n=PENDING_MAT;
+  if(!o||!n){ closeModal(); return; }
+  for(var i=0;i<n.projects.length;i++){ if(o.projects.indexOf(n.projects[i])<0) o.projects.push(n.projects[i]); }
+  for(i=0;i<n.images.length;i++){ if((o.images||[]).length<9) o.images.push(n.images[i]); }
+  for(i=0;i<n.files.length;i++) o.files.push(n.files[i]);
+  for(i=0;i<n.links.length;i++) o.links.push(n.links[i]);
+  if(n.text && String(o.text||'').length < n.text.length) o.text=n.text;
+  o.at=nowStr();
+  PENDING_MAT=null; closeModal(); save(); renderLib(); toast('已并入已有素材，归属项目已合并');
+}
+function forceSaveMat(){ var n=PENDING_MAT; PENDING_MAT=null; closeModal(); if(n) doSaveMat(n); }
+function doSaveMat(obj){
+  if(obj.text && obj.text.length>20) obj.analysis=analyzeArticle(obj.text);
+  DB.lib.mats.unshift(obj);
+  MF.imgs=[]; MF.files=[];
+  closeModal(); save(); refreshAll();
+  toast('素材已保存'+(obj.analysis?('，判定为 '+obj.analysis.genre):''));
+}
+function openMatDetail(id){
+  var m=matById(id); if(!m) return;
+  var pns=[], i;
+  for(i=0;i<(m.projects||[]).length;i++) pns.push(projName(m.lib, m.projects[i]));
+  var h='<div id="mat-print"><div class="row"><span class="tag violet">'+(m.lib==='work'?'工作素材':'学习素材')+'</span>'+
+    '<span class="tag">'+esc(pns.join('/')||'未分类')+'</span><span class="tiny">'+esc(m.at)+'</span></div>'+
+    '<h3 style="font-family:var(--fs);letter-spacing:1px">'+esc(m.title)+'</h3>'+
+    '<div style="font-size:15px;line-height:1.95;white-space:pre-wrap">'+esc(m.text||'（无正文）')+'</div>';
+  if((m.images||[]).length){ h += '<div class="thumbs">';
+    for(i=0;i<m.images.length;i++) h += '<img src="'+m.images[i]+'" style="width:120px;height:120px" alt="图">';
+    h += '</div>'; }
+  if((m.files||[]).length){ h += '<div class="row no-print" style="margin-top:8px">';
+    for(i=0;i<m.files.length;i++) h += '<button class="fileicon" onclick="dlMatFile(\''+m.id+'\','+i+')"><svg width="13" height="13"><use href="#i-download"/></svg>'+esc(m.files[i].name)+'（下载原稿）</button>';
+    h += '</div>'; }
+  if((m.links||[]).length){ h += '<div class="row" style="margin-top:9px">';
+    for(i=0;i<m.links.length;i++){ var lk=m.links[i];
+      h += (lk.url?'<a class="btn sm s" target="_blank" rel="noopener" href="'+esc(lk.url)+'">':'<span class="btn sm s">')+'<svg><use href="#i-link"/></svg>'+esc(lk.name||lk.url||'链接')+(lk.url?'</a>':'</span>'); }
+    h += '</div>'; }
+  h += '</div>';
+  openModal('素材详情', h,
+    '<button class="btn sm" onclick="printExport(\'mat-print\',\''+esc(m.title)+'\')"><svg><use href="#i-file"/></svg>PDF</button>'+
+    '<button class="btn sm" onclick="exportMatWord(\''+m.id+'\')"><svg><use href="#i-download"/></svg>Word</button>'+
+    '<button class="btn sm" onclick="exportMatPng(\''+m.id+'\')"><svg><use href="#i-image"/></svg>图片</button>'+
+    '<button class="btn sm" onclick="editMatLinks(\''+m.id+'\')"><svg><use href="#i-link"/></svg>编辑链接</button>'+
+    '<button class="btn sm v" onclick="openMatAnalysis(\''+m.id+'\',\'\')"><svg><use href="#i-ai"/></svg>AI 解析</button>'+
+    '<button class="btn" onclick="closeModal()">关闭</button>', true);
+}
+function exportMatWord(id){ var m=matById(id); if(m) exportWord(m.title, '<p>'+esc(m.text||'').replace(/\n/g,'</p><p>')+'</p>'); }
+function exportMatPng(id){
+  var m=matById(id); if(!m) return;
+  var txt=String(m.text||''), lines=[], i;
+  for(i=0;i<txt.length && lines.length<26; i+=40) lines.push(txt.slice(i,i+40));
+  exportPng(m.title, lines.length?lines:['（无正文）']);
+}
+function viewImg(id, idx){
+  var m=matById(id); if(!m) return;
+  openModal('查看图片', '<img src="'+m.images[idx]+'" style="width:100%;border-radius:12px" alt="素材图">',
+    '<button class="btn" onclick="closeModal()">关闭</button>', true);
+}
+function dlMatFile(id, idx){
+  var m=matById(id); if(!m||!m.files[idx]) return;
+  var f=m.files[idx], a=document.createElement('a');
+  a.href=f.data; a.download=f.name; document.body.appendChild(a); a.click(); a.remove();
+}
+function editMatProjects(id){
+  var m=matById(id); if(!m) return;
+  var ps=DB.lib[m.lib].projects, chk='';
+  for(var i=0;i<ps.length;i++){
+    chk += '<label class="tag" style="padding:7px 11px;cursor:pointer"><input type="checkbox" class="ep-p" value="'+ps[i].id+'"'+
+      ((m.projects||[]).indexOf(ps[i].id)>=0?' checked':'')+' style="width:auto;margin-right:5px">'+esc(ps[i].name)+'</label>';
+  }
+  openModal('调整归属项目',
+    '<div class="tiny" style="margin-bottom:9px">勾选多个项目，这份素材即在多处通用（例如一份试卷同时属于「试卷」「阅读」「作文」）。</div>'+
+    '<div class="row">'+chk+'</div>',
+    '<button class="btn" onclick="closeModal()">取消</button><button class="btn g" onclick="saveMatProjects(\''+id+'\')">保存</button>');
+}
+function saveMatProjects(id){
+  var m=matById(id); if(!m) return;
+  var bs=document.querySelectorAll('.ep-p'), arr=[];
+  for(var i=0;i<bs.length;i++){ if(bs[i].checked) arr.push(bs[i].value); }
+  m.projects=arr; closeModal(); save(); renderLib(); toast('归属已更新');
+}
+function delMat(id){
+  var m=matById(id); if(!m) return;
+  askConfirm('删除素材','确定删除《'+esc(m.title)+'》？其原稿与图片也会一并删除，不可恢复。', function(){
+    DB.lib.mats=DB.lib.mats.filter(function(x){ return x.id!==id; }); save(); refreshAll(); toast('已删除');
+  }, '删除');
+}
+function editMatLinks(id){
+  var m=matById(id); if(!m) return;
+  openModal('编辑外部链接',
+    '<div class="tiny" style="margin-bottom:9px">为《'+esc(m.title)+'》添加或调整网站 / 软件链接（名称|网址，多个可逐条加）。</div>'+
+    '<div id="mf-links"></div>'+
+    '<button class="btn sm" type="button" onclick="addLinkRow()"><svg><use href="#i-plus"/></svg>再加一个链接</button>',
+    '<button class="btn" onclick="closeModal()">取消</button><button class="btn g" onclick="saveMatLinks(\''+id+'\')">保存</button>');
+  renderLinkRows(m.links||[]);
+}
+function saveMatLinks(id){
+  var m=matById(id); if(!m) return;
+  m.links=collectLinks(); closeModal(); save(); renderLib(); toast('链接已更新');
+}
+
+/* =======================================================================
+   备份 / 设置 / 初始化
+   ======================================================================= */
+function dataCount(){
+  var n=DB.todos.length+DB.memos.length+DB.students.length+DB.records.length+DB.reading.length+DB.lib.mats.length+DB.study.items.length;
+  for(var i=0;i<SUNP.length;i++) n += DB.health[SUNP[i].k].length;
+  return n;
+}
+function exportBackup(){
+  var name='幽径通骄阳_备份_'+todayStr()+'_'+nowStr().split(' ')[1].replace(':','')+'.json';
+  download(name, JSON.stringify(DB, null, 1), 'application/json');
+  toast('备份已导出，请把它放进 E:\\工作台数据保存\\backup 归档');
+}
+function importBackupPick(){
+  askConfirm('导入恢复',
+    '导入备份会<b>覆盖当前全部数据</b>（学生、记录、健康、素材等）。建议先点「导出备份」留一份快照。<br>支持本工作台导出的 JSON 文件，条数不限。',
+    function(){ pickFiles('.json,application/json', false, function(fs){
+      var fr=new FileReader();
+      fr.onload=function(){
+        try{
+          var j=JSON.parse(String(fr.result));
+          if(!j || (!j.students && !j.lib && !j.todos)) { toast('这不是本工作台的备份文件'); return; }
+          DB=j; load2fix(); save(); UI.stuId=null; UI.sunPanel=null; refreshAll();
+          toast('已恢复 '+dataCount()+' 条数据');
+        }catch(e){ toast('文件解析失败，请确认是完整的 JSON 备份'); }
+      };
+      fr.readAsText(fs[0],'utf-8');
+    }); }, '继续导入');
+}
+function load2fix(){
+  var b=blankDB(), k;
+  for(k in b){ if(DB[k]==null) DB[k]=b[k]; }
+  for(k in b.health){ if(!Array.isArray(DB.health[k])) DB.health[k]=[]; }
+  if(!DB.lib.work) DB.lib.work={projects:[]};
+  if(!DB.lib.study) DB.lib.study={projects:[]};
+  if(!Array.isArray(DB.lib.mats)) DB.lib.mats=[];
+  if(!DB.security||!DB.security.pin) DB.security=b.security;
+  if(!DB.flowers) DB.flowers=b.flowers;
+}
+function exportAllCsv(){
+  var rows=[['板块','位置','内容','时间']], ix=buildIndex();
+  for(var i=0;i<ix.length;i++) rows.push([ix[i].mod, ix[i].pos, ix[i].text, ix[i].time]);
+  download('幽径通骄阳_全站数据_'+todayStr()+'.csv', toCsv(rows), 'text/csv');
+  toast('CSV 已导出（Excel 可直接打开）');
+}
+function clearDemo(){
+  askConfirm('清空示例数据','将删除所有带「示例」标记的预置内容（示例学生、示例记录、示例素材、示例健康数据），你自己录入的数据不受影响。', function(){
+    var demoIds={};
+    DB.students=DB.students.filter(function(s){ if(s.note==='示例'){ demoIds[s.id]=1; return false; } return true; });
+    DB.records=DB.records.filter(function(r){ return !demoIds[r.studentId] && r.src!=='示例'; });
+    DB.reading=DB.reading.filter(function(r){ return !demoIds[r.studentId]; });
+    DB.lib.mats=DB.lib.mats.filter(function(m){ return m.src!=='示例'; });
+    for(var i=0;i<SUNP.length;i++){
+      DB.health[SUNP[i].k]=DB.health[SUNP[i].k].filter(function(r){ return String(r.note||'').indexOf('示例')<0; }); }
+    DB.meta.demo=false;
+    save(); refreshAll(); toast('示例数据已清空');
+  }, '确定清空');
+}
+function openSettings(){
+  openModal('设置',
+    '<div class="zone"><div class="zone-h">工作台与板块命名（可自由编辑）</div><div class="zone-b">'+
+    '<div class="inline-form"><div class="field"><label class="fl">工作台名称</label><input type="text" id="nm-title" value="'+esc(DB.meta.title)+'"></div></div>'+
+    '<div class="tiny" style="margin-bottom:7px">四大板块名称</div>'+
+    '<div class="inline-form"><div class="field"><label class="fl">仪表盘</label><input type="text" id="nm-dash" value="'+esc(DB.meta.modules.dash)+'"></div>'+
+    '<div class="field"><label class="fl">康庄幽径</label><input type="text" id="nm-path" value="'+esc(DB.meta.modules.path)+'"></div></div>'+
+    '<div class="inline-form"><div class="field"><label class="fl">骄阳永灿</label><input type="text" id="nm-sun" value="'+esc(DB.meta.modules.sun)+'"></div>'+
+    '<div class="field"><label class="fl">花团锦簇</label><input type="text" id="nm-lib" value="'+esc(DB.meta.modules.lib)+'"></div></div>'+
+    '<button class="btn sm o" onclick="saveNames()"><svg><use href="#i-edit"/></svg>保存命名</button></div></div>'+
+    '<div class="zone"><div class="zone-h">骄阳永灿 · 密码与密保</div><div class="zone-b">'+
+    '<div class="inline-form"><div class="field"><label class="fl">当前密码</label><input type="password" inputmode="numeric" id="se-old" placeholder="6 位数字"></div>'+
+    '<div class="field"><label class="fl">新密码</label><input type="password" inputmode="numeric" id="se-new" placeholder="6 位数字"></div></div>'+
+    '<div class="field"><label class="fl">密保问题</label><input type="text" id="se-q" value="'+esc(DB.security.q)+'"></div>'+
+    '<div class="field"><label class="fl">密保答案</label><input type="text" id="se-a" value="'+esc(DB.security.a)+'"></div>'+
+    '<button class="btn sm o" onclick="saveSecurity()"><svg><use href="#i-lock"/></svg>保存密码设置</button>'+
+    (UI.sunUnlocked?' <button class="btn sm" onclick="lockSun();closeModal()"><svg><use href="#i-lock"/></svg>立即重新锁定</button>':'')+
+    '</div></div>'+
+    '<div class="zone"><div class="zone-h">月度自动总结（每月 25 日）</div><div class="zone-b">'+
+    '<div class="tiny">规则：展示台红字 &lt;20 的学生加一朵小红花；红字 &gt;80 的学生姓名在名单中显示为蓝色。上次执行：'+esc(DB.meta.summaryMonth||'尚未执行')+'</div>'+
+    '<button class="btn sm g" style="margin-top:8px" onclick="manualSummary()"><svg><use href="#i-star"/></svg>立即执行一次总结</button></div></div>'+
+    '<div class="zone"><div class="zone-h">账号与同步（跨设备共用一份数据 · 数据存云端）</div><div class="zone-b">'+
+    '<div class="field"><label class="fl">同步后端</label><select id="sync-backend" onchange="SYNC.backend=this.value;saveSyncCfg();openSettings();">'+
+    '<option value="cb"'+(SYNC.backend==='cb'?' selected':'')+'>腾讯云 CloudBase（国内可达·免费）</option>'+
+    '<option value="cf"'+(SYNC.backend==='cf'?' selected':'')+'>Cloudflare Workers+D1（境外免费）</option>'+
+    '<option value="oracle"'+(SYNC.backend==='oracle'?' selected':'')+'>Oracle Cloud 永远免费（国内可达）</option>'+
+    '<option value="supabase"'+(SYNC.backend==='supabase'?' selected':'')+'>Supabase（免费·国内有时可达）</option>'+
+    '<option value="custom"'+(SYNC.backend==='custom'?' selected':'')+'>自建/其它服务器</option>'+
+    '<option value="bmob"'+(SYNC.backend==='bmob'?' selected':'')+'>Bmob 云（国内免费·手机号注册）</option>'+
+    '<option value="github"'+(SYNC.backend==='github'?' selected':'')+'>GitHub Gist（免费·需 GitHub 账号）</option>'+
+    '<option value="leancloud"'+(SYNC.backend==='leancloud'?' selected':'')+'>LeanCloud（旧·已停新注册）</option></select></div>'+
+    (SYNC.backend==='leancloud' ?
+      '<div class="field"><label class="fl">LeanCloud API 地址</label><input type="text" id="lc-api" placeholder="https://api.leancloud.cn" value="'+esc(SYNC.lcApi||'')+'"></div>'+
+      '<div class="field"><label class="fl">App ID</label><input type="text" id="lc-app" placeholder="应用 App ID" value="'+esc(SYNC.lcApp||'')+'"></div>'+
+      '<div class="field"><label class="fl">Client Key</label><input type="text" id="lc-key" placeholder="应用的 Client Key" value="'+esc(SYNC.lcKey||'')+'"></div>'+
+      '<div class="tiny">控制台建类 Workbench（字段 owner 文本、blob 对象），类权限设为仅登录可读写。</div>'
+    : SYNC.backend==='bmob' ?
+      '<div class="field"><label class="fl">Bmob Application ID</label><input type="text" id="bm-app" placeholder="应用的 Application ID" value="'+esc(SYNC.bmobApp||'')+'"></div>'+
+      '<div class="field"><label class="fl">REST API Key</label><input type="text" id="bm-key" placeholder="应用的 REST API Key" value="'+esc(SYNC.bmobKey||'')+'"></div>'+
+      '<div class="tiny">Bmob 控制台新建应用，建类 Workbench（字段 owner 文本、blob 对象），类权限设为「所有用户可读写」。数据存国内 Bmob 云。下面填用户名/密码登录或注册。</div>'
+    : SYNC.backend==='github' ?
+      '<div class="tiny">数据将存为一个<b>私有 GitHub Gist</b> 文件（仅你自己可见）。下方「连接并同步」处粘贴 Token 即可，无需用户名密码。Token 获取：GitHub → Settings → Developer settings → Personal access tokens → 勾选 <b>gist</b> 生成。</div>'
+      :
+      '<div class="field"><label class="fl">服务器地址</label><input type="text" id="sync-base" placeholder="'+esc(backendBasePlaceholder())+'" value="'+esc(SYNC.base||'')+'"></div>'+
+      '<div class="tiny">'+esc(backendBaseHint())+'</div>'
+    )+
+    (SYNC.backend==='github' ?
+      (SYNC.token ?
+        '<div class="tiny">已连接 GitHub Gist：<b>'+(SYNC.ghId?esc(SYNC.ghId.slice(0,10)+'…'):'待创建')+'</b>　状态：'+syncStatusText()+'</div>'+
+        '<div class="row" style="margin-top:8px"><button class="btn sm a" onclick="syncNow()"><svg><use href="#i-sync"/></svg>立即同步</button>'+
+        '<button class="btn sm danger" onclick="syncLogout()"><svg><use href="#i-lock"/></svg>退出</button></div>'
+        :
+        '<div class="field"><label class="fl">GitHub Token</label><input type="password" id="sync-token" placeholder="需 gist 权限的 Token" value="'+esc(SYNC.token||'')+'"></div>'+
+        '<div class="row" style="margin-top:8px"><button class="btn sm v" onclick="githubConnect()"><svg><use href="#i-lock"/></svg>连接并同步</button></div>'
+      )
+    : SYNC.token ? ('<div class="tiny">已登录：<b>'+esc(SYNC.user)+'</b>　后端：'+syncBackendName()+'　状态：'+syncStatusText()+'</div>'+
+      '<div class="row" style="margin-top:8px"><button class="btn sm a" onclick="syncNow()"><svg><use href="#i-sync"/></svg>立即同步</button>'+
+      '<button class="btn sm danger" onclick="syncLogout()"><svg><use href="#i-lock"/></svg>退出登录</button></div>')
+      : ('<div class="inline-form"><div class="field"><label class="fl">用户名</label><input type="text" id="sync-user" placeholder="2-32 字"></div>'+
+        '<div class="field"><label class="fl">密码</label><input type="password" id="sync-pass" placeholder="至少 4 位"></div></div>'+
+        '<div class="row" style="margin-top:8px"><button class="btn sm v" onclick="syncLogin()"><svg><use href="#i-lock"/></svg>登录</button>'+
+        '<button class="btn sm g" onclick="syncSignup()"><svg><use href="#i-user"/></svg>注册新账号</button></div>'))+
+    '<div class="tiny" style="margin-top:8px;line-height:1.9">登录后，任何增删改自动上传；打开页面或切回前台自动拉取最新（以最新时间戳为准，最后写入优先）。数据存云端，本机仅留离线缓存。</div>'+
+    '</div></div>'+
+    '<div class="zone"><div class="zone-h">一键迁移 / 切换服务器（腾讯收费时换服务器用）</div><div class="zone-b">'+
+    '<div class="tiny">把当前数据完整复制到另一台服务器并立即切换过去。目标服务器需已部署同协议后端（见下方说明）。迁移只传数据，不改内容；旧服务器数据保留作备份。</div>'+
+    '<div class="field"><label class="fl">目标服务器类型</label><select id="mig-type">'+
+      '<option value="cb">腾讯云 CloudBase</option><option value="cf">Cloudflare</option><option value="oracle">Oracle Cloud</option><option value="supabase">Supabase</option><option value="custom" selected>自建/其它</option></select></div>'+
+    '<div class="field"><label class="fl">目标服务器地址</label><input type="text" id="mig-base" placeholder="如 https://env.api.tcloudbasegateway.com/yjtjy"></div>'+
+    '<div class="inline-form"><div class="field"><label class="fl">目标用户名</label><input type="text" id="mig-user" placeholder="2-32 字"></div>'+
+    '<div class="field"><label class="fl">目标密码</label><input type="password" id="mig-pass" placeholder="至少 4 位"></div></div>'+
+    '<div class="row" style="margin-top:8px"><button class="btn sm v" onclick="migrateData()"><svg><use href="#i-sync"/></svg>迁移并切换</button>'+
+    '<button class="btn sm" onclick="toggleHelp(\'alt-help\')">备选服务器说明</button></div>'+
+    '<div id="alt-help" style="display:none;margin-top:8px"><div class="tiny" style="line-height:1.95">'+
+    '备选免费服务器（都跑同一套 /api/* 协议，部署后填地址即可切换，迁移按钮一键搬家）：<br>'+
+    '• <b>腾讯云 CloudBase</b>：已用；控制台「环境配置→HTTP访问服务」关闭身份认证即公网可访问。<br>'+
+    '• <b>Cloudflare Workers+D1</b>：永久免费，但中国大陆网络常打不开（仅境外可用）。<br>'+
+    '• <b>Oracle Cloud 永远免费</b>：注册 Always Free，开计算实例跑 server.src.js（Node），用其公网地址；国内可达。<br>'+
+    '• <b>Supabase</b>：免费 Postgres + Edge Function 跑同协议；国内有时可达。<br>'+
+    '• <b>Bmob 云</b>：国内免费 BaaS，手机号注册即可，数据常驻国内云、地址不变（在「同步后端」直接选，填 Application ID / REST API Key）。<br>'+
+    '• <b>GitHub Gist</b>：免费，数据存私有 Gist，需 GitHub 账号（国内有时偏慢）。<br>'+
+    '• <b>自建/任意 VPS</b>（Render、Fly.io、Railway 等）：部署 server.src.js，填其地址。<br>'+
+    '部署模板与步骤见《备选服务器部署》文档。</div></div>'+
+    '</div></div>'+
+
+    '<div class="zone"><div class="zone-h">数据与存储</div><div class="zone-b">'+
+    '<div class="tiny" style="line-height:1.95">当前数据量：<b>'+dataCount()+'</b> 条<br>'+
+    '存储位置：云端（Bmob / GitHub Gist / 腾讯云 CloudBase / Cloudflare D1 / LeanCloud），本机仅留离线缓存（localStorage，键名 '+KEY+'）<br>'+
+    '归档目录：<b>E:\\工作台数据保存\\backup</b>（导出的 JSON/CSV 请放这里）<br>'+
+    '网页文件：<b>E:\\工作台数据保存\\幽径通骄阳.html</b><br>'+
+    '<span style="color:var(--red)">提示：清理浏览器数据会连带清掉本地存储，请养成定期导出备份的习惯。</span></div>'+
+    '<div class="row" style="margin-top:9px"><button class="btn sm a" onclick="exportBackup()"><svg><use href="#i-download"/></svg>导出备份</button>'+
+    '<button class="btn sm" onclick="importBackupPick()"><svg><use href="#i-upload"/></svg>导入恢复</button>'+
+    '<button class="btn sm" onclick="exportAllCsv()"><svg><use href="#i-file"/></svg>导出 CSV</button></div></div></div>'+
+    '<div class="zone"><div class="zone-h">危险操作</div><div class="zone-b"><div class="row">'+
+    '<button class="btn sm danger" onclick="clearZone(\'todos\')">清空待办</button>'+
+    '<button class="btn sm danger" onclick="clearZone(\'memos\')">清空速记</button>'+
+    '<button class="btn sm danger" onclick="clearZone(\'students\')">清空学生名单</button>'+
+    '<button class="btn sm danger" onclick="wipeAll()">清空全部数据</button></div></div></div>',
+    '<button class="btn" onclick="closeModal()">关闭</button>', true);
+}
+function saveSecurity(){
+  var o=$('se-old').value.trim(), n=$('se-new').value.trim(), q=$('se-q').value.trim(), a=$('se-a').value.trim();
+  if(n){
+    if(o!==String(DB.security.pin)){ toast('当前密码不正确'); return; }
+    if(!/^\d{6}$/.test(n)){ toast('新密码必须是 6 位数字'); return; }
+    DB.security.pin=n;
+  }
+  if(q) DB.security.q=q;
+  if(a) DB.security.a=a;
+  save(); toast('密码设置已保存');
+}
+function saveNames(){
+  DB.meta.title=($('nm-title').value.trim()||'幽径通骄阳');
+  DB.meta.modules.dash=($('nm-dash').value.trim()||'仪表盘');
+  DB.meta.modules.path=($('nm-path').value.trim()||'康庄幽径');
+  DB.meta.modules.sun=($('nm-sun').value.trim()||'骄阳永灿');
+  DB.meta.modules.lib=($('nm-lib').value.trim()||'花团锦簇');
+  save(); renderNav(); toast('命名已更新');
+}
+function manualSummary(){
+  var r=runMonthlySummary(true);
+  closeModal(); refreshAll();
+  showSummary(r, true);
+}
+function showSummary(r, manual){
+  if(!r) return;
+  var h='<div class="row" style="margin-bottom:9px"><span class="tag amber"><svg width="13" height="13"><use href="#i-star"/></svg>'+esc(r.month)+' 月度总结</span>'+
+    (manual?'<span class="tiny">手动执行</span>':'<span class="tiny">每月 25 日自动生成</span>')+'</div>';
+  h += '<div class="zone"><div class="zone-h">优等 · 红字少于 20（已加小红花）</div><div class="zone-b">'+
+    (r.good.length? r.good.map(function(x){ return '<div class="rec">'+esc(x)+' '+flowerSvg(16)+'</div>'; }).join('') : '<div class="tiny">本月暂无</div>')+'</div></div>';
+  h += '<div class="zone"><div class="zone-h">需重点辅导 · 红字超过 80（名单中显示蓝色）</div><div class="zone-b">'+
+    (r.warn.length? r.warn.map(function(x){ return '<div class="rec" style="color:var(--blue);font-weight:700">'+esc(x)+'</div>'; }).join('') : '<div class="tiny">本月暂无</div>')+'</div></div>';
+  openModal('学情月度总结', h, '<button class="btn a" onclick="closeModal()">知道了</button>');
+  if(r.good.length) boom(30);
+}
+function wipeAll(){
+  askConfirm('清空全部数据',
+    '<b style="color:var(--red)">这会删除四大板块的所有数据</b>（学生、展示台记录、阅读错题、健康与进修、素材库、待办速记），仅保留密码设置。<br>确定前请先导出备份！',
+    function(){
+      var sec=DB.security;
+      DB=blankDB(); DB.security=sec; DB.meta.demo=false;
+      UI.stuId=null; UI.sunPanel=null; UI.libProject='all';
+      save(); refreshAll(); toast('已清空全部数据');
+    }, '我已备份，确定清空');
+}
+
+/* ============ 统一刷新入口（唯一调度者，渲染函数之间互不调用） ============ */
+function renderNav(){
+  var t=DB.meta.title||'幽径通骄阳', m=DB.meta.modules||{};
+  var el=document.getElementById('wb-title'); if(el) el.textContent=t;
+  var sb=document.getElementById('wb-sub'); if(sb) sb.textContent=[m.dash,m.path,m.sun,m.lib].filter(Boolean).join(' · ');
+  var labels={dash:m.dash||'仪表盘', path:m.path||'康庄幽径', sun:m.sun||'骄阳永灿', lib:m.lib||'花团锦簇'};
+  var sp=document.querySelectorAll('[data-nav]');
+  for(var i=0;i<sp.length;i++){ var k=sp[i].getAttribute('data-nav'); if(labels[k]) sp[i].textContent=labels[k]; }
+  document.title=t;
+}
+function refreshAll(){
+  renderNav();
+  renderChips();
+  renderToday();
+  renderQuick();
+  renderTodos();
+  renderSearch();
+  renderMemoResult();
+  renderPath();
+  renderSun();
+  renderLib();
+}
+window.onerror=function(m){ toast('出现一个小问题：'+String(m).slice(0,60)); };
+document.addEventListener('DOMContentLoaded', function(){
+  load();
+  var sum=null;
+  try{ sum=runMonthlySummary(false); }catch(e){}
+  refreshAll();
+  renderMemoImgs();
+  if(sum) showSummary(sum);
+  else if(dataCount()>=30) setTimeout(function(){ toast('数据已积累 '+dataCount()+' 条，建议点「导出备份」存一份到 E 盘'); }, 1400);
+});
+</script>
+<script>
+/* ============ 云端同步（统一协议 Bearer Token + /api/*；多后端可一键切换/迁移） ============ */
+// 后端类型：cb 腾讯云CloudBase / cf Cloudflare / oracle Oracle Cloud / supabase Supabase / custom 自建 / bmob Bmob云 / github GitHub Gist；leancloud 仅旧兼容
+var SYNC = { backend:'cb', token:null, user:null, base:'', lcApp:'', lcKey:'', lcApi:'https://api.leancloud.cn', lcUid:'', lcObj:'', bmobApp:'', bmobKey:'', bmobUid:'', bmobObj:'', ghId:'', updatedAt:0, status:'off', pulling:false, _t:null, _iv:null };
+
+function loadSyncCfg(){
+  try{ var s=JSON.parse(localStorage.getItem('wb_yjtjy_sync')||'{}');
+    SYNC.backend=s.backend||'cb'; SYNC.token=s.token||null; SYNC.user=s.user||null;
+    SYNC.base=(s.base||s.cbBase||'').replace(/\/+$/,''); SYNC.lcApp=s.lcApp||''; SYNC.lcKey=s.lcKey||'';
+    SYNC.lcApi=s.lcApi||'https://api.leancloud.cn'; SYNC.lcUid=s.lcUid||''; SYNC.lcObj=s.lcObj||'';
+    SYNC.bmobApp=s.bmobApp||''; SYNC.bmobKey=s.bmobKey||''; SYNC.bmobUid=s.bmobUid||''; SYNC.bmobObj=s.bmobObj||''; SYNC.ghId=s.ghId||''; SYNC.updatedAt=s.updatedAt||0;
+  }catch(e){}
+}
+function saveSyncCfg(){
+  try{ localStorage.setItem('wb_yjtjy_sync', JSON.stringify({backend:SYNC.backend,token:SYNC.token,user:SYNC.user,base:SYNC.base,lcApp:SYNC.lcApp,lcKey:SYNC.lcKey,lcApi:SYNC.lcApi,lcUid:SYNC.lcUid,lcObj:SYNC.lcObj,bmobApp:SYNC.bmobApp,bmobKey:SYNC.bmobKey,bmobUid:SYNC.bmobUid,bmobObj:SYNC.bmobObj,ghId:SYNC.ghId,updatedAt:SYNC.updatedAt})); }catch(e){}
+}
+function syncStatusText(){ return ({off:'未同步',ing:'同步中',ok:'已同步',err:'离线'}[SYNC.status]||'未同步'); }
+function syncBackendName(){ return ({cb:'腾讯云CloudBase',cf:'Cloudflare',oracle:'Oracle Cloud',supabase:'Supabase',custom:'自建服务器',bmob:'Bmob 云',github:'GitHub Gist',leancloud:'LeanCloud'}[SYNC.backend]||SYNC.backend); }
+function setSyncStatus(st){ SYNC.status=st; var dot=document.getElementById('sync-dot'), t=document.getElementById('sync-txt'); if(dot) dot.className='dot sync-'+st; if(t) t.textContent=syncStatusText(); }
+
+/* ---- 统一协议后端：任意服务器地址 + Bearer Token（cb/cf/oracle/supabase/custom 通用） ---- */
+// 未填服务器地址时按当前打开位置自动推断：CloudBase 网关带 /yjtjy 子路径，Cloudflare workers.dev 在根
+function genBaseUrl(p){
+  p=p||SYNC;
+  if(p.base && p.base.trim()) return p.base.trim().replace(/\/+$/,'');
+  var h=(location.hostname||'');
+  if(h.indexOf('tcloudbasegateway.com')>=0) return (location.origin+(location.pathname||'')).replace(/\/+$/,'');
+  return (location.origin||'').replace(/\/+$/,'');
+}
+function genApi(p, path, opts){ opts=opts||{}; var url=genBaseUrl(p)+path; var h={'Content-Type':'application/json'}; if(p.token) h['Authorization']='Bearer '+p.token; return fetch(url, Object.assign({headers:h, cache:'no-store'}, opts)); }
+function backendBasePlaceholder(){ return ({cb:'如 https://env.api.tcloudbasegateway.com/yjtjy（留空=同源自动）',cf:'如 https://yjtjy-sync.xxx.workers.dev（留空=同源自动）',oracle:'如 http://<公网IP>:3000 或 https://oracle.example.com/yjtjy',supabase:'如 https://<project>.functions.supabase.co/yjtjy',custom:'如 https://your-server.example.com/yjtjy'}[SYNC.backend]||'服务器地址'); }
+function backendBaseHint(){ return ({cb:'云函数 HTTP 访问地址；控制台「环境配置→HTTP访问服务」须关闭身份认证。数据存腾讯云数据库。',cf:'Worker 地址；数据存 Cloudflare D1。注：中国大陆网络常打不开。',oracle:'Oracle 永远免费实例上运行的 server.src.js 地址；数据存该实例本地文件/SQLite。国内可达。',supabase:'Supabase Edge Function 地址；数据存 Supabase Postgres。',custom:'任意服务器上运行的同协议后端地址；数据存该服务器。'}[SYNC.backend]||''); }
+function toggleHelp(id){ var e=document.getElementById(id); if(e) e.style.display = (e.style.display==='none'?'block':'none'); }
+
+/* ---- LeanCloud 后端 ---- */
+function lcHeaders(){ var h={'Content-Type':'application/json','X-LC-Id':SYNC.lcApp,'X-LC-Key':SYNC.lcKey}; if(SYNC.token) h['X-LC-Session']=SYNC.token; return h; }
+function lcApi(path, opts){ opts=opts||{}; var url=(SYNC.lcApi.replace(/\/+$/,'')||'https://api.leancloud.cn')+'/1.1'+path; return fetch(url, Object.assign({headers:lcHeaders(), cache:'no-store'}, opts)); }
+function lcReadCfg(){ SYNC.lcApp=($('lc-app')?$('lc-app').value.trim():SYNC.lcApp)||SYNC.lcApp; SYNC.lcKey=($('lc-key')?$('lc-key').value.trim():SYNC.lcKey)||SYNC.lcKey; SYNC.lcApi=($('lc-api')?$('lc-api').value.trim().replace(/\/+$/,''):SYNC.lcApi)||SYNC.lcApi; }
+
+function schedulePush(){ if(!SYNC.token) return; if(SYNC._t) clearTimeout(SYNC._t); SYNC._t=setTimeout(pushData, 800); }
+function pushData(){
+  if(!SYNC.token || typeof fetch!=='function') return;
+  setSyncStatus('ing');
+  if(SYNC.backend==='leancloud') return lcPush();
+  if(SYNC.backend==='bmob') return bmobPush();
+  if(SYNC.backend==='github') return githubPush();
+  genApi(SYNC, '/api/data',{method:'PUT', body:JSON.stringify({blob:JSON.stringify(DB)})})
+    .then(function(r){ if(!r.ok) throw new Error('push '+r.status); return r.json(); })
+    .then(function(j){ SYNC.updatedAt=j.updatedAt||Date.now(); saveSyncCfg(); setSyncStatus('ok'); })
+    .catch(function(){ setSyncStatus('err'); });
+}
+function pullData(force){
+  if(!SYNC.token || typeof fetch!=='function') return Promise.resolve(false);
+  setSyncStatus('ing');
+  if(SYNC.backend==='leancloud') return lcPull(force);
+  if(SYNC.backend==='bmob') return bmobPull(force);
+  if(SYNC.backend==='github') return githubPull(force);
+  return genApi(SYNC, '/api/data',{method:'GET'}).then(function(r){ if(!r.ok) throw new Error('pull '+r.status); return r.json(); }).then(function(j){
+    if(!force && j.updatedAt && j.updatedAt<=SYNC.updatedAt){ setSyncStatus('ok'); return false; }
+    if(j.blob){ SYNC.pulling=true; try{ DB=(typeof j.blob==='string')?JSON.parse(j.blob):j.blob; }catch(e){ DB=j.blob||{}; } SYNC.updatedAt=j.updatedAt||Date.now(); saveSyncCfg(); try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){} SYNC.pulling=false; if(typeof refreshAll==='function') refreshAll(); }
+    setSyncStatus('ok'); return true;
+  }).catch(function(){ setSyncStatus('err'); return false; });
+}
+function syncSignup(){
+  var u=$('sync-user').value.trim(), p=$('sync-pass').value;
+  if(u.length<2){ toast('用户名至少 2 字'); return; }
+  if(String(p).length<4){ toast('密码至少 4 位'); return; }
+  if(SYNC.backend==='leancloud') return lcSignup(u,p);
+  if(SYNC.backend==='bmob') return bmobSignup(u,p);
+  SYNC.base=($('sync-base')?$('sync-base').value.trim().replace(/\/+$/,''):SYNC.base)||SYNC.base;
+  genApi(SYNC, '/api/signup',{method:'POST',body:JSON.stringify({username:u,password:p})})
+    .then(function(r){ if(!r.ok) return r.json().then(function(x){ throw new Error(x.error||'注册失败'); }); return r.json(); })
+    .then(function(j){ SYNC.token=j.token; SYNC.user=j.user; SYNC.base=($('sync-base').value.trim().replace(/\/+$/,'')||SYNC.base); saveSyncCfg(); setSyncStatus('ok'); openSettings(); toast('注册成功，已登录'); return pullData(true); })
+    .then(function(){ pushData(); })
+    .catch(function(e){ toast(e.message||'注册失败'); });
+}
+function syncLogin(){
+  var u=$('sync-user').value.trim(), p=$('sync-pass').value;
+  if(SYNC.backend==='leancloud') return lcLogin(u,p);
+  if(SYNC.backend==='bmob') return bmobLogin(u,p);
+  SYNC.base=($('sync-base')?$('sync-base').value.trim().replace(/\/+$/,''):SYNC.base)||SYNC.base;
+  genApi(SYNC, '/api/login',{method:'POST',body:JSON.stringify({username:u,password:p})})
+    .then(function(r){ if(!r.ok) return r.json().then(function(x){ throw new Error(x.error||'登录失败'); }); return r.json(); })
+    .then(function(j){ SYNC.token=j.token; SYNC.user=j.user; SYNC.base=($('sync-base').value.trim().replace(/\/+$/,'')||SYNC.base); saveSyncCfg(); setSyncStatus('ok'); openSettings(); toast('登录成功'); return pullData(true); })
+    .then(function(){ pushData(); })
+    .catch(function(e){ toast(e.message||'登录失败'); });
+}
+function syncLogout(){ SYNC.token=null; SYNC.user=null; SYNC.lcUid=''; SYNC.lcObj=''; SYNC.bmobUid=''; SYNC.bmobObj=''; SYNC.ghId=''; saveSyncCfg(); setSyncStatus('off'); openSettings(); toast('已退出登录'); }
+function syncNow(){ if(!SYNC.token){ toast('请先登录'); return; } pullData(true).then(function(){ pushData(); }); }
+
+/* ---- LeanCloud 实现 ---- */
+function lcSignup(u,p){
+  lcReadCfg();
+  if(!SYNC.lcApp||!SYNC.lcKey){ toast('请填写 LeanCloud 的 App ID 与 Client Key'); return; }
+  lcApi('/users',{method:'POST',body:JSON.stringify({username:u,password:p})})
+    .then(function(r){ if(!r.ok) return r.json().then(function(x){ throw new Error(x.error||'注册失败'); }); return r.json(); })
+    .then(function(j){ SYNC.token=j.sessionToken; SYNC.user=j.username; SYNC.lcUid=j.objectId; SYNC.lcObj=''; saveSyncCfg(); setSyncStatus('ok'); openSettings(); toast('注册成功，已登录'); return lcPull(true); })
+    .then(function(){ lcPush(); })
+    .catch(function(e){ toast(e.message||'注册失败'); });
+}
+function lcLogin(u,p){
+  lcReadCfg();
+  if(!SYNC.lcApp||!SYNC.lcKey){ toast('请填写 LeanCloud 的 App ID 与 Client Key'); return; }
+  lcApi('/login?username='+encodeURIComponent(u)+'&password='+encodeURIComponent(p),{method:'POST'})
+    .then(function(r){ if(!r.ok) return r.json().then(function(x){ throw new Error(x.error||'登录失败'); }); return r.json(); })
+    .then(function(j){ SYNC.token=j.sessionToken; SYNC.user=j.username; SYNC.lcUid=j.objectId; SYNC.lcObj=''; saveSyncCfg(); setSyncStatus('ok'); openSettings(); toast('登录成功'); return lcPull(true); })
+    .then(function(){ lcPush(); })
+    .catch(function(e){ toast(e.message||'登录失败'); });
+}
+function lcPush(){
+  if(!SYNC.lcObj){
+    var acl={}; acl[SYNC.lcUid]={read:true,write:true};
+    lcApi('/classes/Workbench',{method:'POST',body:JSON.stringify({owner:SYNC.user, blob:DB, ACL:acl})})
+      .then(function(r){ if(!r.ok) throw new Error('push '+r.status); return r.json(); })
+      .then(function(j){ SYNC.lcObj=j.objectId; SYNC.updatedAt=Date.now(); saveSyncCfg(); setSyncStatus('ok'); })
+      .catch(function(){ setSyncStatus('err'); });
+  } else {
+    lcApi('/classes/Workbench/'+SYNC.lcObj,{method:'PUT',body:JSON.stringify({blob:DB})})
+      .then(function(r){ if(!r.ok) throw new Error('push '+r.status); return r.json(); })
+      .then(function(){ SYNC.updatedAt=Date.now(); saveSyncCfg(); setSyncStatus('ok'); })
+      .catch(function(){ setSyncStatus('err'); });
+  }
+}
+function lcPull(force){
+  return lcApi('/classes/Workbench?where='+encodeURIComponent(JSON.stringify({owner:SYNC.user})),{method:'GET'})
+    .then(function(r){ if(!r.ok) throw new Error('pull '+r.status); return r.json(); })
+    .then(function(j){
+      var res=(j.results||[])[0];
+      if(!res){ setSyncStatus('ok'); return false; }
+      var upd=new Date(res.updatedAt).getTime();
+      if(!force && upd && upd<=SYNC.updatedAt){ setSyncStatus('ok'); return false; }
+      SYNC.lcObj=res.objectId; SYNC.updatedAt=upd||Date.now(); SYNC.pulling=true; DB=res.blob; saveSyncCfg();
+      try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){} SYNC.pulling=false; if(typeof refreshAll==='function') refreshAll();
+      setSyncStatus('ok'); return true;
+    }).catch(function(){ setSyncStatus('err'); return false; });
+}
+/* ---- Bmob 云后端 ---- */
+function bmHeaders(session){
+  var h={'Content-Type':'application/json','X-Bmob-Application-Id':SYNC.bmobApp,'X-Bmob-REST-API-Key':SYNC.bmobKey};
+  if(session) h['X-Bmob-Session-Token']=session;
+  return h;
+}
+function bmApi(path, opts, session){ opts=opts||{}; return fetch('https://api2.bmob.cn/1'+path, Object.assign({headers:bmHeaders(session), cache:'no-store'}, opts)); }
+function bmReadCfg(){ SYNC.bmobApp=($('bm-app')?$('bm-app').value.trim():SYNC.bmobApp)||SYNC.bmobApp; SYNC.bmobKey=($('bm-key')?$('bm-key').value.trim():SYNC.bmobKey)||SYNC.bmobKey; }
+function bmobSignup(u,p){
+  bmReadCfg();
+  if(!SYNC.bmobApp||!SYNC.bmobKey){ toast('请填写 Bmob 的 Application ID 与 REST API Key'); return; }
+  bmApi('/users',{method:'POST',body:JSON.stringify({username:u,password:p})})
+    .then(function(r){ if(!r.ok) return r.json().then(function(x){ throw new Error(x.error||'注册失败'); }); return r.json(); })
+    .then(function(j){ SYNC.token=j.sessionToken; SYNC.user=j.username; SYNC.bmobUid=j.objectId; SYNC.bmobObj=''; saveSyncCfg(); setSyncStatus('ok'); openSettings(); toast('注册成功，已登录'); return bmobPull(true); })
+    .then(function(){ bmobPush(); })
+    .catch(function(e){ toast(e.message||'注册失败'); });
+}
+function bmobLogin(u,p){
+  bmReadCfg();
+  if(!SYNC.bmobApp||!SYNC.bmobKey){ toast('请填写 Bmob 的 Application ID 与 REST API Key'); return; }
+  bmApi('/login?username='+encodeURIComponent(u)+'&password='+encodeURIComponent(p),{method:'POST'})
+    .then(function(r){ if(!r.ok) return r.json().then(function(x){ throw new Error(x.error||'登录失败'); }); return r.json(); })
+    .then(function(j){ SYNC.token=j.sessionToken; SYNC.user=j.username; SYNC.bmobUid=j.objectId; SYNC.bmobObj=''; saveSyncCfg(); setSyncStatus('ok'); openSettings(); toast('登录成功'); return bmobPull(true); })
+    .then(function(){ bmobPush(); })
+    .catch(function(e){ toast(e.message||'登录失败'); });
+}
+function bmobPush(){
+  if(!SYNC.bmobObj){
+    var acl={}; acl[SYNC.bmobUid]={read:true,write:true};
+    bmApi('/classes/Workbench',{method:'POST',body:JSON.stringify({owner:SYNC.user, blob:DB, ACL:acl})}, SYNC.token)
+      .then(function(r){ if(!r.ok) throw new Error('push '+r.status); return r.json(); })
+      .then(function(j){ SYNC.bmobObj=j.objectId; SYNC.updatedAt=Date.parse(j.updatedAt)||Date.now(); saveSyncCfg(); setSyncStatus('ok'); })
+      .catch(function(){ setSyncStatus('err'); });
+  } else {
+    bmApi('/classes/Workbench/'+SYNC.bmobObj,{method:'PUT',body:JSON.stringify({blob:DB})}, SYNC.token)
+      .then(function(r){ if(!r.ok) throw new Error('push '+r.status); return r.json(); })
+      .then(function(){ SYNC.updatedAt=Date.now(); saveSyncCfg(); setSyncStatus('ok'); })
+      .catch(function(){ setSyncStatus('err'); });
+  }
+}
+function bmobPull(force){
+  return bmApi('/classes/Workbench?where='+encodeURIComponent(JSON.stringify({owner:SYNC.user})),{method:'GET'}, SYNC.token).then(function(r){ if(!r.ok) throw new Error('pull '+r.status); return r.json(); }).then(function(j){
+    var res=(j.results||[])[0];
+    if(!res){ setSyncStatus('ok'); return false; }
+    var upd=Date.parse(res.updatedAt)||Date.now();
+    if(!force && upd && upd<=SYNC.updatedAt){ setSyncStatus('ok'); return false; }
+    SYNC.bmobObj=res.objectId; SYNC.updatedAt=upd; SYNC.pulling=true; DB=res.blob; saveSyncCfg();
+    try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){} SYNC.pulling=false; if(typeof refreshAll==='function') refreshAll();
+    setSyncStatus('ok'); return true;
+  }).catch(function(){ setSyncStatus('err'); return false; });
+}
+/* ---- GitHub Gist 后端 ---- */
+function ghHeaders(){ return {'Content-Type':'application/json','Authorization':'Bearer '+SYNC.token}; }
+function ghApi(path, opts){ opts=opts||{}; return fetch('https://api.github.com'+path, Object.assign({headers:ghHeaders(), cache:'no-store'}, opts)); }
+function githubPush(){
+  if(!SYNC.token) return;
+  setSyncStatus('ing');
+  var content=JSON.stringify(DB);
+  if(!SYNC.ghId){
+    ghApi('/gists',{method:'POST',body:JSON.stringify({description:'幽径通骄阳工作台数据', public:false, files:{'yjtjy-data.json':{content:content}}})})
+      .then(function(r){ if(!r.ok) throw new Error('push '+r.status); return r.json(); })
+      .then(function(j){ SYNC.ghId=j.id; SYNC.updatedAt=Date.parse(j.updated_at)||Date.now(); saveSyncCfg(); setSyncStatus('ok'); })
+      .catch(function(){ setSyncStatus('err'); });
+  } else {
+    ghApi('/gists/'+SYNC.ghId,{method:'PATCH',body:JSON.stringify({files:{'yjtjy-data.json':{content:content}}})})
+      .then(function(r){ if(!r.ok) throw new Error('push '+r.status); return r.json(); })
+      .then(function(j){ SYNC.updatedAt=Date.parse(j.updated_at)||Date.now(); saveSyncCfg(); setSyncStatus('ok'); })
+      .catch(function(){ setSyncStatus('err'); });
+  }
+}
+function githubPull(force){
+  if(!SYNC.token || !SYNC.ghId) return Promise.resolve(false);
+  setSyncStatus('ing');
+  return ghApi('/gists/'+SYNC.ghId,{method:'GET'}).then(function(r){ if(!r.ok) throw new Error('pull '+r.status); return r.json(); }).then(function(j){
+    var f=j.files&&j.files['yjtjy-data.json'];
+    if(!f||!f.content){ setSyncStatus('ok'); return false; }
+    var upd=Date.parse(j.updated_at)||Date.now();
+    if(!force && upd && upd<=SYNC.updatedAt){ setSyncStatus('ok'); return false; }
+    SYNC.pulling=true; try{ DB=JSON.parse(f.content); }catch(e){} SYNC.updatedAt=upd; saveSyncCfg();
+    try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){} SYNC.pulling=false; if(typeof refreshAll==='function') refreshAll();
+    setSyncStatus('ok'); return true;
+  }).catch(function(){ setSyncStatus('err'); return false; });
+}
+function githubConnect(){
+  SYNC.token=($('sync-token')?$('sync-token').value.trim():SYNC.token)||SYNC.token;
+  if(!SYNC.token){ toast('请填写 GitHub Token（需 gist 权限）'); return; }
+  saveSyncCfg(); setSyncStatus('ok'); openSettings();
+  ghApi('/gists?per_page=100',{method:'GET'}).then(function(r){ if(!r.ok) throw new Error('list '+r.status); return r.json(); }).then(function(list){
+    var found=(list||[]).find(function(g){ return g.description==='幽径通骄阳工作台数据' && g.files && g.files['yjtjy-data.json']; });
+    if(found){ SYNC.ghId=found.id; saveSyncCfg(); return githubPull(true); }
+    return githubPush();
+  }).catch(function(){ githubPush(); });
+}
+/* ---- 一键迁移：把当前数据复制到目标服务器并切换 ---- */
+function migrateData(){
+  var tb=$('mig-base').value.trim().replace(/\/+$/,'');
+  var tu=$('mig-user').value.trim();
+  var tp=$('mig-pass').value;
+  var tt=$('mig-type')?$('mig-type').value:'custom';
+  if(!tb){ toast('请填写目标服务器地址'); return; }
+  if(tu.length<2 || String(tp).length<4){ toast('目标账号：用户名≥2字，密码≥4位'); return; }
+  var tgt={ base:tb, token:null, user:null };
+  setSyncStatus('ing');
+  genApi(tgt, '/api/login',{method:'POST',body:JSON.stringify({username:tu,password:tp})})
+    .then(function(r){ if(r.ok) return r.json();
+      // 目标服务器无此账号时自动注册（仅在登录失败、且账号名未被占用时安全）
+      return genApi(tgt,'/api/signup',{method:'POST',body:JSON.stringify({username:tu,password:tp})}).then(function(rr){ if(!rr.ok) return rr.json().then(function(x){ throw new Error(x.error||'目标服务器登录/注册失败'); }); return rr.json(); });
+    })
+    .then(function(j){ tgt.token=j.token; tgt.user=j.username;
+      return genApi(tgt,'/api/data',{method:'PUT', body:JSON.stringify({blob:JSON.stringify(DB)})}); })
+    .then(function(r){ if(!r.ok) throw new Error('写入目标服务器失败 '+r.status); return r.json(); })
+    .then(function(){
+      SYNC.backend=tt; SYNC.base=tb; SYNC.token=tgt.token; SYNC.user=tgt.user; SYNC.updatedAt=Date.now(); saveSyncCfg(); setSyncStatus('ok');
+      openSettings(); toast('迁移完成，已切换到新服务器'); 
+    })
+    .catch(function(e){ setSyncStatus('err'); toast(e.message||'迁移失败'); });
+}
+/* ---- PWA：动态 manifest + 安装引导（手机/平板“添加到主屏幕”即全屏 App） ---- */
+var PWA_ICON='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjRkZCNzAzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjRkY2QjM1Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyNTYiIHk9IjI1NiIgZm9udC1zaXplPSIzMDAiIGZvbnQtZmFtaWx5PSJLYWlUaSxTVEthaXRpLHNlcmlmIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iI0ZGRjhFRCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiPumYszwvdGV4dD48L3N2Zz4=';
+function setupPWA(){
+  // APK / WebView 本地环境：已是 App 形态，无需「安装到主屏」提示，直接隐藏
+  if(location.href.indexOf('android_asset')>=0){ var _t=document.getElementById('installTip'); if(_t) _t.style.display='none'; return; }
+  try{
+    var manifest={name:'幽径通骄阳 · 学习工作台',short_name:'幽径通骄阳',start_url:'.',display:'standalone',orientation:'portrait',background_color:'#FFFDF7',theme_color:'#FF6B35',icons:[{src:PWA_ICON,sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+    var url=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'}));
+    var l=document.createElement('link'); l.rel='manifest'; l.href=url; document.head.appendChild(l);
+  }catch(e){}
+  try{
+    var standalone=(window.navigator.standalone===true)||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches);
+    if(standalone) return;
+    if(localStorage.getItem('wb_yjtjy_noPwaTip')==='1') return;
+    var tip=document.getElementById('installTip'); if(!tip) return;
+    var ios=/iPad|iPhone|iPod/.test(navigator.userAgent);
+    tip.querySelector('.tip-txt').innerHTML = ios
+      ? '点 Safari 底部 <b>分享</b> 图标 → <b>添加到主屏幕</b>，即可像 App 一样全屏使用'
+      : '点浏览器右上角 <b>⋮</b> → <b>安装应用 / 添加到主屏幕</b>，即可像 App 一样全屏使用';
+    tip.classList.add('show');
+  }catch(e){}
+}
+function closePwaTip(){ var t=document.getElementById('installTip'); if(t) t.classList.remove('show'); try{localStorage.setItem('wb_yjtjy_noPwaTip','1');}catch(e){} }
+function initSync(){
+  setupPWA();
+  loadSyncCfg();
+  // 同源打开时自动把 API 地址设为当前页地址（CloudBase 网关带 /yjtjy 子路径，Cloudflare workers.dev 在根），免填、免 CORS
+  if(SYNC.backend!=='leancloud' && !SYNC.base && location.hostname){
+    if(location.hostname.indexOf('tcloudbasegateway.com')>=0){ SYNC.base=(location.origin+(location.pathname||'')).replace(/\/+$/,''); saveSyncCfg(); }
+    else if(location.hostname.indexOf('workers.dev')>=0){ SYNC.base=location.origin; saveSyncCfg(); }
+  }
+  setSyncStatus(SYNC.token?'ok':'off');
+  if(SYNC.token) pullData(true).then(function(){ pushData(); });
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden && SYNC.token) pullData(); });
+  if(SYNC._iv) clearInterval(SYNC._iv);
+  SYNC._iv=setInterval(function(){ if(SYNC.token && !document.hidden) pullData(); }, 30000);
+}
+if(document.readyState!=='loading') initSync(); else document.addEventListener('DOMContentLoaded', initSync);
+
+</script>
+<div id="installTip" class="install-tip">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+  <div class="tip-txt" style="flex:1"></div>
+  <button class="x" onclick="closePwaTip()" aria-label="关闭">×</button>
+</div>
+</body>
+</html>
