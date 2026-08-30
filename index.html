@@ -1083,33 +1083,43 @@ function jumpTo(type, id){
 var recog=null, recogOn=false, recogFinal='';
 function toggleVoice(){
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){
-    // 移动端/华为浏览器不支持时：引导用输入法自带语音键盘，并聚焦输入框方便直接说话转文字
-    var mi=$('memo'); if(mi) mi.focus();
-    toast('当前浏览器不支持网页语音。请用输入法键盘上的麦克风图标语音转文字（华为可用搜狗/百度输入法麦克风），说完后文字会自动进框，再点「分析归类」');
+  // 华为/荣耀设备内置浏览器对 Web Speech API 支持不完整且易抛 Script error，直接引导用输入法麦克风更稳
+  var ua=navigator.userAgent||'';
+  var isHuawei=/Huawei|Honor|HarmonyOS|鸿蒙/i.test(ua);
+  if(!SR || isHuawei){
+    var mi=$('memo'); if(mi){ mi.focus(); try{ mi.selectionStart=mi.value.length; mi.selectionEnd=mi.value.length; }catch(e){} }
+    toast(isHuawei?'华为/荣耀设备请用输入法键盘麦克风语音转文字（搜狗/百度/讯飞均可），说完文字进框后再点「分析归类」':'当前浏览器不支持网页语音。请用输入法键盘上的麦克风图标语音转文字，说完后再点「分析归类」');
     return;
   }
   var btn=$('mic-btn');
-  if(recogOn && recog){ try{ recog.stop(); }catch(e){} return; }
-  recog = new SR(); recog.lang='zh-CN'; recog.continuous=false; recog.interimResults=false; // 短句模式，避免长连接卡顿与逐字刷屏
+  // 状态异常时强制重置，防止平板点击无法停止
+  if(recogOn && recog){ try{ recog.stop(); }catch(e){ recogOn=false; if(btn){ btn.classList.remove('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>语音输入'; } } return; }
+  if(recogOn){ recogOn=false; if(btn){ btn.classList.remove('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>语音输入'; } return; }
+  recog = new SR(); recog.lang='zh-CN'; recog.continuous=false; recog.interimResults=false;
   recogFinal='';
   recog.onstart=function(){ recogOn=true; if(btn){ btn.classList.add('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>正在聆听…点此结束'; } };
   recog.onresult=function(e){
     for(var i=0;i<e.results.length;i++){ if(e.results[i].isFinal) recogFinal += e.results[i][0].transcript; }
   };
   recog.onerror=function(ev){
+    try{ clearTimeout(recog._to); }catch(e){}
     recogOn=false; if(btn){ btn.classList.remove('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>语音输入'; }
     var err=ev&&ev.error;
     if(err==='not-allowed') toast('麦克风权限被拒绝，请在浏览器地址栏左侧允许麦克风');
     else if(err==='network') toast('语音服务网络异常，请换网络或改用输入法语音键盘');
-    else if(err!=='no-speech'&&err!=='aborted') toast('语音识别中断，请重试');
+    else if(err!=='no-speech'&&err!=='aborted') toast('语音识别中断：'+(err||'未知错误')+',请重试');
   };
   recog.onend=function(){
+    try{ clearTimeout(recog._to); }catch(e){}
     recogOn=false; if(btn){ btn.classList.remove('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>语音输入'; }
-    var cur=$('memo').value.trim();
-    if(recogFinal){ $('memo').value = (cur?cur+' ':'')+recogFinal; recogFinal=''; }
+    var cur=$('memo')?$('memo').value.trim():'';
+    if(recogFinal && $('memo')){ $('memo').value = (cur?cur+' ':'')+recogFinal; recogFinal=''; }
   };
-  try{ recog.start(); }catch(e){ toast('无法启动语音识别'); }
+  try{
+    recog.start();
+    // 30 秒自动停止，避免平板点击无法停止时一直占用
+    recog._to = setTimeout(function(){ try{ recog.stop(); }catch(e){} }, 30000);
+  }catch(e){ toast('无法启动语音识别：'+(e&&e.message||e)); }
 }
 function compressImage(file, maxW, cb){
   var fr=new FileReader();
@@ -1159,6 +1169,8 @@ function baiduOcrRecognize(base64, cb){
   });
 }
 function pickMemoImage(){
+  // 重新加载同步配置，确保 OCR Key 已生效（多标签/缓存场景）
+  try{ loadSyncCfg(); }catch(e){}
   pickFiles('image/*', true, function(fs){
     var n=Math.min(fs.length, 9-UI.memoImgs.length);
     if(n<=0){ toast('最多 9 张图片'); return; }
@@ -1188,7 +1200,7 @@ function pickMemoImage(){
               });
             } else {
               done++;
-              if(done===n){ renderMemoImgs(); toast('图片已附加。提示：未配置 OCR，请在设置填百度 API Key，或把图上文字念出来/打字补录'); }
+              if(done===n){ renderMemoImgs(); toast('图片已附加。OCR 状态：AK='+(SYNC.ocrAk?'有('+SYNC.ocrAk.length+'位)':'空')+'，SK='+(SYNC.ocrSk?'有('+SYNC.ocrSk.length+'位)':'空')+'。请在设置填百度 Key'); }
             }
           } else {
             done++;
@@ -2895,11 +2907,20 @@ function saveSyncCfg(){
 }
 function syncStatusText(){ return ({off:'未同步',ing:'同步中',ok:'已同步',err:'离线'}[SYNC.status]||'未同步'); }
 function saveOcrCfg(){
-  SYNC.ocrAk=($('ocr-ak')?$('ocr-ak').value.trim():SYNC.ocrAk)||SYNC.ocrAk;
-  SYNC.ocrSk=($('ocr-sk')?$('ocr-sk').value.trim():SYNC.ocrSk)||SYNC.ocrSk;
-  SYNC.ocrTok=''; SYNC.ocrExp=0; // 重置旧 token，下次 OCR 重新换取
-  saveSyncCfg();
-  toast((SYNC.ocrAk&&SYNC.ocrSk)?'OCR 配置已保存，可拍照识别':'已清空 OCR 配置');
+  try{
+    var ak=$('ocr-ak')?$('ocr-ak').value.trim():'';
+    var sk=$('ocr-sk')?$('ocr-sk').value.trim():'';
+    SYNC.ocrAk=ak||SYNC.ocrAk;
+    SYNC.ocrSk=sk||SYNC.ocrSk;
+    SYNC.ocrTok=''; SYNC.ocrExp=0; // 重置旧 token，下次 OCR 重新换取
+    saveSyncCfg();
+    // 验证是否真的写进了 localStorage
+    loadSyncCfg();
+    var ok=!!(SYNC.ocrAk && SYNC.ocrSk);
+    toast(ok?('OCR 配置已保存，可拍照识别（AK 长度 '+SYNC.ocrAk.length+'）'):'已清空 OCR 配置');
+  }catch(e){
+    toast('保存 OCR 配置失败：'+(e&&e.message||e));
+  }
 }
 function syncBackendName(){ return ({cb:'腾讯云CloudBase',cf:'Cloudflare',oracle:'Oracle Cloud',supabase:'Supabase',custom:'自建服务器',bmob:'Bmob 云',github:'GitHub Gist',leancloud:'LeanCloud'}[SYNC.backend]||SYNC.backend); }
 function setSyncStatus(st){ SYNC.status=st; var dot=document.getElementById('sync-dot'), t=document.getElementById('sync-txt'); if(dot) dot.className='dot sync-'+st; if(t) t.textContent=syncStatusText(); }
