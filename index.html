@@ -579,7 +579,7 @@ function blankDB(){
     security:{ pin:'123456', q:'我最喜欢的花是什么？', a:'木棉' },
     todos:[], memos:[],
     classes:[], students:[], records:[], reading:[],
-    health:{ weight:[], glucose:[], sport:[], diet:[] },
+    health:{ weight:[], glucose:[], bp:[], hr:[], sport:[], sleep:[], diet:[] },
     study:{ projects:[], items:[] },
     lib:{ work:{projects:[]}, study:{projects:[]}, mats:[] },
     flowers:{ total:0, log:[] }
@@ -603,6 +603,7 @@ function load(){
   for(var mk in b.meta.modules){ if(!DB.meta.modules[mk]) DB.meta.modules[mk]=b.meta.modules[mk]; }
   if(!DB.health) DB.health=b.health;
   for(k in b.health){ if(!Array.isArray(DB.health[k])) DB.health[k]=[]; }
+  for(i=0;i<SUNP.length;i++){ var hk=SUNP[i].k; if(!Array.isArray(DB.health[hk])) DB.health[hk]=[]; }
   if(!DB.study||!DB.study.projects) DB.study=b.study;
   if(!DB.lib||!DB.lib.mats) DB.lib=b.lib;
   if(!DB.lib.work) DB.lib.work={projects:[]};
@@ -2636,7 +2637,7 @@ function saveMatLinks(id){
    ======================================================================= */
 function dataCount(){
   var n=DB.todos.length+DB.memos.length+DB.students.length+DB.records.length+DB.reading.length+DB.lib.mats.length+DB.study.items.length;
-  for(var i=0;i<SUNP.length;i++) n += DB.health[SUNP[i].k].length;
+  for(var i=0;i<SUNP.length;i++){ var arr=DB.health[SUNP[i].k]; if(Array.isArray(arr)) n += arr.length; }
   return n;
 }
 function exportBackup(){
