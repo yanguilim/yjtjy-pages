@@ -1258,7 +1258,7 @@ function pickMemoImage(){
               });
             } else {
               done++;
-              if(done===n){ renderMemoImgs(); toast('图片已附加。OCR 状态：AK='+(SYNC.ocrAk?'有('+SYNC.ocrAk.length+'位)':'空')+'，SK='+(SYNC.ocrSk?'有('+SYNC.ocrSk.length+'位)':'空')+'。请在设置填百度 Key'); }
+              if(done===n){ renderMemoImgs(); toast('图片已附加。提取文字：手机用相册「提取文字」或输入法「扫一扫」复制，粘贴到下方输入框，再点「分析归类」'); }
             }
           } else {
             done++;
@@ -2846,12 +2846,12 @@ function openSettings(){
     '部署模板与步骤见《备选服务器部署》文档。</div></div>'+
     '</div></div>'+
 
-    '<div class="zone"><div class="zone-h">图片转文字 OCR（百度智能云 · 拍照/扫描自动识别）</div><div class="zone-b">'+
+    '<div class="zone"><div class="zone-h">图片转文字 OCR（当前网络不可用 · 已停用）</div><div class="zone-b">'+
     '<div class="field"><label class="fl">百度 OCR API Key</label><input type="text" id="ocr-ak" placeholder="如 8aBc…123" value="'+esc(SYNC.ocrAk||'')+'"></div>'+
     '<div class="field"><label class="fl">百度 OCR Secret Key</label><input type="password" id="ocr-sk" placeholder="如 AbCd…456" value="'+esc(SYNC.ocrSk||'')+'"></div>'+
     '<div class="field"><label class="fl">OCR 代理地址（可选）</label><input type="text" id="ocr-proxy" placeholder="如 https://yjtjy-sync.xxx.workers.dev" value="'+esc(SYNC.ocrProxy||'')+'"></div>'+
     '<button class="btn sm v" onclick="saveOcrCfg()"><svg><use href="#i-lock"/></svg>保存 OCR 配置</button>'+
-    '<div class="tiny" style="margin-top:8px;line-height:1.95">获取：登录 <b>ai.baidu.com</b> → 控制台「文字识别」→ 创建应用 → 复制 API Key / Secret Key（每日免费额度可识别数万次）。配置后，在「一句话速记」点「图片/扫描」即可自动识别图上文字再归类。<br><b style="color:var(--red)">注意：GitHub Pages 页面无法直接访问百度 AI（浏览器跨域限制）。若保存 Key 时提示联网失败，请在上面「OCR 代理地址」填写你的 Cloudflare Worker 地址（部署后形如 https://yjtjy-sync.xxx.workers.dev），Worker 会安全转发请求而不暴露 Key。</b></div>'+
+    '<div class="tiny" style="margin-top:8px;line-height:1.95">你的网络连不上 Cloudflare 代理（workers.dev 超时），网页自动识别暂不可用，已停用引导。<br><b>替代方案（推荐，零部署）：</b>手机用相册长按图片「提取文字」或输入法「扫一扫」，复制文字后粘贴到「一句话速记」输入框，再点「分析归类」即可自动分配。<br>若以后更换到可访问 Cloudflare 的网络，仍可在此填 Key 恢复自动识别。</div>'+
     '</div></div>'+
     '<div class="zone"><div class="zone-h">数据与存储</div><div class="zone-b">'+
     '<div class="tiny" style="line-height:1.95">当前数据量：<b>'+dataCount()+'</b> 条<br>'+
