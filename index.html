@@ -929,7 +929,7 @@ function analyzeMemoText(raw){
   if(bp) sug.push({type:'health', panel:'bp', title:'骄阳永灿 · 血压', val:parseFloat(bp[1]), note:(bp[2]?('低压 '+bp[2]):''), desc:'记录血压 '+(bp[2]?(bp[1]+'/'+bp[2]):bp[1])+' mmHg'});
   var hr=t.match(/(?:心率|脉搏|心跳)\s*[:：]?\s*([\d.]+)/);
   if(hr) sug.push({type:'health', panel:'hr', title:'骄阳永灿 · 心率', val:parseFloat(hr[1]), desc:'记录心率 '+hr[1]+' 次/分'});
-  var w=t.match(/体重\s*[:：]?\s*([\d.]+)/);
+  var w=t.match(/(?:体重|重)\s*[:：]?\s*([\d.]+)/);
   if(w) sug.push({type:'health', panel:'weight', title:'骄阳永灿 · 体重', val:parseFloat(w[1]), desc:'记录体重 '+w[1]+' kg'});
   var sp=t.match(/(?:运动|跑步|快走|健走|骑行|游泳|瑜伽|跳操|健身)\s*[了]?\s*([\d.]+)\s*(分钟|公里|km|小时|个钟)?/);
   if(sp) sug.push({type:'health', panel:'sport', title:'骄阳永灿 · 运动', val:parseFloat(sp[1]),
@@ -949,6 +949,9 @@ function analyzeMemoText(raw){
   if(/文章|试卷|阅读|作文|佳句|素材|摘抄|议论文|记叙文|说明文|散文|诗歌|随笔|读后感|好词|好句|美文/.test(t))
     sug.push({type:'mat', title:'花团锦簇 · 素材库', text:t, desc:'存入素材库并做文体解析'});
   if(!sug.length) sug.push({type:'memo', title:'仅存为速记', text:t, desc:'未识别到明确归属，先存速记流水，稍后可手动分配'});
+  // 健康 / 进修 / 学生记录 / 待办 / 素材 / 纯速记 按优先级排序
+  var order={health:0, study:1, record:2, todo:3, mat:4, memo:5};
+  sug.sort(function(a,b){ return (order[a.type]||5)-(order[b.type]||5); });
   return sug;
 }
 function parseTodoDate(t){
@@ -1119,7 +1122,12 @@ function setVoiceBtn(listening){
 }
 function stopVoice(){
   try{ clearTimeout(VOICE._to); }catch(e){}
-  try{ if(VOICE.recog){ VOICE.recog.abort(); VOICE.recog.stop(); } }catch(e){}
+  try{
+    if(VOICE.recog){
+      try{ VOICE.recog.stop(); }catch(e){}
+      try{ VOICE.recog.abort(); }catch(e){}
+    }
+  }catch(e){}
   VOICE.recog=null; VOICE.listening=false; VOICE.final='';
   setVoiceBtn(false);
 }
@@ -1128,7 +1136,7 @@ function toggleVoice(){
   var ua=navigator.userAgent||'';
   var isHuawei=/Huawei|Honor|HarmonyOS|鸿蒙/i.test(ua);
   var isIOS=/iPhone|iPad|iPod/i.test(ua);
-  // 华为/荣耀设备内置浏览器对 Web Speech API 支持不完整且易抛 Script error，直接引导用输入法麦克风更稳
+  // 华为/荣耀/HarmonyOS/iOS 内置浏览器对 Web Speech API 支持不完整且易抛 Script error，直接引导用输入法麦克风更稳
   if(!SR || isHuawei || isIOS){
     var mi=$('memo'); if(mi){ mi.focus(); try{ mi.selectionStart=mi.value.length; mi.selectionEnd=mi.value.length; }catch(e){} }
     var tip='当前浏览器/设备不支持网页语音。请点击输入框，用输入法键盘上的「麦克风」图标说话（文字会自动进框），说完再点「分析归类」。';
@@ -1137,12 +1145,13 @@ function toggleVoice(){
     toast(tip);
     return;
   }
-  // 已经在听：强制停止（同时 abort+stop，解决平板点击无法停止）
+  // 已经在听：强制停止
   if(VOICE.listening || VOICE.recog){ stopVoice(); return; }
   try{
     var recog = new SR(); recog.lang='zh-CN'; recog.continuous=false; recog.interimResults=false;
-    VOICE.recog=recog; VOICE.final='';
-    recog.onstart=function(){ setVoiceBtn(true); };
+    VOICE.recog=recog; VOICE.final=''; VOICE.t0=Date.now();
+    setVoiceBtn(true);
+    recog.onstart=function(){ };
     recog.onresult=function(e){
       for(var i=0;i<e.results.length;i++){ if(e.results[i].isFinal) VOICE.final += e.results[i][0].transcript; }
     };
@@ -1151,17 +1160,19 @@ function toggleVoice(){
       stopVoice();
       if(err==='not-allowed') toast('麦克风权限被拒绝，请在浏览器地址栏左侧允许麦克风');
       else if(err==='network') toast('语音服务网络异常，请换网络或改用输入法语音键盘');
-      else if(err!=='no-speech'&&err!=='aborted') toast('语音识别中断：'+(err||'未知错误')+',请重试');
+      else if(err==='no-speech') toast('没识别到语音，请靠近麦克风再试一次');
+      else if(err!=='aborted') toast('语音识别中断：'+(err||'未知错误')+'，请重试');
     };
     recog.onend=function(){
       var txt=VOICE.final; stopVoice();
       var cur=$('memo')?$('memo').value.trim():'';
       if(txt && $('memo')){ $('memo').value = (cur?cur+' ':'')+txt; }
+      else if(Date.now()-(VOICE.t0||0)>1000){ toast('未识别到内容，可改用输入法麦克风'); }
     };
     recog.start();
     // 25 秒自动停止，避免一直占用
     VOICE._to = setTimeout(function(){ stopVoice(); }, 25000);
-  }catch(e){ stopVoice(); toast('无法启动语音识别：'+(e&&e.message||e)); }
+  }catch(e){ stopVoice(); toast('无法启动语音识别：'+(e&&e.message||e)+'，请改用输入法麦克风'); }
 }
 function compressImage(file, maxW, cb){
   var fr=new FileReader();
@@ -2968,7 +2979,18 @@ function refreshAll(){
   renderSun();
   renderLib();
 }
-window.onerror=function(m){ toast('出现一个小问题：'+String(m).slice(0,60)); };
+window.onerror=function(msg, src, line, col, err){
+  var txt='出现一个小问题：';
+  if(msg==='Script error.' || !msg) txt+='Script error（多为浏览器扩展/外接脚本或内联事件异常，建议换系统浏览器重试）';
+  else txt+=String(msg).slice(0,80);
+  if(line) txt+=' ['+line+(col?':'+col:'')+']';
+  toast(txt);
+  return false;
+};
+window.onunhandledrejection=function(ev){
+  var r=ev&&ev.reason;
+  toast('出现一个小问题：'+(r&&(r.message||r)||'未处理的 Promise 异常').toString().slice(0,80));
+};
 document.addEventListener('DOMContentLoaded', function(){
   load();
   var sum=null;
