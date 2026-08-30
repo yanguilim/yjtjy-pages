@@ -1157,31 +1157,56 @@ function pickFiles(accept, multiple, cb){
   el.click();
 }
 /* ---------- 百度 OCR（图片转文字） ---------- */
+function baiduOcrProxyBase(){ return (SYNC.ocrProxy||'').replace(/\/+$/, ''); }
 function baiduOcrGetToken(cb){
   if(SYNC.ocrTok && SYNC.ocrExp && Date.now()<SYNC.ocrExp){ cb(SYNC.ocrTok); return; }
   if(!SYNC.ocrAk || !SYNC.ocrSk){ cb(null,'未配置 OCR：请在设置里填写百度 API Key / Secret Key'); return; }
-  var url='https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id='+encodeURIComponent(SYNC.ocrAk)+'&client_secret='+encodeURIComponent(SYNC.ocrSk);
-  fetch(url).then(function(r){
-    if(!r.ok) throw new Error('token http '+r.status);
-    return r.json();
-  }).then(function(d){
-    if(d&&d.access_token){ SYNC.ocrTok=d.access_token; SYNC.ocrExp=Date.now()+((d.expires_in||2592000)*1000); saveSyncCfg(); cb(SYNC.ocrTok); }
-    else cb(null, (d&&d.error_description)||'获取 token 失败，请检查 API Key/Secret Key 是否填反或已过期');
-  }).catch(function(e){ cb(null,'OCR 联网失败（获取 token）：'+(e&&e.message||e)+'；可能是浏览器跨域限制或当前网络无法访问百度 AI'); });
+  var proxy = baiduOcrProxyBase();
+  if(proxy){
+    fetch(proxy+'/api/ocr-token', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ak:SYNC.ocrAk, sk:SYNC.ocrSk})
+    }).then(function(r){ return r.json(); }).then(function(d){
+      if(d&&d.access_token){ SYNC.ocrTok=d.access_token; SYNC.ocrExp=Date.now()+((d.expires_in||2592000)*1000); saveSyncCfg(); cb(SYNC.ocrTok); }
+      else cb(null, (d&&d.error_description)||(d&&d.error_msg)||'代理返回 token 失败');
+    }).catch(function(e){ cb(null,'OCR 代理请求失败（获取 token）：'+(e&&e.message||e)+'；请检查代理地址是否正确'); });
+  } else {
+    var url='https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id='+encodeURIComponent(SYNC.ocrAk)+'&client_secret='+encodeURIComponent(SYNC.ocrSk);
+    fetch(url).then(function(r){
+      if(!r.ok) throw new Error('token http '+r.status);
+      return r.json();
+    }).then(function(d){
+      if(d&&d.access_token){ SYNC.ocrTok=d.access_token; SYNC.ocrExp=Date.now()+((d.expires_in||2592000)*1000); saveSyncCfg(); cb(SYNC.ocrTok); }
+      else cb(null, (d&&d.error_description)||'获取 token 失败，请检查 API Key/Secret Key 是否填反或已过期');
+    }).catch(function(e){ cb(null,'OCR 联网失败（获取 token）：'+(e&&e.message||e)+'；可能是浏览器跨域限制，请在设置里填写 Cloudflare Worker 代理地址'); });
+  }
 }
 function baiduOcrCall(api, tok, b64, cb){
-  var body='image='+encodeURIComponent(b64)+'&language_type=CHN_ENG&detect_direction=true';
-  fetch('https://aip.baidubce.com/rest/2.0/ocr/v1/'+api+'?access_token='+tok, {
-    method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body
-  }).then(function(r){
-    if(!r.ok) throw new Error(api+' http '+r.status);
-    return r.json();
-  }).then(function(d){
-    if(d&&d.words_result&&d.words_result.length){ cb(d.words_result.map(function(x){return x.words;}).join('\n'), null); }
-    else if(d&&d.error_code==='6'||d&&d.error_msg&&/unsupported|未开通|权限/.test(d.error_msg)){ cb(null, {fallback:true, msg:d.error_msg}); }
-    else if(d&&d.error_msg){ cb(null, d.error_msg); }
-    else cb(null,'未识别到文字');
-  }).catch(function(e){ cb(null,'OCR 联网失败（'+api+'）：'+(e&&e.message||e)); });
+  var proxy = baiduOcrProxyBase();
+  if(proxy){
+    fetch(proxy+'/api/ocr', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:tok, image:b64, accurate:(api==='accurate_basic')})
+    }).then(function(r){ return r.json(); }).then(function(d){
+      if(d&&d.words_result&&d.words_result.length){ cb(d.words_result.map(function(x){return x.words;}).join('\n'), null); }
+      else if(d&&d.error_code==='6'||d&&d.error_msg&&/unsupported|未开通|权限/.test(d.error_msg)){ cb(null, {fallback:true, msg:d.error_msg}); }
+      else if(d&&d.error_msg){ cb(null, d.error_msg); }
+      else cb(null,'未识别到文字');
+    }).catch(function(e){ cb(null,'OCR 代理请求失败（'+api+'）：'+(e&&e.message||e)); });
+  } else {
+    var body='image='+encodeURIComponent(b64)+'&language_type=CHN_ENG&detect_direction=true';
+    fetch('https://aip.baidubce.com/rest/2.0/ocr/v1/'+api+'?access_token='+tok, {
+      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body
+    }).then(function(r){
+      if(!r.ok) throw new Error(api+' http '+r.status);
+      return r.json();
+    }).then(function(d){
+      if(d&&d.words_result&&d.words_result.length){ cb(d.words_result.map(function(x){return x.words;}).join('\n'), null); }
+      else if(d&&d.error_code==='6'||d&&d.error_msg&&/unsupported|未开通|权限/.test(d.error_msg)){ cb(null, {fallback:true, msg:d.error_msg}); }
+      else if(d&&d.error_msg){ cb(null, d.error_msg); }
+      else cb(null,'未识别到文字');
+    }).catch(function(e){ cb(null,'OCR 联网失败（'+api+'）：'+(e&&e.message||e)); });
+  }
 }
 function baiduOcrRecognize(base64, cb){
   baiduOcrGetToken(function(tok, err){
@@ -2824,8 +2849,9 @@ function openSettings(){
     '<div class="zone"><div class="zone-h">图片转文字 OCR（百度智能云 · 拍照/扫描自动识别）</div><div class="zone-b">'+
     '<div class="field"><label class="fl">百度 OCR API Key</label><input type="text" id="ocr-ak" placeholder="如 8aBc…123" value="'+esc(SYNC.ocrAk||'')+'"></div>'+
     '<div class="field"><label class="fl">百度 OCR Secret Key</label><input type="password" id="ocr-sk" placeholder="如 AbCd…456" value="'+esc(SYNC.ocrSk||'')+'"></div>'+
+    '<div class="field"><label class="fl">OCR 代理地址（可选）</label><input type="text" id="ocr-proxy" placeholder="如 https://yjtjy-sync.xxx.workers.dev" value="'+esc(SYNC.ocrProxy||'')+'"></div>'+
     '<button class="btn sm v" onclick="saveOcrCfg()"><svg><use href="#i-lock"/></svg>保存 OCR 配置</button>'+
-    '<div class="tiny" style="margin-top:8px;line-height:1.95">获取：登录 <b>ai.baidu.com</b> → 控制台「文字识别」→ 创建应用 → 复制 API Key / Secret Key（每日免费额度可识别数万次）。配置后，在「一句话速记」点「图片/扫描」即可自动识别图上文字再归类。<b>国内网络可用、无需翻墙。</b></div>'+
+    '<div class="tiny" style="margin-top:8px;line-height:1.95">获取：登录 <b>ai.baidu.com</b> → 控制台「文字识别」→ 创建应用 → 复制 API Key / Secret Key（每日免费额度可识别数万次）。配置后，在「一句话速记」点「图片/扫描」即可自动识别图上文字再归类。<br><b style="color:var(--red)">注意：GitHub Pages 页面无法直接访问百度 AI（浏览器跨域限制）。若保存 Key 时提示联网失败，请在上面「OCR 代理地址」填写你的 Cloudflare Worker 地址（部署后形如 https://yjtjy-sync.xxx.workers.dev），Worker 会安全转发请求而不暴露 Key。</b></div>'+
     '</div></div>'+
     '<div class="zone"><div class="zone-h">数据与存储</div><div class="zone-b">'+
     '<div class="tiny" style="line-height:1.95">当前数据量：<b>'+dataCount()+'</b> 条<br>'+
@@ -2925,7 +2951,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <script>
 /* ============ 云端同步（统一协议 Bearer Token + /api/*；多后端可一键切换/迁移） ============ */
 // 后端类型：cb 腾讯云CloudBase / cf Cloudflare / oracle Oracle Cloud / supabase Supabase / custom 自建 / bmob Bmob云 / github GitHub Gist；leancloud 仅旧兼容
-var SYNC = { backend:'cb', token:null, user:null, base:'', lcApp:'', lcKey:'', lcApi:'https://api.leancloud.cn', lcUid:'', lcObj:'', bmobApp:'', bmobKey:'', bmobUid:'', bmobObj:'', ghId:'', updatedAt:0, status:'off', pulling:false, _t:null, _iv:null, ocrAk:'', ocrSk:'', ocrTok:'', ocrExp:0 };
+var SYNC = { backend:'cb', token:null, user:null, base:'', lcApp:'', lcKey:'', lcApi:'https://api.leancloud.cn', lcUid:'', lcObj:'', bmobApp:'', bmobKey:'', bmobUid:'', bmobObj:'', ghId:'', updatedAt:0, status:'off', pulling:false, _t:null, _iv:null, ocrAk:'', ocrSk:'', ocrTok:'', ocrExp:0, ocrProxy:'' };
 
 function loadSyncCfg(){
   try{ var s=JSON.parse(localStorage.getItem('wb_yjtjy_sync')||'{}');
@@ -2933,11 +2959,11 @@ function loadSyncCfg(){
     SYNC.base=(s.base||s.cbBase||'').replace(/\/+$/,''); SYNC.lcApp=s.lcApp||''; SYNC.lcKey=s.lcKey||'';
     SYNC.lcApi=s.lcApi||'https://api.leancloud.cn'; SYNC.lcUid=s.lcUid||''; SYNC.lcObj=s.lcObj||'';
     SYNC.bmobApp=s.bmobApp||''; SYNC.bmobKey=s.bmobKey||''; SYNC.bmobUid=s.bmobUid||''; SYNC.bmobObj=s.bmobObj||''; SYNC.ghId=s.ghId||''; SYNC.updatedAt=s.updatedAt||0;
-    SYNC.ocrAk=s.ocrAk||''; SYNC.ocrSk=s.ocrSk||''; SYNC.ocrTok=s.ocrTok||''; SYNC.ocrExp=s.ocrExp||0;
+    SYNC.ocrAk=s.ocrAk||''; SYNC.ocrSk=s.ocrSk||''; SYNC.ocrTok=s.ocrTok||''; SYNC.ocrExp=s.ocrExp||0; SYNC.ocrProxy=(s.ocrProxy||'').replace(/\/+$/,'');
   }catch(e){}
 }
 function saveSyncCfg(){
-  try{ localStorage.setItem('wb_yjtjy_sync', JSON.stringify({backend:SYNC.backend,token:SYNC.token,user:SYNC.user,base:SYNC.base,lcApp:SYNC.lcApp,lcKey:SYNC.lcKey,lcApi:SYNC.lcApi,lcUid:SYNC.lcUid,lcObj:SYNC.lcObj,bmobApp:SYNC.bmobApp,bmobKey:SYNC.bmobKey,bmobUid:SYNC.bmobUid,bmobObj:SYNC.bmobObj,ghId:SYNC.ghId,updatedAt:SYNC.updatedAt,ocrAk:SYNC.ocrAk,ocrSk:SYNC.ocrSk,ocrTok:SYNC.ocrTok,ocrExp:SYNC.ocrExp})); }catch(e){}
+  try{ localStorage.setItem('wb_yjtjy_sync', JSON.stringify({backend:SYNC.backend,token:SYNC.token,user:SYNC.user,base:SYNC.base,lcApp:SYNC.lcApp,lcKey:SYNC.lcKey,lcApi:SYNC.lcApi,lcUid:SYNC.lcUid,lcObj:SYNC.lcObj,bmobApp:SYNC.bmobApp,bmobKey:SYNC.bmobKey,bmobUid:SYNC.bmobUid,bmobObj:SYNC.bmobObj,ghId:SYNC.ghId,updatedAt:SYNC.updatedAt,ocrAk:SYNC.ocrAk,ocrSk:SYNC.ocrSk,ocrTok:SYNC.ocrTok,ocrExp:SYNC.ocrExp,ocrProxy:SYNC.ocrProxy})); }catch(e){}
 }
 function syncStatusText(){ return ({off:'未同步',ing:'同步中',ok:'已同步',err:'离线'}[SYNC.status]||'未同步'); }
 function saveOcrCfg(){
@@ -2945,6 +2971,8 @@ function saveOcrCfg(){
     var ak=$('ocr-ak')?$('ocr-ak').value.trim():'';
     var sk=$('ocr-sk')?$('ocr-sk').value.trim():'';
     // 如果两个框都为空，表示要清空配置
+    var proxy=$('ocr-proxy')?$('ocr-proxy').value.trim():'';
+    SYNC.ocrProxy=proxy.replace(/\/+$/,'');
     if(!ak && !sk && $('ocr-ak') && $('ocr-sk')){
       SYNC.ocrAk=''; SYNC.ocrSk=''; SYNC.ocrTok=''; SYNC.ocrExp=0;
       saveSyncCfg(); loadSyncCfg();
@@ -2958,7 +2986,13 @@ function saveOcrCfg(){
       if(tok){
         toast('OCR 配置有效，已保存（AK 长度 '+ak.length+'）。现在可拍照识别');
       }else{
-        toast('OCR Key 验证失败：'+(err||'未知错误')+'；请检查 AK/SK 是否填反或百度应用是否已开通文字识别');
+        var hint='';
+        if(err && /跨域|CORS|Failed to fetch|NetworkError/i.test(err)){
+          hint='；失败原因是浏览器跨域限制，请在上方填一个 Cloudflare Worker 代理地址（如 https://xxx.workers.dev）';
+        } else if(err){
+          hint='；请检查 AK/SK 是否填反或百度应用是否已开通文字识别';
+        }
+        toast('OCR Key 验证失败：'+(err||'未知错误')+hint);
       }
     });
   }catch(e){
