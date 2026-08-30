@@ -484,7 +484,10 @@ var ZONES = [
 var SUNP = [
   {k:'weight',  n:'体重', unit:'kg',     icon:'i-weight', c:'#FF4D6D'},
   {k:'glucose', n:'血糖', unit:'mmol/L', icon:'i-drop',   c:'#4CC9F0'},
+  {k:'bp',      n:'血压', unit:'mmHg',   icon:'i-drop',   c:'#EF476F'},
+  {k:'hr',      n:'心率', unit:'次/分',  icon:'i-run',    c:'#7209B7'},
   {k:'sport',   n:'运动', unit:'分钟',   icon:'i-run',    c:'#06D6A0'},
+  {k:'sleep',   n:'睡眠', unit:'小时',   icon:'i-clock',  c:'#3A0CA3'},
   {k:'diet',    n:'餐饮', unit:'内容',   icon:'i-food',   c:'#FFB703'}
 ];
 
@@ -842,35 +845,44 @@ function analyzeArticle(text){
 }
 /* 速记分析：识别学生 / 栏目 / 错字 / 健康数值 / 待办 / 素材 */
 function analyzeMemoText(raw){
-  var t=String(raw||'').trim(), sug=[], i;
+  var t=String(raw||'').trim(), sug=[], i, j;
   if(!t) return sug;
+  // 学生识别
   var stu=null;
   for(i=0;i<DB.students.length;i++){ if(t.indexOf(DB.students[i].name)>=0){ stu=DB.students[i]; break; } }
+  // 栏目识别（扩展）
   var zone=null;
   if(/听写/.test(t)) zone='dictation';
   else if(/默写/.test(t)) zone='write';
   else if(/背诵|背书/.test(t)) zone='recite';
   else if(/注释|释义|解释/.test(t)) zone='annot';
-  var errs=[], m;
-  var re1=/([\u4e00-\u9fa5])字(?:写|念|读)?错/g;
-  while((m=re1.exec(t))!==null){ errs.push(m[1]); }
-  var re2=/(?:错字|错别字|写错的?字?|错的?字)(?:有|是|为|：|:)?\s*([\u4e00-\u9fa5、，,\s]+)/g;
-  while((m=re2.exec(t))!==null){
+  else if(/测验|测试|月考|单元考|考试|考卷|期中|期末|模拟考/.test(t)) zone='exam';
+  else if(/作业|练习|习题|刷题|题单/.test(t)) zone='homework';
+  // 错字提取（多种表述）
+  var errs=[];
+  function pushErr(c){ c=String(c||'').trim(); if(c && c.length<=4 && !/写|错|字|成|了|把|将|的|有|是|为|：|:|，|,|、/.test(c)) errs.push(c); }
+  var m;
+  var reA=/([\u4e00-\u9fa5])\s*字?(?:写错|不会写|写不来|记错|默错|念错)/g;
+  while((m=reA.exec(t))!==null){ pushErr(m[1]); }
+  var reB=/(?:把|将)?\s*([\u4e00-\u9fa5])\s*(?:写成了|写成|误写为|写为了)\s*([\u4e00-\u9fa5])/g;
+  while((m=reB.exec(t))!==null){ pushErr(m[2]); }
+  var reC=/(?:错字|错别字|写错的?字?|错的?字|不会写的字)(?:有|是|为|：|:|，|,)?\s*([\u4e00-\u9fa5、，,\s]+?)(?:[。\n]|$)/g;
+  while((m=reC.exec(t))!==null){
     var parts=m[1].split(/[、，,\s]+/);
-    for(i=0;i<parts.length;i++){ var p=parts[i].trim(); if(p && p.length<=4 && !/写|错|字|有|的/.test(p)) errs.push(p); }
+    for(j=0;j<parts.length;j++) pushErr(parts[j]);
   }
-  var re3=/([\u4e00-\u9fa5]{1,3})\s*字?\s*(?:写|默)错/g;
-  while((m=re3.exec(t))!==null){ if(m[1].length<=2) errs.push(m[1]); }
   var uq={}, ue=[];
-  for(i=0;i<errs.length;i++){ var e=errs[i].trim(); if(e&&!uq[e]){ uq[e]=1; ue.push(e); } }
+  for(i=0;i<errs.length;i++){ var e=errs[i]; if(e&&!uq[e]){ uq[e]=1; ue.push(e); } }
+  // 内容提取
   var content='';
   var cm = t.match(/《([^》]+)》/) || t.match(/[“"]([^”"]{2,20})[”"]/);
   if(cm) content = cm[1];
   if(!content){
-    var kw = t.match(/(?:听写|默写|背诵|注释)\s*[了]?\s*([\u4e00-\u9fa5]{2,12})/);
-    if(kw) content = kw[1].replace(/(的|时|中|里|错|字)$/,'');
+    var kw = t.match(/(?:听写|默写|背诵|注释|测试|测验|月考|单元考|考试|作业|练习)\s*[了]?\s*([\u4e00-\u9fa5]{2,12})/);
+    if(kw) content = kw[1].replace(/(的|时|中|里|错|字|卷|次|第|一|二|三|四|五|六|七|八|九|十)$/,'');
   }
   if(!content && ue.length) content = ue.join('、');
+  // 学生听写/栏目记录
   if(stu && zone){
     sug.push({type:'record', title:stu.name+' · '+zoneName(zone), studentId:stu.id, zone:zone,
       content:content||t.slice(0,30), errs:ue,
@@ -879,23 +891,49 @@ function analyzeMemoText(raw){
     sug.push({type:'record', title:stu.name+' · 听写（默认栏目，可改）', studentId:stu.id, zone:'dictation',
       content:content||ue.join('、'), errs:ue, desc:'未指明栏目，默认归入听写；错字：'+ue.join('、')});
   }
+  // 健康数值（扩展）
   var g=t.match(/血糖\s*[:：]?\s*([\d.]+)/);
   if(g) sug.push({type:'health', panel:'glucose', title:'骄阳永灿 · 血糖', val:parseFloat(g[1]), desc:'记录血糖 '+g[1]+' mmol/L'});
+  var bp=t.match(/血压\s*[:：]?\s*([\d.]+)\s*(?:\/|到|至|-|~)?\s*([\d.]+)?/);
+  if(bp) sug.push({type:'health', panel:'bp', title:'骄阳永灿 · 血压', val:parseFloat(bp[1]), note:(bp[2]?('低压 '+bp[2]):''), desc:'记录血压 '+(bp[2]?(bp[1]+'/'+bp[2]):bp[1])+' mmHg'});
+  var hr=t.match(/(?:心率|脉搏|心跳)\s*[:：]?\s*([\d.]+)/);
+  if(hr) sug.push({type:'health', panel:'hr', title:'骄阳永灿 · 心率', val:parseFloat(hr[1]), desc:'记录心率 '+hr[1]+' 次/分'});
   var w=t.match(/体重\s*[:：]?\s*([\d.]+)/);
   if(w) sug.push({type:'health', panel:'weight', title:'骄阳永灿 · 体重', val:parseFloat(w[1]), desc:'记录体重 '+w[1]+' kg'});
-  var sp=t.match(/(?:运动|跑步|快走|健走|骑行|游泳|瑜伽)\s*[了]?\s*([\d.]+)\s*(分钟|公里|km|小时)?/);
+  var sp=t.match(/(?:运动|跑步|快走|健走|骑行|游泳|瑜伽|跳操|健身)\s*[了]?\s*([\d.]+)\s*(分钟|公里|km|小时|个钟)?/);
   if(sp) sug.push({type:'health', panel:'sport', title:'骄阳永灿 · 运动', val:parseFloat(sp[1]),
     note:(sp[0]||'').replace(/[\d.]+.*$/,'')+(sp[2]||'分钟'), desc:'记录运动 '+sp[1]+' '+(sp[2]||'分钟')});
-  if(/早餐|午餐|晚餐|吃了|加餐|饮食/.test(t)) sug.push({type:'health', panel:'diet', title:'骄阳永灿 · 餐饮', val:t.slice(0,40), desc:'记入餐饮记录'});
-  if(/学习|进修|听课|读了|看完|课程/.test(t) && DB.study.projects.length)
+  var sl=t.match(/睡眠\s*[:：]?\s*([\d.]+)\s*(小时|h|个钟)?/);
+  if(sl) sug.push({type:'health', panel:'sleep', title:'骄阳永灿 · 睡眠', val:parseFloat(sl[1]), note:(sl[2]||'小时'), desc:'记录睡眠 '+sl[1]+' 小时'});
+  if(/早餐|午餐|晚餐|吃了|加餐|饮食|喝|吃饭/.test(t)) sug.push({type:'health', panel:'diet', title:'骄阳永灿 · 餐饮', val:t.slice(0,40), desc:'记入餐饮记录'});
+  // 进修
+  if(/学习|进修|听课|读了|看完|课程|培训|笔记|学了/.test(t) && DB.study.projects.length)
     sug.push({type:'study', title:'骄阳永灿 · 进修（'+DB.study.projects[0].name+'）', projectId:DB.study.projects[0].id, result:t.slice(0,60), desc:'记入进修成果'});
-  if(/记得|提醒|明天|待办|要交|截止|别忘/.test(t))
-    sug.push({type:'todo', title:'仪表盘 · 待办事项', text:t.slice(0,40), desc:'新增一条待办（默认今天）'});
-  if(/文章|试卷|阅读|作文|佳句|素材|摘抄/.test(t))
+  // 待办（含日期解析）
+  if(/记得|提醒|明天|后天|大后天|下周|待办|要交|截止|别忘|周[一二三四五六日天]|[\d]{1,2}月[\d]{1,2}[日号]/.test(t)){
+    var td=parseTodoDate(t);
+    sug.push({type:'todo', title:'仪表盘 · 待办事项', text:t.slice(0,40), date:td?fmtDate(td):todayStr(), desc:'新增待办'+(td?('，目标日 '+fmtDate(td)):'（默认今天）')});
+  }
+  // 素材/文章（扩展）
+  if(/文章|试卷|阅读|作文|佳句|素材|摘抄|议论文|记叙文|说明文|散文|诗歌|随笔|读后感|好词|好句|美文/.test(t))
     sug.push({type:'mat', title:'花团锦簇 · 素材库', text:t, desc:'存入素材库并做文体解析'});
   if(!sug.length) sug.push({type:'memo', title:'仅存为速记', text:t, desc:'未识别到明确归属，先存速记流水，稍后可手动分配'});
   return sug;
 }
+function parseTodoDate(t){
+  var d=new Date(); d.setHours(0,0,0,0);
+  var mm=t.match(/(\d{1,2})月(\d{1,2})[日号]?/);
+  if(mm){ var y=d.getFullYear(), mo=parseInt(mm[1],10), da=parseInt(mm[2],10);
+    if(mo>=1&&mo<=12&&da>=1&&da<=31){ if(mo<(d.getMonth()+1)||(mo===d.getMonth()+1&&da<d.getDate())) y++; return new Date(y,mo-1,da); } }
+  var wd=t.match(/(周|星期)(一|二|三|四|五|六|日|天)/);
+  if(wd){ var wmap={'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'日':0,'天':0}; var tw=wmap[wd[2]]; var diff=(tw-d.getDay()+7)%7; if(diff===0) diff=7; var nd=new Date(d); nd.setDate(d.getDate()+diff); return nd; }
+  if(/明天/.test(t)){ var n1=new Date(d); n1.setDate(d.getDate()+1); return n1; }
+  if(/后天/.test(t)){ var n2=new Date(d); n2.setDate(d.getDate()+2); return n2; }
+  if(/大后天/.test(t)){ var n3=new Date(d); n3.setDate(d.getDate()+3); return n3; }
+  if(/下周/.test(t)){ var n4=new Date(d); n4.setDate(d.getDate()+7); return n4; }
+  return null;
+}
+function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 
 /* =======================================================================
    月度自动总结（每月 25 日）：红字<20 加小红花，>80 姓名变蓝
@@ -1041,22 +1079,35 @@ function jumpTo(type, id){
   }
 }
 /* ---------- 一句话速记 ---------- */
-var recog=null, recogOn=false;
+var recog=null, recogOn=false, recogFinal='';
 function toggleVoice(){
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ toast('当前浏览器不支持语音输入，建议用 Chrome / Edge，或直接打字'); return; }
+  if(!SR){
+    // 移动端/华为浏览器不支持时：引导用输入法自带语音键盘，并聚焦输入框方便直接说话转文字
+    var mi=$('memo'); if(mi) mi.focus();
+    toast('当前浏览器不支持网页语音。请用输入法键盘上的麦克风图标语音转文字（华为可用搜狗/百度输入法麦克风），说完后文字会自动进框，再点「分析归类」');
+    return;
+  }
   var btn=$('mic-btn');
-  if(recogOn && recog){ recog.stop(); return; }
-  recog = new SR(); recog.lang='zh-CN'; recog.continuous=true; recog.interimResults=true;
-  var base = $('memo').value;
+  if(recogOn && recog){ try{ recog.stop(); }catch(e){} return; }
+  recog = new SR(); recog.lang='zh-CN'; recog.continuous=false; recog.interimResults=false; // 短句模式，避免长连接卡顿与逐字刷屏
+  recogFinal='';
   recog.onstart=function(){ recogOn=true; if(btn){ btn.classList.add('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>正在聆听…点此结束'; } };
   recog.onresult=function(e){
-    var txt='';
-    for(var i=0;i<e.results.length;i++){ txt += e.results[i][0].transcript; }
-    $('memo').value = (base?base+' ':'')+txt;
+    for(var i=0;i<e.results.length;i++){ if(e.results[i].isFinal) recogFinal += e.results[i][0].transcript; }
   };
-  recog.onerror=function(){ toast('语音识别中断，请检查麦克风权限'); };
-  recog.onend=function(){ recogOn=false; if(btn){ btn.classList.remove('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>语音输入'; } };
+  recog.onerror=function(ev){
+    recogOn=false; if(btn){ btn.classList.remove('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>语音输入'; }
+    var err=ev&&ev.error;
+    if(err==='not-allowed') toast('麦克风权限被拒绝，请在浏览器地址栏左侧允许麦克风');
+    else if(err==='network') toast('语音服务网络异常，请换网络或改用输入法语音键盘');
+    else if(err!=='no-speech'&&err!=='aborted') toast('语音识别中断，请重试');
+  };
+  recog.onend=function(){
+    recogOn=false; if(btn){ btn.classList.remove('p'); btn.innerHTML='<svg><use href="#i-mic"/></svg>语音输入'; }
+    var cur=$('memo').value.trim();
+    if(recogFinal){ $('memo').value = (cur?cur+' ':'')+recogFinal; recogFinal=''; }
+  };
   try{ recog.start(); }catch(e){ toast('无法启动语音识别'); }
 }
 function compressImage(file, maxW, cb){
@@ -1082,17 +1133,68 @@ function pickFiles(accept, multiple, cb){
   el.onchange=function(){ var fs=el.files; if(fs&&fs.length) cb(fs); };
   el.click();
 }
+/* ---------- 百度 OCR（图片转文字） ---------- */
+function baiduOcrGetToken(cb){
+  if(SYNC.ocrTok && SYNC.ocrExp && Date.now()<SYNC.ocrExp){ cb(SYNC.ocrTok); return; }
+  if(!SYNC.ocrAk || !SYNC.ocrSk){ cb(null); return; }
+  var url='https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id='+encodeURIComponent(SYNC.ocrAk)+'&client_secret='+encodeURIComponent(SYNC.ocrSk);
+  fetch(url).then(function(r){return r.json();}).then(function(d){
+    if(d&&d.access_token){ SYNC.ocrTok=d.access_token; SYNC.ocrExp=Date.now()+((d.expires_in||2592000)*1000); saveSyncCfg(); cb(SYNC.ocrTok); }
+    else cb(null);
+  }).catch(function(){ cb(null); });
+}
+function baiduOcrRecognize(base64, cb){
+  baiduOcrGetToken(function(tok){
+    if(!tok){ cb(null,'未配置百度 OCR（设置里填 API Key/Secret）'); return; }
+    var b64=(base64.split(',')[1]||base64);
+    var body='image='+encodeURIComponent(b64)+'&language_type=CHN_ENG';
+    fetch('https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic?access_token='+tok, {
+      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d&&d.words_result&&d.words_result.length){ cb(d.words_result.map(function(x){return x.words;}).join('\n'), null); }
+      else if(d&&d.error_msg){ cb(null, d.error_msg); }
+      else cb(null,'未识别到文字');
+    }).catch(function(e){ cb(null,'OCR 网络错误：'+(e&&e.message||e)); });
+  });
+}
 function pickMemoImage(){
   pickFiles('image/*', true, function(fs){
     var n=Math.min(fs.length, 9-UI.memoImgs.length);
     if(n<=0){ toast('最多 9 张图片'); return; }
-    var done=0;
+    var done=0, ocrTexts=[];
+    var useOcr = !!(SYNC.ocrAk && SYNC.ocrSk);
+    if(useOcr) toast('正在 OCR 识别图片文字…');
     for(var i=0;i<n;i++){
-      compressImage(fs[i], 800, function(data){
-        if(data) UI.memoImgs.push(data);
-        done++;
-        if(done===n){ renderMemoImgs(); toast('图片已附加。提示：本地方案不含联网 OCR，请把图上文字念出来或打字补录，系统会自动归类'); }
-      });
+      (function(file){
+        compressImage(file, 1200, function(data){
+          if(data){
+            UI.memoImgs.push(data);
+            if(useOcr){
+              baiduOcrRecognize(data, function(txt, err){
+                if(txt) ocrTexts.push(txt);
+                done++;
+                if(done===n){
+                  renderMemoImgs();
+                  if(ocrTexts.length){
+                    var merged=ocrTexts.join('\n');
+                    var cur=$('memo').value.trim();
+                    $('memo').value = (cur?cur+'\n':'')+merged;
+                    toast('OCR 完成，文字已填入，点「分析归类」自动分配');
+                  } else {
+                    toast(err||'OCR 未识别到文字，可手动补录或重新拍照');
+                  }
+                }
+              });
+            } else {
+              done++;
+              if(done===n){ renderMemoImgs(); toast('图片已附加。提示：未配置 OCR，请在设置填百度 API Key，或把图上文字念出来/打字补录'); }
+            }
+          } else {
+            done++;
+            if(done===n) renderMemoImgs();
+          }
+        });
+      })(fs[i]);
     }
   });
 }
@@ -1145,7 +1247,7 @@ function applySuggestion(i){
       t:pad(d.getHours())+':'+pad(d.getMinutes()),hours:0,result:s.result,questions:[],links:[],at:nowStr()});
     toast('已记入进修');
   }
-  else if(s.type==='todo'){ DB.todos.push({id:uid(),text:s.text,date:todayStr(),done:false,createdAt:nowStr()}); toast('已加入待办'); }
+  else if(s.type==='todo'){ DB.todos.push({id:uid(),text:s.text,date:s.date||todayStr(),done:false,createdAt:nowStr()}); toast('已加入待办'+(s.date?('（目标 '+s.date+'）'):'')); }
   else if(s.type==='mat'){
     var pid = DB.lib.work.projects.length?DB.lib.work.projects[0].id:null;
     var an = analyzeArticle(s.text);
@@ -1898,7 +2000,7 @@ function saveHealthForm(k){
   addHealthRecord(k, (k==='diet'? v : parseFloat(v)), note, {ds:ds, t:t});
 }
 function addHealthRecord(k, val, note, when){
-  var arr=DB.health[k]; if(!arr) return;
+  var arr=DB.health[k]; if(!arr){ DB.health[k]=[]; arr=DB.health[k]; }
   var ds=(when&&when.ds)||todayStr(), t=(when&&when.t)||nowStr().split(' ')[1];
   var p=ds.split('-'), prev=arr.length?arr[arr.length-1]:null;
   arr.push({id:uid(), y:+p[0], m:+p[1], d:+p[2], t:t, val:val, note:note||'', at:nowStr()});
@@ -2672,6 +2774,12 @@ function openSettings(){
     '部署模板与步骤见《备选服务器部署》文档。</div></div>'+
     '</div></div>'+
 
+    '<div class="zone"><div class="zone-h">图片转文字 OCR（百度智能云 · 拍照/扫描自动识别）</div><div class="zone-b">'+
+    '<div class="field"><label class="fl">百度 OCR API Key</label><input type="text" id="ocr-ak" placeholder="如 8aBc…123" value="'+esc(SYNC.ocrAk||'')+'"></div>'+
+    '<div class="field"><label class="fl">百度 OCR Secret Key</label><input type="password" id="ocr-sk" placeholder="如 AbCd…456" value="'+esc(SYNC.ocrSk||'')+'"></div>'+
+    '<button class="btn sm v" onclick="saveOcrCfg()"><svg><use href="#i-lock"/></svg>保存 OCR 配置</button>'+
+    '<div class="tiny" style="margin-top:8px;line-height:1.95">获取：登录 <b>ai.baidu.com</b> → 控制台「文字识别」→ 创建应用 → 复制 API Key / Secret Key（每日免费额度可识别数万次）。配置后，在「一句话速记」点「图片/扫描」即可自动识别图上文字再归类。<b>国内网络可用、无需翻墙。</b></div>'+
+    '</div></div>'+
     '<div class="zone"><div class="zone-h">数据与存储</div><div class="zone-b">'+
     '<div class="tiny" style="line-height:1.95">当前数据量：<b>'+dataCount()+'</b> 条<br>'+
     '存储位置：云端（Bmob / GitHub Gist / 腾讯云 CloudBase / Cloudflare D1 / LeanCloud），本机仅留离线缓存（localStorage，键名 '+KEY+'）<br>'+
@@ -2770,7 +2878,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <script>
 /* ============ 云端同步（统一协议 Bearer Token + /api/*；多后端可一键切换/迁移） ============ */
 // 后端类型：cb 腾讯云CloudBase / cf Cloudflare / oracle Oracle Cloud / supabase Supabase / custom 自建 / bmob Bmob云 / github GitHub Gist；leancloud 仅旧兼容
-var SYNC = { backend:'cb', token:null, user:null, base:'', lcApp:'', lcKey:'', lcApi:'https://api.leancloud.cn', lcUid:'', lcObj:'', bmobApp:'', bmobKey:'', bmobUid:'', bmobObj:'', ghId:'', updatedAt:0, status:'off', pulling:false, _t:null, _iv:null };
+var SYNC = { backend:'cb', token:null, user:null, base:'', lcApp:'', lcKey:'', lcApi:'https://api.leancloud.cn', lcUid:'', lcObj:'', bmobApp:'', bmobKey:'', bmobUid:'', bmobObj:'', ghId:'', updatedAt:0, status:'off', pulling:false, _t:null, _iv:null, ocrAk:'', ocrSk:'', ocrTok:'', ocrExp:0 };
 
 function loadSyncCfg(){
   try{ var s=JSON.parse(localStorage.getItem('wb_yjtjy_sync')||'{}');
@@ -2778,12 +2886,20 @@ function loadSyncCfg(){
     SYNC.base=(s.base||s.cbBase||'').replace(/\/+$/,''); SYNC.lcApp=s.lcApp||''; SYNC.lcKey=s.lcKey||'';
     SYNC.lcApi=s.lcApi||'https://api.leancloud.cn'; SYNC.lcUid=s.lcUid||''; SYNC.lcObj=s.lcObj||'';
     SYNC.bmobApp=s.bmobApp||''; SYNC.bmobKey=s.bmobKey||''; SYNC.bmobUid=s.bmobUid||''; SYNC.bmobObj=s.bmobObj||''; SYNC.ghId=s.ghId||''; SYNC.updatedAt=s.updatedAt||0;
+    SYNC.ocrAk=s.ocrAk||''; SYNC.ocrSk=s.ocrSk||''; SYNC.ocrTok=s.ocrTok||''; SYNC.ocrExp=s.ocrExp||0;
   }catch(e){}
 }
 function saveSyncCfg(){
-  try{ localStorage.setItem('wb_yjtjy_sync', JSON.stringify({backend:SYNC.backend,token:SYNC.token,user:SYNC.user,base:SYNC.base,lcApp:SYNC.lcApp,lcKey:SYNC.lcKey,lcApi:SYNC.lcApi,lcUid:SYNC.lcUid,lcObj:SYNC.lcObj,bmobApp:SYNC.bmobApp,bmobKey:SYNC.bmobKey,bmobUid:SYNC.bmobUid,bmobObj:SYNC.bmobObj,ghId:SYNC.ghId,updatedAt:SYNC.updatedAt})); }catch(e){}
+  try{ localStorage.setItem('wb_yjtjy_sync', JSON.stringify({backend:SYNC.backend,token:SYNC.token,user:SYNC.user,base:SYNC.base,lcApp:SYNC.lcApp,lcKey:SYNC.lcKey,lcApi:SYNC.lcApi,lcUid:SYNC.lcUid,lcObj:SYNC.lcObj,bmobApp:SYNC.bmobApp,bmobKey:SYNC.bmobKey,bmobUid:SYNC.bmobUid,bmobObj:SYNC.bmobObj,ghId:SYNC.ghId,updatedAt:SYNC.updatedAt,ocrAk:SYNC.ocrAk,ocrSk:SYNC.ocrSk,ocrTok:SYNC.ocrTok,ocrExp:SYNC.ocrExp})); }catch(e){}
 }
 function syncStatusText(){ return ({off:'未同步',ing:'同步中',ok:'已同步',err:'离线'}[SYNC.status]||'未同步'); }
+function saveOcrCfg(){
+  SYNC.ocrAk=($('ocr-ak')?$('ocr-ak').value.trim():SYNC.ocrAk)||SYNC.ocrAk;
+  SYNC.ocrSk=($('ocr-sk')?$('ocr-sk').value.trim():SYNC.ocrSk)||SYNC.ocrSk;
+  SYNC.ocrTok=''; SYNC.ocrExp=0; // 重置旧 token，下次 OCR 重新换取
+  saveSyncCfg();
+  toast((SYNC.ocrAk&&SYNC.ocrSk)?'OCR 配置已保存，可拍照识别':'已清空 OCR 配置');
+}
 function syncBackendName(){ return ({cb:'腾讯云CloudBase',cf:'Cloudflare',oracle:'Oracle Cloud',supabase:'Supabase',custom:'自建服务器',bmob:'Bmob 云',github:'GitHub Gist',leancloud:'LeanCloud'}[SYNC.backend]||SYNC.backend); }
 function setSyncStatus(st){ SYNC.status=st; var dot=document.getElementById('sync-dot'), t=document.getElementById('sync-txt'); if(dot) dot.className='dot sync-'+st; if(t) t.textContent=syncStatusText(); }
 
