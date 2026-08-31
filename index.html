@@ -436,6 +436,7 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
             <button class="btn sm danger" onclick="clearZone('students')"><svg><use href="#i-trash"/></svg>清空</button>
           </span></div>
         <div class="tiny" style="margin-bottom:9px" id="path-rule-tip">规则：每月 25 日自动总结 · 红字加小红花 / 超阈值姓名显示蓝色（阈值可在「设置 → 小红花奖励标准」调整）</div>
+        <div id="stu-filter" class="tiny" style="margin-bottom:8px;display:none"></div>
         <div id="stu-print"><div class="stu-grid" id="stu-list"></div></div>
       </div>
     </div>
@@ -500,7 +501,7 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
 'use strict';
 var KEY = 'wb_yjtjy_v1';
 var DB = null;
-var UI = { module:'dash', stuId:null, sunPanel:null, lib:'work', libProject:'all', sunUnlocked:false, memoImgs:[], pendingAnalysis:null };
+var UI = { module:'dash', stuId:null, clsFilter:'', sunPanel:null, lib:'work', libProject:'all', sunUnlocked:false, memoImgs:[], pendingAnalysis:null };
 var ZONES = [
   {k:'dictation', n:'听写', c:'var(--dop-rose)'},
   {k:'recite',    n:'背诵', c:'var(--dop-amber)'},
@@ -1426,14 +1427,16 @@ function renderPath(){
 function renderClsBar(){
   var box=$('cls-bar'); if(!box) return;
   var h='';
-  if(!DB.classes.length) h='<span class="muted">还没有班级，点「新增班级」创建。</span>';
+  if(!DB.classes.length) h='<span class="muted">还没有班级，点「新增班级」创建。点班级标签可筛选下方学生名单。</span>';
   for(var i=0;i<DB.classes.length;i++){ var c=DB.classes[i];
     var n=0; for(var j=0;j<DB.students.length;j++){ if(DB.students[j].classId===c.id) n++; }
-    h += '<span class="tag mint" style="padding:7px 12px;font-size:13px">'+
+    var act=(UI.clsFilter===c.id)?' style="outline:2px solid var(--m2);outline-offset:1px"':'';
+    h += '<span class="tag mint"'+act+' style="padding:7px 12px;font-size:13px;cursor:pointer" onclick="filterClass(\''+c.id+'\')" title="点击筛选该班学生并跳转">'+
       '<svg width="13" height="13"><use href="#i-book"/></svg>'+esc(c.name)+' · '+n+' 人'+
-      '<button class="btn sm" style="min-height:22px;padding:0 6px;margin-left:5px;border:0" onclick="renameClass(\''+c.id+'\')" title="改名"><svg><use href="#i-edit"/></svg></button>'+
-      '<button class="btn sm danger" style="min-height:22px;padding:0 6px;border:0" onclick="delClass(\''+c.id+'\')" title="删除班级"><svg><use href="#i-minus"/></svg></button></span>';
+      '<button class="btn sm" style="min-height:22px;padding:0 6px;margin-left:5px;border:0" onclick="event.stopPropagation();renameClass(\''+c.id+'\')" title="改名"><svg><use href="#i-edit"/></svg></button>'+
+      '<button class="btn sm danger" style="min-height:22px;padding:0 6px;border:0" onclick="event.stopPropagation();delClass(\''+c.id+'\')" title="删除班级"><svg><use href="#i-minus"/></svg></button></span>';
   }
+  if(UI.clsFilter){ h += '<span class="tag" style="cursor:pointer;padding:7px 12px;font-size:13px" onclick="filterClass(\'\')" title="取消筛选、显示全部">✕ 全部学生</span>'; }
   box.innerHTML=h;
 }
 function addClass(){ askPrompt('新增班级','班级名称','', function(v){
@@ -1479,25 +1482,35 @@ function delStudent(id){
 }
 function openStu(id){ UI.stuId=id; switchModule('path'); }
 function closeStu(){ UI.stuId=null; renderPath(); window.scrollTo(0,0); }
+function filterClass(id){
+  UI.stuId=null; UI.clsFilter = id||'';
+  refreshAll();
+  var el=document.getElementById('stu-print');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
 function renderStuList(){
   var box=$('stu-list'); if(!box) return;
-  if(!DB.students.length){ box.innerHTML='<div class="empty">还没有学生，点「添加学生」或「导入」。</div>'; return; }
-  var groups={}, i;
-  for(var i=0;i<DB.students.length;i++){ var s=DB.students[i], k=s.classId||'';
-    if(!groups[k]) groups[k]=[]; groups[k].push(s); }
-  var h='', order=DB.classes.map(function(c){ return c.id; });
-  if(groups['']) order.push('');
-  for(var gi=0; gi<order.length; gi++){
-    var cid=order[gi], arr=groups[cid]; if(!arr||!arr.length) continue;
-    h += '<div style="grid-column:1/-1;margin:6px 0 2px;font-weight:800;font-family:var(--fs);letter-spacing:2px;font-size:15px">'+
-         '<svg width="15" height="15" style="color:var(--m2)"><use href="#i-book"/></svg> '+esc(cid?clsName(cid):'未分班')+'</div>';
-    for(var i=0;i<arr.length;i++){ var st=arr[i], n=errCount(st.id), fl=st.flowers||0;
-      var _fr=DB.flowerRules||{}, _me=_fr.monthlyErr!=null?_fr.monthlyErr:20, _wc=_fr.warnCount!=null?_fr.warnCount:80;
-      h += '<button class="stu'+(n>_wc?' warn':'')+'" onclick="openStu(\''+st.id+'\')">'+
-        '<span class="nm">'+esc(st.name)+(fl>0?flowerSvg(18):'')+(fl>1?('<span class="tiny">×'+fl+'</span>'):'')+'</span>'+
-        '<span class="mt">红字 '+n+' 个 · '+(n<_me?'优等':(n>_wc?'需重点辅导':'正常'))+'</span>'+
-        '<span class="mt">'+esc(st.note||clsName(st.classId))+'</span></button>';
-    }
+  var fb=$('stu-filter');
+  if(UI.clsFilter){
+    var cn=clsName(UI.clsFilter);
+    if(fb) fb.innerHTML='正在查看班级：<b style="color:var(--m2)">'+esc(cn)+'</b> <button class="btn sm" style="margin-left:6px" onclick="filterClass(\'\')">✕ 显示全部</button>';
+    if(fb) fb.style.display='';
+  } else if(fb){ fb.innerHTML=''; fb.style.display='none'; }
+  var list=DB.students.filter(function(s){ return !UI.clsFilter || s.classId===UI.clsFilter; });
+  if(!list.length){ box.innerHTML='<div class="empty">'+(UI.clsFilter?'该班级还没有学生，点「添加学生」并选择此班级即可加入。':'还没有学生，点「添加学生」或「导入」。')+'</div>'; return; }
+  var order={}; for(var oi=0;oi<DB.classes.length;oi++) order[DB.classes[oi].id]=oi;
+  list.sort(function(a,b){
+    var ka=(order[a.classId]!=null?order[a.classId]:999), kb=(order[b.classId]!=null?order[b.classId]:999);
+    if(ka!==kb) return ka-kb;
+    return (a.name||'').localeCompare(b.name||'','zh');
+  });
+  var h='';
+  for(var i=0;i<list.length;i++){ var st=list[i], n=errCount(st.id), fl=st.flowers||0;
+    var _fr=DB.flowerRules||{}, _me=_fr.monthlyErr!=null?_fr.monthlyErr:20, _wc=_fr.warnCount!=null?_fr.warnCount:80;
+    h += '<button class="stu'+(n>_wc?' warn':'')+'" onclick="openStu(\''+st.id+'\')">'+
+      '<span class="nm">'+esc(st.name)+(fl>0?flowerSvg(18):'')+(fl>1?('<span class="tiny">×'+fl+'</span>'):'')+'</span>'+
+      '<span class="mt">红字 '+n+' 个 · '+(n<_me?'优等':(n>_wc?'需重点辅导':'正常'))+'</span>'+
+      '<span class="mt">'+esc(st.note||clsName(st.classId))+'</span></button>';
   }
   box.innerHTML=h;
 }
@@ -1907,7 +1920,7 @@ function importStudentsFile(){
 function clearZone(what){
   var map={ students:'学生名单（含全部展示台记录与阅读错题）', todos:'待办事项', memos:'速记流水' };
   askConfirm('一键清空','确定清空 <b>'+map[what]+'</b>？点击确定即刻删除相关数据，不可恢复。', function(){
-    if(what==='students'){ DB.students=[]; DB.records=[]; DB.reading=[]; UI.stuId=null; }
+    if(what==='students'){ DB.students=[]; DB.records=[]; DB.reading=[]; UI.stuId=null; UI.clsFilter=''; }
     if(what==='todos') DB.todos=[];
     if(what==='memos') DB.memos=[];
     save(); refreshAll(); toast('已清空');
