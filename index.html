@@ -308,7 +308,8 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
 <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></symbol>
     <symbol id="i-sync" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-5.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14 5.5L20 16"/><path d="M20 20v-4h-4"/></symbol>
     <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></symbol>
-</defs></svg>
+    <symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-9 7-14 14-14 0 9-7 14-14 14z"/><path d="M5 19c4-4 8-6 12-7"/></symbol>
+  </defs></svg>
 
 <header class="topbar">
   <div class="topbar-in">
@@ -405,6 +406,12 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
         </div>
         <div id="gs-res" style="margin-top:12px"></div>
       </div>
+    </div>
+
+    <div class="card" id="growth-card">
+      <div class="card-h"><svg width="19" height="19" style="color:#2A9D8F"><use href="#i-leaf"/></svg><h2>积分养成 · 班级绿植</h2>
+        <span class="right"><span class="tiny">用小红花浇灌，植物逐级成长（种子→开花）</span></span></div>
+      <div id="growth-body"></div>
     </div>
   </section>
 
@@ -607,7 +614,9 @@ function blankDB(){
     health:{ weight:[], glucose:[], bp:[], hr:[], sport:[], sleep:[], diet:[] },
     study:{ projects:[], items:[] },
     lib:{ work:{projects:[]}, study:{projects:[]}, mats:[] },
-    flowers:{ total:0, log:[] }
+    flowers:{ total:0, log:[] },
+    flowerRules:{ glucoseLow:5, glucoseHighEq:6, glucoseHigh:7.5, weightReward:true, monthlyErr:20 },
+    growth:{ exp:0, level:0, watered:0, log:[] }
   };
 }
 var STUDY_COLORS=['#FFB703','#06A77D','#FF6B35','#9D4EDD','#2A9D8F','#E76F51','#457B9D','#F4A261','#E07A5F','#3D5A80'];
@@ -635,6 +644,8 @@ function load(){
   if(!DB.lib.study) DB.lib.study={projects:[]};
   DB.study.projects.forEach(function(p,i){ if(!p.color) p.color=STUDY_COLORS[i%STUDY_COLORS.length]; });
   if(!DB.flowers) DB.flowers=b.flowers;
+  if(!DB.flowerRules) DB.flowerRules=b.flowerRules;
+  if(!DB.growth) DB.growth=b.growth;
   if(!DB.security||!DB.security.pin) DB.security=b.security;
   DB.meta.lastOpen = nowStr();
 }
@@ -1004,7 +1015,7 @@ function runMonthlySummary(force){
   var good=[], warn=[], i;
   for(var i=0;i<DB.students.length;i++){
     var s=DB.students[i], n=errCount(s.id);
-    if(n<20){ s.flowers=(s.flowers||0)+1; good.push(s.name+'（'+n+'）'); }
+    if(n < (DB.flowerRules.monthlyErr||20)){ s.flowers=(s.flowers||0)+1; good.push(s.name+'（'+n+'）'); }
     if(n>80) warn.push(s.name+'（'+n+'）');
   }
   DB.meta.summaryMonth=mk; save();
@@ -2160,10 +2171,11 @@ function openHealthForm(k){
     (p.unit==='内容'? '<textarea id="hf-val" placeholder="例：杂粮饭+清蒸鱼+时蔬，七分饱"></textarea>'
                     : '<input type="number" step="0.01" inputmode="decimal" id="hf-val" placeholder="例：'+(k==='glucose'?'5.6':(k==='weight'?'62.5':'40'))+'">')+'</div>'+
     '<div class="field"><label class="fl">备注</label><input type="text" id="hf-note" placeholder="选填，如：空腹 / 快走4公里"></div>'+
-    (k==='glucose'?'<div class="tiny">规则：下降且落在 5–6 → 放烟花 + 加小红花；超过 7.5 → 扣花并整页标红提醒。</div>':'')+
+    (k==='glucose'?'<div class="tiny" id="gl-rules-tip"></div>':'')+
     (k==='weight'?'<div class="tiny">规则：比上一条下降 → 加小红花；上升 → 扣除小红花。</div>':''),
     '<button class="btn" onclick="closeModal()">取消</button><button class="btn o" onclick="saveHealthForm(\''+k+'\')">保存</button>');
-}
+  if(k==='glucose'){ var t=$('gl-rules-tip'); if(t){ var R=DB.flowerRules; t.innerHTML='规则：下降且落在 '+R.glucoseLow+'–'+R.glucoseHighEq+' → 加小红花+放烟花；超过 '+R.glucoseHigh+' → 扣花并标红（阈值可在设置改）'; } }
+  }
 function saveHealthForm(k){
   var v=$('hf-val').value, note=$('hf-note').value.trim(), ds=$('hf-date').value||todayStr(), t=$('hf-time').value||'';
   if(v===''||v==null){ toast('请填写内容'); return; }
@@ -2184,8 +2196,9 @@ function addHealthRecord(k, val, note, when){
     else if(+val > +prev.val){ addFlower(-1, '体重上升至 '+val+' kg'); msg='体重上升，扣除小红花 -1'; }
   }
   if(k==='glucose'){
-    if(+val>7.5){ addFlower(-1, '血糖偏高 '+val); msg='血糖 '+val+' 偏高，扣除小红花并标红提醒'; }
-    else if(+val>=5 && +val<=6 && prev && +val < +prev.val){
+    var R=DB.flowerRules;
+    if(+val > R.glucoseHigh){ addFlower(-1, '血糖偏高 '+val); msg='血糖 '+val+' 偏高，扣除小红花并标红提醒'; }
+    else if(+val>=R.glucoseLow && +val<=R.glucoseHighEq && prev && +val < +prev.val){
       addFlower(1, '血糖下降至理想区间 '+val); msg='血糖降入理想区间，放烟花 + 小红花 +1'; boom(46);
     }
   }
@@ -2195,6 +2208,52 @@ function addFlower(delta, reason){
   DB.flowers.total = Math.max(0, (DB.flowers.total||0) + delta);
   DB.flowers.log.unshift({delta:delta, reason:reason, at:nowStr()});
   if(DB.flowers.log.length>200) DB.flowers.log.length=200;
+}
+function saveFlowerRules(){
+  var a=parseFloat($('fr-glow').value), b=parseFloat($('fr-gheq').value), c=parseFloat($('fr-ghigh').value), d=parseInt($('fr-err').value,10);
+  if(isNaN(a)||isNaN(b)||isNaN(c)||isNaN(d)){ toast('请填写有效的数字'); return; }
+  if(a>b){ toast('理想下限不能大于理想上限'); return; }
+  var R=DB.flowerRules; R.glucoseLow=a; R.glucoseHighEq=b; R.glucoseHigh=c; R.monthlyErr=d;
+  save(); renderChips(); toast('奖励标准已保存，全班生效');
+}
+function plantSvg(level){
+  var pot='<path d="M35 100 L85 100 L78 132 L42 132 Z" fill="#C77D4A"/><rect x="32" y="92" width="56" height="12" rx="3" fill="#A9622F"/><ellipse cx="60" cy="92" rx="28" ry="6" fill="#6B4F2A"/>';
+  if(level<=0) return '<svg width="120" height="140" viewBox="0 0 120 140">'+pot+'<ellipse cx="60" cy="92" rx="7" ry="4" fill="#3D2B16"/></svg>';
+  var st=92-level*15;
+  var body='<rect x="57" y="'+st+'" width="6" height="'+(92-st)+'" rx="3" fill="#2A9D8F"/>';
+  if(level>=1) body+='<path d="M60 '+(st+10)+' q-16 -6 -18 6 q14 4 18 -6 Z" fill="#06D6A0"/><path d="M60 '+(st+10)+' q16 -6 18 6 q-14 4 -18 -6 Z" fill="#06D6A0"/>';
+  if(level>=2) body+='<path d="M60 '+(st+22)+' q-22 -4 -26 10 q18 2 26 -10 Z" fill="#2A9D8F"/><path d="M60 '+(st+22)+' q22 -4 26 10 q-18 2 -26 -10 Z" fill="#2A9D8F"/>';
+  if(level>=3) body+='<circle cx="60" cy="'+(st-2)+'" r="7" fill="#E76F51"/>';
+  if(level>=4){ var cy=st-4, fl=''; for(var a=0;a<5;a++){ var ang=a*72*Math.PI/180, x=Math.sin(ang)*12, y=-Math.cos(ang)*12; fl+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="8" fill="#FF6B35"/>'; } body+='<g transform="translate(60,'+cy+')">'+fl+'<circle cx="0" cy="0" r="7" fill="#FFD166"/></g>'; }
+  return '<svg width="120" height="140" viewBox="0 0 120 140">'+pot+body+'</svg>';
+}
+function renderGrowth(){
+  var el=$('growth-body'); if(!el) return;
+  var g=DB.growth||{exp:0,level:0,watered:0,log:[]}, lv=g.level||0, exp=g.exp||0, per=5, cur=exp%per, pct=Math.round(cur/per*100);
+  var names=['小小种子','冒出嫩芽','长出小苗','孕育花苞','绚丽绽放'];
+  var h='<div class="grid g2" style="align-items:center;gap:14px">';
+  h+='<div style="text-align:center">'+plantSvg(lv)+'</div>';
+  h+='<div><div style="font-weight:800;font-size:17px">'+(names[lv]||'')+'</div>';
+  h+='<div class="tiny" style="margin:4px 0 8px">已浇水 '+(g.watered||0)+' 次 · 累计成长 '+exp+'</div>';
+  h+='<div class="bar"><i style="width:'+pct+'%"></i></div>';
+  h+='<div class="tiny" style="margin:4px 0 10px">'+(lv>=4?'已长成，继续浇灌可保持繁茂':('距离下一级还需 '+(per-cur)+' 次浇灌'))+'</div>';
+  h+='<button class="btn g" onclick="waterPlant()"><svg><use href="#i-drop"/></svg>用 1 朵小红花浇灌</button></div></div>';
+  if((g.log||[]).length){ h+='<div class="tiny" style="margin-top:10px">成长记录</div><div class="row" style="flex-wrap:wrap;gap:6px;margin-top:5px">';
+    for(var i=0;i<Math.min(g.log.length,6);i++) h+='<span class="tag mint">'+esc(g.log[i].text||'')+' · '+String(g.log[i].at||'').slice(5,16)+'</span>';
+    h+='</div>'; }
+  el.innerHTML=h;
+}
+function waterPlant(){
+  if((DB.flowers.total||0)<1){ toast('小红花不足，完成健康目标或月度总结可赚取小红花'); return; }
+  var g=DB.growth||{exp:0,level:0,watered:0,log:[]}; DB.growth=g;
+  var old=g.level||0;
+  addFlower(-1,'浇灌班级绿植');
+  g.exp=(g.exp||0)+1; g.watered=(g.watered||0)+1;
+  var lvl=Math.min(4, Math.floor(g.exp/5)), names=['','冒出嫩芽','长出小苗','孕育花苞','绚丽绽放'], up=lvl>old;
+  g.level=lvl; g.log=g.log||[]; g.log.unshift({at:nowStr(), text: up?('升级·'+names[lvl]):'浇灌 +1'});
+  if(g.log.length>50) g.log.length=50;
+  if(up){ toast('植物升级啦！'+names[lvl]); boom(30,['#06D6A0','#FFB703','#FF6B35']); }
+  save(); refreshAll();
 }
 function delHealth(k, id){
   askConfirm('删除记录','确定删除这条记录？', function(){
@@ -2900,6 +2959,8 @@ function load2fix(){
   if(!Array.isArray(DB.lib.mats)) DB.lib.mats=[];
   if(!DB.security||!DB.security.pin) DB.security=b.security;
   if(!DB.flowers) DB.flowers=b.flowers;
+  if(!DB.flowerRules) DB.flowerRules=b.flowerRules;
+  if(!DB.growth) DB.growth=b.growth;
 }
 function exportAllCsv(){
   var rows=[['板块','位置','内容','时间']], ix=buildIndex();
@@ -2941,6 +3002,13 @@ function openSettings(){
     '<div class="zone"><div class="zone-h">月度自动总结（每月 25 日）</div><div class="zone-b">'+
     '<div class="tiny">规则：展示台红字 &lt;20 的学生加一朵小红花；红字 &gt;80 的学生姓名在名单中显示为蓝色。上次执行：'+esc(DB.meta.summaryMonth||'尚未执行')+'</div>'+
     '<button class="btn sm g" style="margin-top:8px" onclick="manualSummary()"><svg><use href="#i-star"/></svg>立即执行一次总结</button></div></div>'+
+    '<div class="zone"><div class="zone-h">小红花奖励标准（全班通用 · 可随时调整）</div><div class="zone-b">'+
+    '<div class="tiny" style="margin-bottom:7px">指标达标自动加红花、超标扣红花；阈值对所有学生一致，修改后即时生效。</div>'+
+    '<div class="inline-form"><div class="field"><label class="fl">血糖理想下限</label><input type="number" step="0.1" id="fr-glow" value="'+DB.flowerRules.glucoseLow+'"></div>'+
+    '<div class="field"><label class="fl">血糖理想上限</label><input type="number" step="0.1" id="fr-gheq" value="'+DB.flowerRules.glucoseHighEq+'"></div></div>'+
+    '<div class="inline-form"><div class="field"><label class="fl">血糖偏高阈值</label><input type="number" step="0.1" id="fr-ghigh" value="'+DB.flowerRules.glucoseHigh+'"></div>'+
+    '<div class="field"><label class="fl">月度红字加花线</label><input type="number" id="fr-err" value="'+DB.flowerRules.monthlyErr+'"></div></div>'+
+    '<button class="btn sm o" onclick="saveFlowerRules()"><svg><use href="#i-edit"/></svg>保存奖励标准</button></div></div>'+
     '<div class="zone"><div class="zone-h">账号与同步（跨设备共用一份数据 · 数据存云端）</div><div class="zone-b">'+
     '<div class="field"><label class="fl">同步后端</label><select id="sync-backend" onchange="SYNC.backend=this.value;saveSyncCfg();openSettings();">'+
     '<option value="cb"'+(SYNC.backend==='cb'?' selected':'')+'>腾讯云 CloudBase（国内可达·免费）</option>'+
@@ -3096,11 +3164,16 @@ function refreshAll(){
   renderPath();
   renderSun();
   renderLib();
+  renderGrowth();
 }
 window.onerror=function(msg, src, line, col, err){
+  // Script error 是跨域脚本/浏览器扩展/微信内置注入脚本触发的，不阻断页面功能，只记控制台不吓人
+  if(msg==='Script error.' || msg==='Script error' || !msg){
+    console.warn('Script error (cross-origin/browser injection, safe to ignore):', src||'', 'line', line||'-', err);
+    return false;
+  }
   var txt='出现一个小问题：';
-  if(msg==='Script error.' || !msg) txt+='Script error（多为浏览器扩展/外接脚本或内联事件异常，建议换系统浏览器重试）';
-  else txt+=String(msg).slice(0,120);
+  txt+=String(msg).slice(0,120);
   if(line) txt+=' ['+line+(col?':'+col:'')+']';
   console.error('WorkBuddy onerror:', msg, src, line, col, err);
   toast(txt); showErrBanner(txt+'\n（已记入控制台，可截图反馈）');
