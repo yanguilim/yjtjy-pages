@@ -1237,110 +1237,19 @@ function pickFiles(accept, multiple, cb){
   el.onchange=function(){ var fs=el.files; if(fs&&fs.length) cb(fs); };
   el.click();
 }
-/* ---------- 百度 OCR（图片转文字） ---------- */
-function baiduOcrProxyBase(){ return (SYNC.ocrProxy||'').replace(/\/+$/, ''); }
-function baiduOcrGetToken(cb){
-  if(SYNC.ocrTok && SYNC.ocrExp && Date.now()<SYNC.ocrExp){ cb(SYNC.ocrTok); return; }
-  if(!SYNC.ocrAk || !SYNC.ocrSk){ cb(null,'未配置 OCR：请在设置里填写百度 API Key / Secret Key'); return; }
-  var proxy = baiduOcrProxyBase();
-  if(proxy){
-    fetch(proxy+'/api/ocr-token', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ak:SYNC.ocrAk, sk:SYNC.ocrSk})
-    }).then(function(r){ return r.json(); }).then(function(d){
-      if(d&&d.access_token){ SYNC.ocrTok=d.access_token; SYNC.ocrExp=Date.now()+((d.expires_in||2592000)*1000); saveSyncCfg(); cb(SYNC.ocrTok); }
-      else cb(null, (d&&d.error_description)||(d&&d.error_msg)||'代理返回 token 失败');
-    }).catch(function(e){ cb(null,'OCR 代理请求失败（获取 token）：'+(e&&e.message||e)+'；请检查代理地址是否正确'); });
-  } else {
-    var url='https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id='+encodeURIComponent(SYNC.ocrAk)+'&client_secret='+encodeURIComponent(SYNC.ocrSk);
-    fetch(url).then(function(r){
-      if(!r.ok) throw new Error('token http '+r.status);
-      return r.json();
-    }).then(function(d){
-      if(d&&d.access_token){ SYNC.ocrTok=d.access_token; SYNC.ocrExp=Date.now()+((d.expires_in||2592000)*1000); saveSyncCfg(); cb(SYNC.ocrTok); }
-      else cb(null, (d&&d.error_description)||'获取 token 失败，请检查 API Key/Secret Key 是否填反或已过期');
-    }).catch(function(e){ cb(null,'OCR 联网失败（获取 token）：'+(e&&e.message||e)+'；可能是浏览器跨域限制，请在设置里填写 Cloudflare Worker 代理地址'); });
-  }
-}
-function baiduOcrCall(api, tok, b64, cb){
-  var proxy = baiduOcrProxyBase();
-  if(proxy){
-    fetch(proxy+'/api/ocr', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token:tok, image:b64, accurate:(api==='accurate_basic')})
-    }).then(function(r){ return r.json(); }).then(function(d){
-      if(d&&d.words_result&&d.words_result.length){ cb(d.words_result.map(function(x){return x.words;}).join('\n'), null); }
-      else if(d&&d.error_code==='6'||d&&d.error_msg&&/unsupported|未开通|权限/.test(d.error_msg)){ cb(null, {fallback:true, msg:d.error_msg}); }
-      else if(d&&d.error_msg){ cb(null, d.error_msg); }
-      else cb(null,'未识别到文字');
-    }).catch(function(e){ cb(null,'OCR 代理请求失败（'+api+'）：'+(e&&e.message||e)); });
-  } else {
-    var body='image='+encodeURIComponent(b64)+'&language_type=CHN_ENG&detect_direction=true';
-    fetch('https://aip.baidubce.com/rest/2.0/ocr/v1/'+api+'?access_token='+tok, {
-      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body
-    }).then(function(r){
-      if(!r.ok) throw new Error(api+' http '+r.status);
-      return r.json();
-    }).then(function(d){
-      if(d&&d.words_result&&d.words_result.length){ cb(d.words_result.map(function(x){return x.words;}).join('\n'), null); }
-      else if(d&&d.error_code==='6'||d&&d.error_msg&&/unsupported|未开通|权限/.test(d.error_msg)){ cb(null, {fallback:true, msg:d.error_msg}); }
-      else if(d&&d.error_msg){ cb(null, d.error_msg); }
-      else cb(null,'未识别到文字');
-    }).catch(function(e){ cb(null,'OCR 联网失败（'+api+'）：'+(e&&e.message||e)); });
-  }
-}
-function baiduOcrRecognize(base64, cb){
-  baiduOcrGetToken(function(tok, err){
-    if(!tok){ cb(null, err||'未配置百度 OCR'); return; }
-    var b64=(base64.split(',')[1]||base64);
-    // 先尝试高精度版；若用户未开通该接口，自动降级到标准版
-    baiduOcrCall('accurate_basic', tok, b64, function(txt, err){
-      if(txt){ cb(txt, null); return; }
-      if(err && err.fallback){
-        baiduOcrCall('general_basic', tok, b64, function(txt2, err2){
-          if(txt2){ cb(txt2, null); }
-          else if(err2 && err2.fallback){ cb(null, '百度 OCR 接口未开通：请在百度控制台「文字识别」里领取「通用文字识别（标准版）」或「高精度版」的额度'); }
-          else cb(null, err2||'OCR 未识别到文字');
-        });
-      }else{
-        cb(null, err||'OCR 未识别到文字');
-      }
-    });
-  });
-}
 function pickMemoImage(){
   try{ loadSyncCfg(); }catch(e){}
   pickFiles('image/*', true, function(fs){
     var n=Math.min(fs.length, 9-UI.memoImgs.length);
     if(n<=0){ toast('最多 9 张图片'); return; }
-    var done=0, ocrTexts=[];
-    var useOcr = !!(SYNC.ocrAk && SYNC.ocrSk);
-    if(useOcr) toast('正在 OCR 识别图片文字…');
+    var done=0;
     for(var i=0;i<n;i++){
       (function(file){
         compressImage(file, 1200, function(data){
           if(data){
             UI.memoImgs.push(data);
-            if(useOcr){
-              baiduOcrRecognize(data, function(txt, err){
-                if(txt) ocrTexts.push(txt);
-                done++;
-                if(done===n){
-                  renderMemoImgs();
-                  if(ocrTexts.length){
-                    var merged=ocrTexts.join('\n');
-                    var cur=$('memo').value.trim();
-                    $('memo').value = (cur?cur+'\n':'')+merged;
-                    toast('OCR 完成，文字已填入，点「分析归类」自动分配');
-                  } else {
-                    toast(err||'OCR 未识别到文字，可手动补录或重新拍照');
-                  }
-                }
-              });
-            } else {
-              done++;
-              if(done===n){ renderMemoImgs(); toast('图片已附加。提取文字：手机用相册「提取文字」或输入法「扫一扫」复制，粘贴到下方输入框，再点「分析归类」'); }
-            }
+            done++;
+            if(done===n){ renderMemoImgs(); toast('图片已附加。提取图中文字：手机用相册「提取文字」或输入法「扫一扫」复制，粘贴到下方输入框，再点「分析归类」'); }
           } else {
             done++;
             if(done===n) renderMemoImgs();
@@ -3051,7 +2960,7 @@ function openSettings(){
     '<div class="field"><label class="fl" style="color:var(--blue)">红字≥此值·姓名显蓝</label><span class="tiny">如 80，可随时调整</span></div></div>'; })(DB.flowerRules)+
     '<button class="btn sm o" onclick="saveFlowerRules()"><svg><use href="#i-edit"/></svg>保存奖励标准</button></div></div>'+
     '<div class="zone"><div class="zone-h">账号与同步（跨设备共用一份数据 · 数据存云端）</div><div class="zone-b">'+
-    '<div class="field"><label class="fl">同步后端</label><select id="sync-backend" onchange="SYNC.backend=this.value;saveSyncCfg();openSettings();">'+
+    '<div class="field"><label class="fl">同步后端</label><select id="sync-backend" onchange="SYNC.backend=this.value;saveSyncCfg(); if(SYNC.token) syncNow(); openSettings();">'+
     '<option value="cb"'+(SYNC.backend==='cb'?' selected':'')+'>腾讯云 CloudBase（国内可达·免费）</option>'+
     '<option value="cf"'+(SYNC.backend==='cf'?' selected':'')+'>Cloudflare Workers+D1（境外免费）</option>'+
     '<option value="oracle"'+(SYNC.backend==='oracle'?' selected':'')+'>Oracle Cloud 永远免费（国内可达）</option>'+
@@ -3114,13 +3023,6 @@ function openSettings(){
     '部署模板与步骤见《备选服务器部署》文档。</div></div>'+
     '</div></div>'+
 
-    '<div class="zone"><div class="zone-h">图片转文字 OCR（当前网络不可用 · 已停用）</div><div class="zone-b">'+
-    '<div class="field"><label class="fl">百度 OCR API Key</label><input type="text" id="ocr-ak" placeholder="如 8aBc…123" value="'+esc(SYNC.ocrAk||'')+'"></div>'+
-    '<div class="field"><label class="fl">百度 OCR Secret Key</label><input type="password" id="ocr-sk" placeholder="如 AbCd…456" value="'+esc(SYNC.ocrSk||'')+'"></div>'+
-    '<div class="field"><label class="fl">OCR 代理地址（可选）</label><input type="text" id="ocr-proxy" placeholder="如 https://yjtjy-sync.xxx.workers.dev" value="'+esc(SYNC.ocrProxy||'')+'"></div>'+
-    '<button class="btn sm v" onclick="saveOcrCfg()"><svg><use href="#i-lock"/></svg>保存 OCR 配置</button>'+
-    '<div class="tiny" style="margin-top:8px;line-height:1.95">你的网络连不上 Cloudflare 代理（workers.dev 超时），网页自动识别暂不可用，已停用引导。<br><b>替代方案（推荐，零部署）：</b>手机用相册长按图片「提取文字」或输入法「扫一扫」，复制文字后粘贴到「一句话速记」输入框，再点「分析归类」即可自动分配。<br>若以后更换到可访问 Cloudflare 的网络，仍可在此填 Key 恢复自动识别。</div>'+
-    '</div></div>'+
     '<div class="zone"><div class="zone-h">数据与存储</div><div class="zone-b">'+
     '<div class="tiny" style="line-height:1.95">当前数据量：<b>'+dataCount()+'</b> 条<br>'+
     '存储位置：云端（Bmob / GitHub Gist / 腾讯云 CloudBase / Cloudflare D1 / LeanCloud），本机仅留离线缓存（localStorage，键名 '+KEY+'）<br>'+
@@ -3240,7 +3142,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <script>
 /* ============ 云端同步（统一协议 Bearer Token + /api/*；多后端可一键切换/迁移） ============ */
 // 后端类型：cb 腾讯云CloudBase / cf Cloudflare / oracle Oracle Cloud / supabase Supabase / custom 自建 / bmob Bmob云 / github GitHub Gist；leancloud 仅旧兼容
-var SYNC = { backend:'github', token:null, user:null, base:'', lcApp:'', lcKey:'', lcApi:'https://api.leancloud.cn', lcUid:'', lcObj:'', bmobApp:'', bmobKey:'', bmobUid:'', bmobObj:'', ghId:'', updatedAt:0, status:'off', pulling:false, _t:null, _iv:null, ocrAk:'', ocrSk:'', ocrTok:'', ocrExp:0, ocrProxy:'' };
+var SYNC = { backend:'github', token:null, user:null, base:'', lcApp:'', lcKey:'', lcApi:'https://api.leancloud.cn', lcUid:'', lcObj:'', bmobApp:'', bmobKey:'', bmobUid:'', bmobObj:'', ghId:'', updatedAt:0, status:'off', pulling:false, _t:null, _iv:null };
 
 function loadSyncCfg(){
   try{ var s=JSON.parse(localStorage.getItem('wb_yjtjy_sync')||'{}');
@@ -3248,48 +3150,16 @@ function loadSyncCfg(){
     SYNC.base=(s.base||s.cbBase||'').replace(/\/+$/,''); SYNC.lcApp=s.lcApp||''; SYNC.lcKey=s.lcKey||'';
     SYNC.lcApi=s.lcApi||'https://api.leancloud.cn'; SYNC.lcUid=s.lcUid||''; SYNC.lcObj=s.lcObj||'';
     SYNC.bmobApp=s.bmobApp||''; SYNC.bmobKey=s.bmobKey||''; SYNC.bmobUid=s.bmobUid||''; SYNC.bmobObj=s.bmobObj||''; SYNC.ghId=s.ghId||''; SYNC.updatedAt=s.updatedAt||0;
-    SYNC.ocrAk=s.ocrAk||''; SYNC.ocrSk=s.ocrSk||''; SYNC.ocrTok=s.ocrTok||''; SYNC.ocrExp=s.ocrExp||0; SYNC.ocrProxy=(s.ocrProxy||'').replace(/\/+$/,'');
   }catch(e){}
 }
 function saveSyncCfg(){
-  try{ localStorage.setItem('wb_yjtjy_sync', JSON.stringify({backend:SYNC.backend,token:SYNC.token,user:SYNC.user,base:SYNC.base,lcApp:SYNC.lcApp,lcKey:SYNC.lcKey,lcApi:SYNC.lcApi,lcUid:SYNC.lcUid,lcObj:SYNC.lcObj,bmobApp:SYNC.bmobApp,bmobKey:SYNC.bmobKey,bmobUid:SYNC.bmobUid,bmobObj:SYNC.bmobObj,ghId:SYNC.ghId,updatedAt:SYNC.updatedAt,ocrAk:SYNC.ocrAk,ocrSk:SYNC.ocrSk,ocrTok:SYNC.ocrTok,ocrExp:SYNC.ocrExp,ocrProxy:SYNC.ocrProxy})); }catch(e){}
+  try{ localStorage.setItem('wb_yjtjy_sync', JSON.stringify({backend:SYNC.backend,token:SYNC.token,user:SYNC.user,base:SYNC.base,lcApp:SYNC.lcApp,lcKey:SYNC.lcKey,lcApi:SYNC.lcApi,lcUid:SYNC.lcUid,lcObj:SYNC.lcObj,bmobApp:SYNC.bmobApp,bmobKey:SYNC.bmobKey,bmobUid:SYNC.bmobUid,bmobObj:SYNC.bmobObj,ghId:SYNC.ghId,updatedAt:SYNC.updatedAt})); }catch(e){}
 }
 function syncStatusText(){ return ({off:'未同步',ing:'同步中',ok:'已同步',err:'离线'}[SYNC.status]||'未同步'); }
-function saveOcrCfg(){
-  try{
-    var ak=$('ocr-ak')?$('ocr-ak').value.trim():'';
-    var sk=$('ocr-sk')?$('ocr-sk').value.trim():'';
-    // 如果两个框都为空，表示要清空配置
-    var proxy=$('ocr-proxy')?$('ocr-proxy').value.trim():'';
-    SYNC.ocrProxy=proxy.replace(/\/+$/,'');
-    if(!ak && !sk && $('ocr-ak') && $('ocr-sk')){
-      SYNC.ocrAk=''; SYNC.ocrSk=''; SYNC.ocrTok=''; SYNC.ocrExp=0;
-      saveSyncCfg(); loadSyncCfg();
-      toast('已清空 OCR 配置'); return;
-    }
-    if(!ak || !sk){ toast('请同时填写 API Key 和 Secret Key，或两者都留空以清空'); return; }
-    SYNC.ocrAk=ak; SYNC.ocrSk=sk; SYNC.ocrTok=''; SYNC.ocrExp=0;
-    saveSyncCfg(); loadSyncCfg();
-    toast('正在验证百度 OCR Key…');
-    baiduOcrGetToken(function(tok, err){
-      if(tok){
-        toast('OCR 配置有效，已保存（AK 长度 '+ak.length+'）。现在可拍照识别');
-      }else{
-        var hint='';
-        if(err && /跨域|CORS|Failed to fetch|NetworkError/i.test(err)){
-          hint='；失败原因是浏览器跨域限制，请在上方填一个 Cloudflare Worker 代理地址（如 https://xxx.workers.dev）';
-        } else if(err){
-          hint='；请检查 AK/SK 是否填反或百度应用是否已开通文字识别';
-        }
-        toast('OCR Key 验证失败：'+(err||'未知错误')+hint);
-      }
-    });
-  }catch(e){
-    toast('保存 OCR 配置失败：'+(e&&e.message||e));
-  }
-}
 function syncBackendName(){ return ({cb:'腾讯云CloudBase',cf:'Cloudflare',oracle:'Oracle Cloud',supabase:'Supabase',custom:'自建服务器',bmob:'Bmob 云',github:'GitHub Gist',leancloud:'LeanCloud'}[SYNC.backend]||SYNC.backend); }
 function setSyncStatus(st){ SYNC.status=st; var dot=document.getElementById('sync-dot'), t=document.getElementById('sync-txt'); if(dot) dot.className='dot sync-'+st; if(t) t.textContent=syncStatusText(); }
+// 带超时的 fetch 包装：国内访问 GitHub/Gist 偶发卡住时，裸 fetch 会永久 pending，导致状态卡在「同步中」。统一加超时。
+function fetchTo(url, opts, ms){ ms=ms||12000; var ctrl=(typeof AbortController!=='undefined')?new AbortController():null; var to=setTimeout(function(){ if(ctrl) ctrl.abort(); }, ms); var o=Object.assign({}, opts||{}); if(ctrl) o.signal=ctrl.signal; return fetch(url,o).then(function(r){ clearTimeout(to); return r; }, function(e){ clearTimeout(to); throw e; }); }
 
 /* ---- 统一协议后端：任意服务器地址 + Bearer Token（cb/cf/oracle/supabase/custom 通用） ---- */
 // 未填服务器地址时按当前打开位置自动推断：CloudBase 网关带 /yjtjy 子路径，Cloudflare workers.dev 在根
@@ -3300,14 +3170,14 @@ function genBaseUrl(p){
   if(h.indexOf('tcloudbasegateway.com')>=0) return (location.origin+(location.pathname||'')).replace(/\/+$/,'');
   return (location.origin||'').replace(/\/+$/,'');
 }
-function genApi(p, path, opts){ opts=opts||{}; var url=genBaseUrl(p)+path; var h={'Content-Type':'application/json'}; if(p.token) h['Authorization']='Bearer '+p.token; return fetch(url, Object.assign({headers:h, cache:'no-store'}, opts)); }
+function genApi(p, path, opts){ opts=opts||{}; var url=genBaseUrl(p)+path; var h={'Content-Type':'application/json'}; if(p.token) h['Authorization']='Bearer '+p.token; return fetchTo(url, Object.assign({headers:h, cache:'no-store'}, opts), 12000); }
 function backendBasePlaceholder(){ return ({cb:'如 https://env.api.tcloudbasegateway.com/yjtjy（留空=同源自动）',cf:'如 https://yjtjy-sync.xxx.workers.dev（留空=同源自动）',oracle:'如 http://<公网IP>:3000 或 https://oracle.example.com/yjtjy',supabase:'如 https://<project>.functions.supabase.co/yjtjy',custom:'如 https://your-server.example.com/yjtjy'}[SYNC.backend]||'服务器地址'); }
 function backendBaseHint(){ return ({cb:'云函数 HTTP 访问地址；控制台「环境配置→HTTP访问服务」须关闭身份认证。数据存腾讯云数据库。',cf:'Worker 地址；数据存 Cloudflare D1。注：中国大陆网络常打不开。',oracle:'Oracle 永远免费实例上运行的 server.src.js 地址；数据存该实例本地文件/SQLite。国内可达。',supabase:'Supabase Edge Function 地址；数据存 Supabase Postgres。',custom:'任意服务器上运行的同协议后端地址；数据存该服务器。'}[SYNC.backend]||''); }
 function toggleHelp(id){ var e=document.getElementById(id); if(e) e.style.display = (e.style.display==='none'?'block':'none'); }
 
 /* ---- LeanCloud 后端 ---- */
 function lcHeaders(){ var h={'Content-Type':'application/json','X-LC-Id':SYNC.lcApp,'X-LC-Key':SYNC.lcKey}; if(SYNC.token) h['X-LC-Session']=SYNC.token; return h; }
-function lcApi(path, opts){ opts=opts||{}; var url=(SYNC.lcApi.replace(/\/+$/,'')||'https://api.leancloud.cn')+'/1.1'+path; return fetch(url, Object.assign({headers:lcHeaders(), cache:'no-store'}, opts)); }
+function lcApi(path, opts){ opts=opts||{}; var url=(SYNC.lcApi.replace(/\/+$/,'')||'https://api.leancloud.cn')+'/1.1'+path; return fetchTo(url, Object.assign({headers:lcHeaders(), cache:'no-store'}, opts), 12000); }
 function lcReadCfg(){ SYNC.lcApp=($('lc-app')?$('lc-app').value.trim():SYNC.lcApp)||SYNC.lcApp; SYNC.lcKey=($('lc-key')?$('lc-key').value.trim():SYNC.lcKey)||SYNC.lcKey; SYNC.lcApi=($('lc-api')?$('lc-api').value.trim().replace(/\/+$/,''):SYNC.lcApi)||SYNC.lcApi; }
 
 function schedulePush(){ if(!SYNC.token) return; if(SYNC._t) clearTimeout(SYNC._t); SYNC._t=setTimeout(pushData, 800); }
@@ -3413,7 +3283,7 @@ function bmHeaders(session){
   if(session) h['X-Bmob-Session-Token']=session;
   return h;
 }
-function bmApi(path, opts, session){ opts=opts||{}; return fetch('https://api2.bmob.cn/1'+path, Object.assign({headers:bmHeaders(session), cache:'no-store'}, opts)); }
+function bmApi(path, opts, session){ opts=opts||{}; return fetchTo('https://api2.bmob.cn/1'+path, Object.assign({headers:bmHeaders(session), cache:'no-store'}, opts), 12000); }
 function bmReadCfg(){ SYNC.bmobApp=($('bm-app')?$('bm-app').value.trim():SYNC.bmobApp)||SYNC.bmobApp; SYNC.bmobKey=($('bm-key')?$('bm-key').value.trim():SYNC.bmobKey)||SYNC.bmobKey; }
 function bmobSignup(u,p){
   bmReadCfg();
@@ -3460,7 +3330,7 @@ function bmobPull(force){
 }
 /* ---- GitHub Gist 后端 ---- */
 function ghHeaders(){ return {'Content-Type':'application/json','Authorization':'Bearer '+SYNC.token}; }
-function ghApi(path, opts){ opts=opts||{}; return fetch('https://api.github.com'+path, Object.assign({headers:ghHeaders(), cache:'no-store'}, opts)); }
+function ghApi(path, opts){ opts=opts||{}; return fetchTo('https://api.github.com'+path, Object.assign({headers:ghHeaders(), cache:'no-store'}, opts), 15000); }
 function githubPush(){
   if(!SYNC.token) return;
   setSyncStatus('ing');
