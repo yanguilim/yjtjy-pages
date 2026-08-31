@@ -644,7 +644,7 @@ function load(){
   if(!DB.lib.study) DB.lib.study={projects:[]};
   DB.study.projects.forEach(function(p,i){ if(!p.color) p.color=STUDY_COLORS[i%STUDY_COLORS.length]; });
   if(!DB.flowers) DB.flowers=b.flowers;
-  if(!DB.flowerRules) DB.flowerRules=b.flowerRules;
+  ensureFlowerRules();
   if(!DB.growth) DB.growth=b.growth;
   if(!DB.security||!DB.security.pin) DB.security=b.security;
   DB.meta.lastOpen = nowStr();
@@ -1010,6 +1010,7 @@ function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.ge
    月度自动总结（每月 25 日）：红字<20 加小红花，>80 姓名变蓝
    ======================================================================= */
 function runMonthlySummary(force){
+  ensureFlowerRules();
   var d=new Date(), mk=monthKey();
   if(!force){ if(d.getDate()<25) return null; if(DB.meta.summaryMonth===mk) return null; }
   var good=[], warn=[], i;
@@ -2161,6 +2162,7 @@ function renderSunStage(){
   box.innerHTML=h;
 }
 function openHealthForm(k){
+  ensureFlowerRules();
   var p=null; for(var i=0;i<SUNP.length;i++){ if(SUNP[i].k===k) p=SUNP[i]; }
   var d=new Date();
   openModal('新增'+p.n+'记录',
@@ -2183,6 +2185,7 @@ function saveHealthForm(k){
   addHealthRecord(k, (k==='diet'? v : parseFloat(v)), note, {ds:ds, t:t});
 }
 function addHealthRecord(k, val, note, when){
+  ensureFlowerRules();
   var arr=DB.health[k]; if(!arr){ DB.health[k]=[]; arr=DB.health[k]; }
   var ds=(when&&when.ds)||todayStr(), t=(when&&when.t)||nowStr().split(' ')[1];
   var p=ds.split('-'), prev=arr.length?arr[arr.length-1]:null;
@@ -2950,6 +2953,11 @@ function importBackupPick(){
       fr.readAsText(fs[0],'utf-8');
     }); }, '继续导入');
 }
+function ensureFlowerRules(){
+  var def={glucoseLow:5, glucoseHighEq:6, glucoseHigh:7.5, weightReward:true, monthlyErr:20};
+  if(!DB.flowerRules || typeof DB.flowerRules!=='object') DB.flowerRules=def;
+  else { for(var k in def){ if(DB.flowerRules[k]==null) DB.flowerRules[k]=def[k]; } }
+}
 function load2fix(){
   var b=blankDB(), k;
   for(k in b){ if(DB[k]==null) DB[k]=b[k]; }
@@ -2959,7 +2967,7 @@ function load2fix(){
   if(!Array.isArray(DB.lib.mats)) DB.lib.mats=[];
   if(!DB.security||!DB.security.pin) DB.security=b.security;
   if(!DB.flowers) DB.flowers=b.flowers;
-  if(!DB.flowerRules) DB.flowerRules=b.flowerRules;
+  ensureFlowerRules();
   if(!DB.growth) DB.growth=b.growth;
 }
 function exportAllCsv(){
@@ -2982,6 +2990,7 @@ function clearDemo(){
   }, '确定清空');
 }
 function openSettings(){
+  ensureFlowerRules();
   openModal('设置',
     '<div class="zone"><div class="zone-h">工作台与板块命名（可自由编辑）</div><div class="zone-b">'+
     '<div class="inline-form"><div class="field"><label class="fl">工作台名称</label><input type="text" id="nm-title" value="'+esc(DB.meta.title)+'"></div></div>'+
