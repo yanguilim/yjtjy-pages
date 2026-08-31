@@ -761,7 +761,7 @@ function pendingItems(){
     var diff = dayDiff(t, td.date||t);
     if(diff>=0) out.push({kind:'todo', id:td.id, text:td.text, date:td.date, over:diff>0, days:diff});
   }
-  var g = DB.health.glucose, w = DB.health.weight;
+  var g = (DB.health&&DB.health.glucose)||[], w = (DB.health&&DB.health.weight)||[];
   if(g.length){ var last=g[g.length-1]; var _gh=(DB.flowerRules&&DB.flowerRules.glucoseHigh!=null)?DB.flowerRules.glucoseHigh:7.5; if(+last.val>_gh)
     out.push({kind:'alert', id:'g', text:'血糖偏高（'+last.val+' mmol/L），需复测并调整饮食', date:t, over:true, days:0}); }
   for(var i=0;i<DB.students.length;i++){ var s=DB.students[i];
@@ -787,7 +787,8 @@ function buildIndex(){
     for(var j=0;j<arr.length;j++){ var a=arr[j];
       ix.push({mod:'骄阳永灿', pos:p.n+'展示台', text:p.n+' '+a.val+(p.unit==='内容'?'':(' '+p.unit))+(a.note?('　'+a.note):''),
         time:a.y+'-'+pad(a.m)+'-'+pad(a.d)+' '+(a.t||''), go:['sun',p.k], lock:true}); } }
-  for(var i=0;i<DB.study.items.length;i++){ var it=DB.study.items[i];
+  var studyItemsArr=(DB.study&&DB.study.items)||[];
+  for(var i=0;i<studyItemsArr.length;i++){ var it=studyItemsArr[i];
     ix.push({mod:'骄阳永灿', pos:'进修 · '+studyProjName(it.projectId), text:(it.result||'')+' '+((it.questions||[]).join('；')),
       time:it.y+'-'+pad(it.m)+'-'+pad(it.d)+' '+(it.t||''), go:['sun','study'], lock:true}); }
   var mats=(DB.lib&&DB.lib.mats)||[];
@@ -976,7 +977,7 @@ function analyzeMemoText(raw){
   if(sl) sug.push({type:'health', panel:'sleep', title:'骄阳永灿 · 睡眠', val:parseFloat(sl[1]), note:(sl[2]||'小时'), desc:'记录睡眠 '+sl[1]+' 小时'});
   if(/早餐|午餐|晚餐|吃了|加餐|饮食|喝|吃饭/.test(t)) sug.push({type:'health', panel:'diet', title:'骄阳永灿 · 餐饮', val:t.slice(0,40), desc:'记入餐饮记录'});
   // 进修
-  if(/学习|进修|听课|读了|看完|课程|培训|笔记|学了/.test(t) && DB.study.projects.length)
+  if(/学习|进修|听课|读了|看完|课程|培训|笔记|学了/.test(t) && ((DB.study&&DB.study.projects)||[]).length)
     sug.push({type:'study', title:'骄阳永灿 · 进修（'+DB.study.projects[0].name+'）', projectId:DB.study.projects[0].id, result:t.slice(0,60), desc:'记入进修成果'});
   // 待办（含日期解析）
   if(/记得|提醒|明天|后天|大后天|下周|待办|要交|截止|别忘|周[一二三四五六日天]|[\d]{1,2}月[\d]{1,2}[日号]/.test(t)){
@@ -1039,7 +1040,7 @@ function switchModule(m){
 }
 function renderChips(){
   var el=$('flower-n'); if(el) el.textContent=totalFlowers();
-  var g=DB.health.glucose;
+  var g=(DB.health&&DB.health.glucose)||[];
   if(g.length && +g[g.length-1].val>7.5) document.body.classList.add('glucose-alarm');
   else document.body.classList.remove('glucose-alarm');
 }
@@ -2065,7 +2066,8 @@ function renderSunHome(){
   if(hero){
     var w=healthLast('weight'), g=healthLast('glucose'), sp=DB.health.sport||[], sh=0, i;
     for(var i=0;i<sp.length;i++) sh += (+sp[i].val||0);
-    var studyH=0; for(var i=0;i<DB.study.items.length;i++) studyH += (+DB.study.items[i].hours||0);
+    var items=(DB.study&&DB.study.items)||[];
+    var studyH=0; for(var i=0;i<items.length;i++) studyH += (+items[i].hours||0);
     hero.innerHTML =
       '<div>体重<b>'+(w?w.val+' kg':'—')+'</b></div>'+
       '<div>血糖<b>'+(g?g.val:'—')+'</b></div>'+
@@ -2076,7 +2078,7 @@ function renderSunHome(){
   if(!cards) return;
   var h='', i2;
   for(i2=0;i2<SUNP.length;i2++){
-    var p=SUNP[i2], last=healthLast(p.k), n=DB.health[p.k].length;
+    var p=SUNP[i2], last=healthLast(p.k), n=(DB.health[p.k]||[]).length;
     var alarm = (p.k==='glucose' && last && +last.val>7.5);
     h += '<button class="card tight" style="text-align:left;margin:0;border-top:4px solid '+p.c+(alarm?';background:#FFF2F2':'')+'" onclick="openSunPanel(\''+p.k+'\')">'+
       '<div class="row"><svg width="22" height="22" style="color:'+p.c+'"><use href="#'+p.icon+'"/></svg>'+
@@ -2089,8 +2091,8 @@ function renderSunHome(){
   h += '<button class="card tight" style="text-align:left;margin:0;border-top:4px solid #9D4EDD" onclick="openSunPanel(\'study\')">'+
     '<div class="row"><svg width="22" height="22" style="color:#9D4EDD"><use href="#i-book"/></svg>'+
     '<div style="font-weight:800;font-size:16px">进修</div></div>'+
-    '<div style="font-size:22px;font-weight:800;margin-top:6px">'+DB.study.projects.length+'<span class="tiny" style="font-weight:600"> 个项目</span></div>'+
-    '<div class="tiny">'+DB.study.items.length+' 条学习记录</div></button>';
+    '<div style="font-size:22px;font-weight:800;margin-top:6px">'+((DB.study&&DB.study.projects)||[]).length+'<span class="tiny" style="font-weight:600"> 个项目</span></div>'+
+    '<div class="tiny">'+((DB.study&&DB.study.items)||[]).length+' 条学习记录</div></button>';
   cards.innerHTML=h;
 }
 function openSunPanel(k){ UI.sunPanel=k; renderSun(); window.scrollTo(0,0); }
@@ -2265,7 +2267,8 @@ function waterPlant(){
 }
 function delHealth(k, id){
   askConfirm('删除记录','确定删除这条记录？', function(){
-    DB.health[k]=DB.health[k].filter(function(r){ return r.id!==id; }); save(); refreshAll(); toast('已删除');
+    var arr=DB.health[k]||[];
+    DB.health[k]=arr.filter(function(r){ return r.id!==id; }); save(); refreshAll(); toast('已删除');
   }, '删除');
 }
 function clearHealth(k){
@@ -2276,7 +2279,7 @@ function clearHealth(k){
 }
 function exportHealthCsv(k){
   var p=null; for(var i=0;i<SUNP.length;i++){ if(SUNP[i].k===k) p=SUNP[i]; }
-  var rows=[['年','月','日','时间',(p.unit==='内容'?'内容':'数值('+p.unit+')'),'备注','录入时间']], arr=DB.health[k];
+  var rows=[['年','月','日','时间',(p.unit==='内容'?'内容':'数值('+p.unit+')'),'备注','录入时间']], arr=DB.health[k]||[];
   for(var i=0;i<arr.length;i++){ var r=arr[i]; rows.push([r.y,r.m,r.d,r.t,r.val,r.note||'',r.at]); }
   download(p.n+'记录_'+todayStr()+'.csv', toCsv(rows), 'text/csv'); toast('CSV 已导出');
 }
@@ -2291,6 +2294,7 @@ function importHealthPick(k){
     '<button class="btn o" onclick="importHealthText(\''+k+'\')">导入粘贴内容</button>');
 }
 function parseHealthLines(k, text){
+  var arr=DB.health[k]||[];
   var lines=String(text).replace(/\r/g,'').split('\n'), n=0;
   for(var i=0;i<lines.length;i++){
     var ln=lines[i].trim(); if(!ln || /^年|^日期/.test(ln)) continue;
@@ -2300,11 +2304,12 @@ function parseHealthLines(k, text){
     var t=(c[1]||'').trim(), v=(c[2]||'').trim(), note=(c[3]||'').trim();
     if(v==='') continue;
     var p=ds.split('-');
-    DB.health[k].push({id:uid(), y:+p[0], m:+p[1], d:+p[2], t:t, val:(k==='diet'?v:parseFloat(v)), note:note, at:nowStr()});
+    arr.push({id:uid(), y:+p[0], m:+p[1], d:+p[2], t:t, val:(k==='diet'?v:parseFloat(v)), note:note, at:nowStr()});
     n++;
   }
-  DB.health[k].sort(function(a,b){ var ka=a.y*10000+a.m*100+a.d, kb=b.y*10000+b.m*100+b.d;
+  arr.sort(function(a,b){ var ka=a.y*10000+a.m*100+a.d, kb=b.y*10000+b.m*100+b.d;
     if(ka!==kb) return ka-kb; return (a.t||'')<(b.t||'')?-1:1; });
+  DB.health[k]=arr;
   return n;
 }
 function importHealthText(k){
@@ -2460,19 +2465,22 @@ function openStudyTrend(){
   renderStudyTrend(1);
 }
 
-function studyItemById(id){ for(var i=0;i<DB.study.items.length;i++){ if(DB.study.items[i].id===id) return DB.study.items[i]; } return null; }
+function studyItemById(id){ var items=(DB.study&&DB.study.items)||[]; for(var i=0;i<items.length;i++){ if(items[i].id===id) return items[i]; } return null; }
 function addStudyProject(){ askPrompt('新增学习项目','项目名称，如：教师资格进修','', function(v){
-  DB.study.projects.push({id:uid(), name:v, color:STUDY_COLORS[DB.study.projects.length%STUDY_COLORS.length]}); save(); refreshAll(); toast('项目已添加'); }); }
+  var projects=(DB.study&&DB.study.projects)||[];
+  projects.push({id:uid(), name:v, color:STUDY_COLORS[projects.length%STUDY_COLORS.length]}); DB.study.projects=projects; save(); refreshAll(); toast('项目已添加'); }); }
 function delStudyProject(id){
   var n=studyItems(id).length;
   askConfirm('删除学习项目','该项目下有 <b>'+n+'</b> 条记录，删除项目会同时删除这些记录。确定？', function(){
-    DB.study.projects=DB.study.projects.filter(function(p){ return p.id!==id; });
-    DB.study.items=DB.study.items.filter(function(it){ return it.projectId!==id; });
+    var projects=(DB.study&&DB.study.projects)||[], items=(DB.study&&DB.study.items)||[];
+    DB.study.projects=projects.filter(function(p){ return p.id!==id; });
+    DB.study.items=items.filter(function(it){ return it.projectId!==id; });
     save(); refreshAll(); toast('已删除');
   }, '删除');
 }
 function renameStudyProject(id){
-  var p=null; for(var i=0;i<DB.study.projects.length;i++){ if(DB.study.projects[i].id===id){ p=DB.study.projects[i]; break; } }
+  var projects=(DB.study&&DB.study.projects)||[];
+  var p=null; for(var i=0;i<projects.length;i++){ if(projects[i].id===id){ p=projects[i]; break; } }
   if(!p) return;
   askPrompt('重命名学习项目','项目名称', p.name, function(v){
     v=(v||'').trim(); if(!v){ toast('名称不能为空'); return; }
@@ -2480,9 +2488,10 @@ function renameStudyProject(id){
   });
 }
 function openStudyForm(presetPid){
-  if(!DB.study.projects.length){ toast('请先新增一个学习项目'); return; }
-  var opts='', i, d=new Date(), sel=(presetPid||DB.study.projects[0].id);
-  for(var i=0;i<DB.study.projects.length;i++) opts += '<option value="'+DB.study.projects[i].id+'"'+(DB.study.projects[i].id===sel?' selected':'')+'>'+esc(DB.study.projects[i].name)+'</option>';
+  var projects=(DB.study&&DB.study.projects)||[];
+  if(!projects.length){ toast('请先新增一个学习项目'); return; }
+  var opts='', i, d=new Date(), sel=(presetPid||projects[0].id);
+  for(var i=0;i<projects.length;i++) opts += '<option value="'+projects[i].id+'"'+(projects[i].id===sel?' selected':'')+'>'+esc(projects[i].name)+'</option>';
   openModal('新增学习记录',
     '<div class="inline-form"><div class="field"><label class="fl">学习项目</label><select id="st-p">'+opts+'</select></div>'+
     '<div class="field"><label class="fl">日期</label><input type="date" id="st-date" value="'+todayStr()+'"></div>'+
@@ -3004,7 +3013,8 @@ function clearDemo(){
     var mats=(DB.lib&&DB.lib.mats)||[];
     DB.lib.mats=mats.filter(function(m){ return m.src!=='示例'; });
     for(var i=0;i<SUNP.length;i++){
-      DB.health[SUNP[i].k]=DB.health[SUNP[i].k].filter(function(r){ return String(r.note||'').indexOf('示例')<0; }); }
+      var arr=DB.health[SUNP[i].k]||[];
+      DB.health[SUNP[i].k]=arr.filter(function(r){ return String(r.note||'').indexOf('示例')<0; }); }
     DB.meta.demo=false;
     save(); refreshAll(); toast('示例数据已清空');
   }, '确定清空');
