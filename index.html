@@ -435,7 +435,7 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
             <button class="btn sm" onclick="printExport('stu-print','学生名单')"><svg><use href="#i-file"/></svg>PDF</button>
             <button class="btn sm danger" onclick="clearZone('students')"><svg><use href="#i-trash"/></svg>清空</button>
           </span></div>
-        <div class="tiny" style="margin-bottom:9px">规则：每月 25 日自动总结 · 展示台红字 &lt;20 加小红花 · 红字 &gt;80 姓名显示为<span style="color:var(--blue);font-weight:800">蓝色</span></div>
+        <div class="tiny" style="margin-bottom:9px" id="path-rule-tip">规则：每月 25 日自动总结 · 红字加小红花 / 超阈值姓名显示蓝色（阈值可在「设置 → 小红花奖励标准」调整）</div>
         <div id="stu-print"><div class="stu-grid" id="stu-list"></div></div>
       </div>
     </div>
@@ -615,7 +615,7 @@ function blankDB(){
     study:{ projects:[], items:[] },
     lib:{ work:{projects:[]}, study:{projects:[]}, mats:[] },
     flowers:{ total:0, log:[] },
-    flowerRules:{ glucoseLow:5, glucoseHighEq:6, glucoseHigh:7.5, weightReward:true, monthlyErr:20 },
+    flowerRules:{ glucoseLow:5, glucoseHighEq:6, glucoseHigh:7.5, weightReward:true, monthlyErr:20, warnCount:80 },
     growth:{ exp:0, level:0, watered:0, log:[] }
   };
 }
@@ -715,9 +715,9 @@ function seedDemo(){
    ======================================================================= */
 function clsName(id){ for(var i=0;i<DB.classes.length;i++){ if(DB.classes[i].id===id) return DB.classes[i].name; } return '未分班'; }
 function stuById(id){ for(var i=0;i<DB.students.length;i++){ if(DB.students[i].id===id) return DB.students[i]; } return null; }
-function matById(id){ for(var i=0;i<DB.lib.mats.length;i++){ if(DB.lib.mats[i].id===id) return DB.lib.mats[i]; } return null; }
+function matById(id){ var mats=(DB.lib&&DB.lib.mats)||[]; for(var i=0;i<mats.length;i++){ if(mats[i].id===id) return mats[i]; } return null; }
 function zoneName(k){ for(var i=0;i<ZONES.length;i++){ if(ZONES[i].k===k) return ZONES[i].n; } return k; }
-function projName(lib,id){ var ps=DB.lib[lib].projects; for(var i=0;i<ps.length;i++){ if(ps[i].id===id) return ps[i].name; } return '未分类'; }
+function projName(lib,id){ var ps=((DB.lib||{})[lib]||{projects:[]}).projects; for(var i=0;i<ps.length;i++){ if(ps[i].id===id) return ps[i].name; } return '未分类'; }
 function studyProjName(id){ var ps=DB.study.projects; for(var i=0;i<ps.length;i++){ if(ps[i].id===id) return ps[i].name; } return '未分类'; }
 
 /* 学生红字总数（展示台四栏 + 阅读错题） */
@@ -762,10 +762,10 @@ function pendingItems(){
     if(diff>=0) out.push({kind:'todo', id:td.id, text:td.text, date:td.date, over:diff>0, days:diff});
   }
   var g = DB.health.glucose, w = DB.health.weight;
-  if(g.length){ var last=g[g.length-1]; if(+last.val>7.5)
+  if(g.length){ var last=g[g.length-1]; var _gh=(DB.flowerRules&&DB.flowerRules.glucoseHigh!=null)?DB.flowerRules.glucoseHigh:7.5; if(+last.val>_gh)
     out.push({kind:'alert', id:'g', text:'血糖偏高（'+last.val+' mmol/L），需复测并调整饮食', date:t, over:true, days:0}); }
   for(var i=0;i<DB.students.length;i++){ var s=DB.students[i];
-    if(errCount(s.id)>80) out.push({kind:'stu', id:s.id, text:s.name+' 红字已达 '+errCount(s.id)+' 个，需重点辅导', date:t, over:true, days:0}); }
+    var _wc=(DB.flowerRules&&DB.flowerRules.warnCount!=null)?DB.flowerRules.warnCount:80; if(errCount(s.id)>_wc) out.push({kind:'stu', id:s.id, text:s.name+' 红字已达 '+errCount(s.id)+' 个，需重点辅导', date:t, over:true, days:0}); }
   out.sort(function(a,b){ return (b.days||0)-(a.days||0); });
   return out;
 }
@@ -790,7 +790,8 @@ function buildIndex(){
   for(var i=0;i<DB.study.items.length;i++){ var it=DB.study.items[i];
     ix.push({mod:'骄阳永灿', pos:'进修 · '+studyProjName(it.projectId), text:(it.result||'')+' '+((it.questions||[]).join('；')),
       time:it.y+'-'+pad(it.m)+'-'+pad(it.d)+' '+(it.t||''), go:['sun','study'], lock:true}); }
-  for(var i=0;i<DB.lib.mats.length;i++){ var mt=DB.lib.mats[i];
+  var mats=(DB.lib&&DB.lib.mats)||[];
+  for(var i=0;i<mats.length;i++){ var mt=mats[i];
     var pns=[]; for(var j=0;j<(mt.projects||[]).length;j++) pns.push(projName(mt.lib, mt.projects[j]));
     ix.push({mod:'花团锦簇', pos:(mt.lib==='work'?'工作素材':'学习素材')+' · '+(pns.join('/')||'未分类'),
       text:mt.title+'　'+(mt.text||''), time:mt.at, go:['mat',mt.id]}); }
@@ -1013,11 +1014,11 @@ function runMonthlySummary(force){
   ensureFlowerRules();
   var d=new Date(), mk=monthKey();
   if(!force){ if(d.getDate()<25) return null; if(DB.meta.summaryMonth===mk) return null; }
-  var good=[], warn=[], i;
+  var good=[], warn=[], i; var _wc=(DB.flowerRules&&DB.flowerRules.warnCount!=null)?DB.flowerRules.warnCount:80;
   for(var i=0;i<DB.students.length;i++){
     var s=DB.students[i], n=errCount(s.id);
     if(n < (DB.flowerRules.monthlyErr||20)){ s.flowers=(s.flowers||0)+1; good.push(s.name+'（'+n+'）'); }
-    if(n>80) warn.push(s.name+'（'+n+'）');
+    if(n>_wc) warn.push(s.name+'（'+n+'）');
   }
   DB.meta.summaryMonth=mk; save();
   return {month:mk, good:good, warn:warn};
@@ -1501,6 +1502,7 @@ function exportXls(filename, rows, sheet){ download(filename, toXls(rows, sheet)
    ======================================================================= */
 function renderPath(){
   var list=$('path-list'), stage=$('path-stage');
+  var _tip=$('path-rule-tip'); if(_tip){ var _fr=DB.flowerRules||{}, _me=_fr.monthlyErr!=null?_fr.monthlyErr:20, _wc=_fr.warnCount!=null?_fr.warnCount:80; _tip.innerHTML='规则：每月 25 日自动总结 · 红字 &lt;'+_me+' 加小红花 · 红字 &gt;'+_wc+' 姓名显示为<span style="color:var(--blue);font-weight:800">蓝色</span>（阈值在「设置→小红花奖励标准」可调）'; }
   if(!list||!stage) return;
   if(UI.stuId && stuById(UI.stuId)){
     list.classList.add('hide'); stage.classList.remove('hide');
@@ -1580,9 +1582,10 @@ function renderStuList(){
     h += '<div style="grid-column:1/-1;margin:6px 0 2px;font-weight:800;font-family:var(--fs);letter-spacing:2px;font-size:15px">'+
          '<svg width="15" height="15" style="color:var(--m2)"><use href="#i-book"/></svg> '+esc(cid?clsName(cid):'未分班')+'</div>';
     for(var i=0;i<arr.length;i++){ var st=arr[i], n=errCount(st.id), fl=st.flowers||0;
-      h += '<button class="stu'+(n>80?' warn':'')+'" onclick="openStu(\''+st.id+'\')">'+
+      var _fr=DB.flowerRules||{}, _me=_fr.monthlyErr!=null?_fr.monthlyErr:20, _wc=_fr.warnCount!=null?_fr.warnCount:80;
+      h += '<button class="stu'+(n>_wc?' warn':'')+'" onclick="openStu(\''+st.id+'\')">'+
         '<span class="nm">'+esc(st.name)+(fl>0?flowerSvg(18):'')+(fl>1?('<span class="tiny">×'+fl+'</span>'):'')+'</span>'+
-        '<span class="mt">红字 '+n+' 个 · '+(n<20?'优等':(n>80?'需重点辅导':'正常'))+'</span>'+
+        '<span class="mt">红字 '+n+' 个 · '+(n<_me?'优等':(n>_wc?'需重点辅导':'正常'))+'</span>'+
         '<span class="mt">'+esc(st.note||clsName(st.classId))+'</span></button>';
     }
   }
@@ -1736,7 +1739,8 @@ function renderReadingZone(s){
 }
 function openReadingForm(sid){
   var mopts='<option value="">（不链接素材）</option>', i;
-  for(var i=0;i<DB.lib.mats.length;i++){ var m=DB.lib.mats[i];
+  var mats=(DB.lib&&DB.lib.mats)||[];
+  for(var i=0;i<mats.length;i++){ var m=mats[i];
     mopts += '<option value="'+m.id+'">'+esc((m.lib==='work'?'工作·':'学习·')+m.title)+'</option>'; }
   openModal('添加阅读错题',
     '<div class="field"><label class="fl">题干 / 考查点</label><textarea id="rd-q" placeholder="例：分析“那辆自行车吱呀作响，像父亲的脊背”的修辞及作用"></textarea></div>'+
@@ -2055,11 +2059,11 @@ function trySunAnswer(){
   }else toast('答案不正确');
 }
 function lockSun(){ UI.sunUnlocked=false; UI.sunPanel=null; refreshAll(); toast('已重新锁定'); }
-function healthLast(k){ var a=DB.health[k]; return a.length? a[a.length-1] : null; }
+function healthLast(k){ var a=DB.health[k]||[]; return a.length? a[a.length-1] : null; }
 function renderSunHome(){
   var hero=$('sun-hero'), cards=$('sun-cards');
   if(hero){
-    var w=healthLast('weight'), g=healthLast('glucose'), sp=DB.health.sport, sh=0, i;
+    var w=healthLast('weight'), g=healthLast('glucose'), sp=DB.health.sport||[], sh=0, i;
     for(var i=0;i<sp.length;i++) sh += (+sp[i].val||0);
     var studyH=0; for(var i=0;i<DB.study.items.length;i++) studyH += (+DB.study.items[i].hours||0);
     hero.innerHTML =
@@ -2118,7 +2122,7 @@ function renderSunStage(){
   if(UI.sunPanel==='study'){ box.innerHTML=studyStageHtml(); return; }
   var p=null; for(var i=0;i<SUNP.length;i++){ if(SUNP[i].k===UI.sunPanel) p=SUNP[i]; }
   if(!p){ UI.sunPanel=null; return; }
-  var arr=DB.health[p.k].slice();
+  var arr=(DB.health[p.k]||[]).slice();
   var h='<div class="row no-print" style="margin-bottom:11px">'+
     '<button class="btn sm" onclick="closeSunPanel()"><svg><use href="#i-back"/></svg>返回</button>'+
     '<span style="margin-left:auto"></span>'+
@@ -2176,7 +2180,7 @@ function openHealthForm(k){
     (k==='glucose'?'<div class="tiny" id="gl-rules-tip"></div>':'')+
     (k==='weight'?'<div class="tiny">规则：比上一条下降 → 加小红花；上升 → 扣除小红花。</div>':''),
     '<button class="btn" onclick="closeModal()">取消</button><button class="btn o" onclick="saveHealthForm(\''+k+'\')">保存</button>');
-  if(k==='glucose'){ var t=$('gl-rules-tip'); if(t){ var R=DB.flowerRules; t.innerHTML='规则：下降且落在 '+R.glucoseLow+'–'+R.glucoseHighEq+' → 加小红花+放烟花；超过 '+R.glucoseHigh+' → 扣花并标红（阈值可在设置改）'; } }
+  if(k==='glucose'){ var t=$('gl-rules-tip'); if(t){ var R=DB.flowerRules||{}, glow=R.glucoseLow!=null?R.glucoseLow:5, gheq=R.glucoseHighEq!=null?R.glucoseHighEq:6, ghigh=R.glucoseHigh!=null?R.glucoseHigh:7.5; t.innerHTML='规则：下降且落在 '+glow+'–'+gheq+' → 加小红花+放烟花；超过 '+ghigh+' → 扣花并标红（阈值可在设置改）'; } }
   }
 function saveHealthForm(k){
   var v=$('hf-val').value, note=$('hf-note').value.trim(), ds=$('hf-date').value||todayStr(), t=$('hf-time').value||'';
@@ -2199,9 +2203,9 @@ function addHealthRecord(k, val, note, when){
     else if(+val > +prev.val){ addFlower(-1, '体重上升至 '+val+' kg'); msg='体重上升，扣除小红花 -1'; }
   }
   if(k==='glucose'){
-    var R=DB.flowerRules;
-    if(+val > R.glucoseHigh){ addFlower(-1, '血糖偏高 '+val); msg='血糖 '+val+' 偏高，扣除小红花并标红提醒'; }
-    else if(+val>=R.glucoseLow && +val<=R.glucoseHighEq && prev && +val < +prev.val){
+    var R=DB.flowerRules||{}, glow=R.glucoseLow!=null?R.glucoseLow:5, gheq=R.glucoseHighEq!=null?R.glucoseHighEq:6, ghigh=R.glucoseHigh!=null?R.glucoseHigh:7.5;
+    if(+val > ghigh){ addFlower(-1, '血糖偏高 '+val); msg='血糖 '+val+' 偏高，扣除小红花并标红提醒'; }
+    else if(+val>=glow && +val<=gheq && prev && +val < +prev.val){
       addFlower(1, '血糖下降至理想区间 '+val); msg='血糖降入理想区间，放烟花 + 小红花 +1'; boom(46);
     }
   }
@@ -2213,10 +2217,11 @@ function addFlower(delta, reason){
   if(DB.flowers.log.length>200) DB.flowers.log.length=200;
 }
 function saveFlowerRules(){
-  var a=parseFloat($('fr-glow').value), b=parseFloat($('fr-gheq').value), c=parseFloat($('fr-ghigh').value), d=parseInt($('fr-err').value,10);
-  if(isNaN(a)||isNaN(b)||isNaN(c)||isNaN(d)){ toast('请填写有效的数字'); return; }
+  ensureFlowerRules();
+  var a=parseFloat($('fr-glow').value), b=parseFloat($('fr-gheq').value), c=parseFloat($('fr-ghigh').value), d=parseInt($('fr-err').value,10), e=parseInt($('fr-warn').value,10);
+  if(isNaN(a)||isNaN(b)||isNaN(c)||isNaN(d)||isNaN(e)){ toast('请填写有效的数字'); return; }
   if(a>b){ toast('理想下限不能大于理想上限'); return; }
-  var R=DB.flowerRules; R.glucoseLow=a; R.glucoseHighEq=b; R.glucoseHigh=c; R.monthlyErr=d;
+  var R=DB.flowerRules; R.glucoseLow=a; R.glucoseHighEq=b; R.glucoseHigh=c; R.monthlyErr=d; R.warnCount=e;
   save(); renderChips(); toast('奖励标准已保存，全班生效');
 }
 function plantSvg(level){
@@ -2320,14 +2325,16 @@ function importHealthFile(k){
    骄阳永灿 · 进修（模板函数，由 renderSunStage 单向调用）
    ======================================================================= */
 function studyItems(pid){
-  var out=[]; for(var i=0;i<DB.study.items.length;i++){
-    if(!pid || pid==='all' || DB.study.items[i].projectId===pid) out.push(DB.study.items[i]); }
+  var items=DB.study&&DB.study.items||[];
+  var out=[]; for(var i=0;i<items.length;i++){
+    if(!pid || pid==='all' || items[i].projectId===pid) out.push(items[i]); }
   return out.sort(function(a,b){ return a.at<b.at?1:-1; });
 }
 
 function studyStageHtml(){
+  var projects=DB.study&&DB.study.projects||[], items=DB.study&&DB.study.items||[];
   var totalH=0, i;
-  for(var i=0;i<DB.study.items.length;i++) totalH += (+DB.study.items[i].hours||0);
+  for(var i=0;i<items.length;i++) totalH += (+items[i].hours||0);
   /* 第一层：操作条 + 抬头（保持最初版本格局） */
   var h='<div class="row no-print" style="margin-bottom:11px">'+
     '<button class="btn sm" onclick="closeSunPanel()"><svg><use href="#i-back"/></svg>返回</button>'+
@@ -2337,25 +2344,25 @@ function studyStageHtml(){
     '<button class="btn sm" onclick="openStudyTrend()"><svg><use href="#i-chart"/></svg>时长趋势</button>'+
     '<button class="btn sm" onclick="printExport(\'study-print\',\'进修记录\')"><svg><use href="#i-file"/></svg>PDF</button></div>';
   h += '<div class="card-hero" style="background:linear-gradient(135deg,#B57BEA,#9D4EDD,#6423A8);min-height:0;padding:16px">'+
-    '<h2>进修展示台</h2><div class="hero-stats"><div>学习项目<b>'+DB.study.projects.length+'</b></div>'+
-    '<div>学习记录<b>'+DB.study.items.length+'</b></div><div>累计时长<b>'+(Math.round(totalH*10)/10)+' h</b></div></div></div>';
+    '<h2>进修展示台</h2><div class="hero-stats"><div>学习项目<b>'+projects.length+'</b></div>'+
+    '<div>学习记录<b>'+items.length+'</b></div><div>累计时长<b>'+(Math.round(totalH*10)/10)+' h</b></div></div></div>';
   /* 第二层：学习项目列表（保持最初版本） */
   h += '<div class="card"><div class="card-h"><svg width="18" height="18" style="color:var(--m4)"><use href="#i-folder"/></svg><h3>学习项目</h3>'+
     '<span class="right"><span class="tiny">点击项目名可重命名；删项目会连同其记录一起删除</span></span></div><div class="row">';
-  if(!DB.study.projects.length) h += '<span class="muted">还没有学习项目，点上方「新增学习项目」开始。</span>';
-  for(var i=0;i<DB.study.projects.length;i++){ var pl=DB.study.projects[i], nl=studyItems(pl.id).length, cl=(pl.color||'#9D4EDD');
+  if(!projects.length) h += '<span class="muted">还没有学习项目，点上方「新增学习项目」开始。</span>';
+  for(var i=0;i<projects.length;i++){ var pl=projects[i], nl=studyItems(pl.id).length, cl=(pl.color||'#9D4EDD');
     h += '<span class="tag violet" style="padding:7px 12px;font-size:13px;border-left:4px solid '+cl+';cursor:pointer" onclick="renameStudyProject(\''+pl.id+'\')" title="点击重命名">'+esc(pl.name)+' · '+nl+' 条 · 累计 '+(Math.round((studyItems(pl.id).reduce(function(a,b){return a+(+b.hours||0);},0))*10)/10)+' h'+
       '<svg width="13" height="13" style="margin-left:5px;opacity:.7"><use href="#i-edit"/></svg>'+
       '<button class="btn sm danger" style="min-height:22px;padding:0 6px;border:0" onclick="event.stopPropagation();delStudyProject(\''+pl.id+'\')"><svg><use href="#i-minus"/></svg></button></span>'; }
   h += '</div></div>';
   /* 第三层：学习项目内容（三列并列，多层顺延） */
-  if(!DB.study.projects.length){
+  if(!projects.length){
     h += '<div class="empty" style="padding:18px">还没有学习项目，点上方「新增学习项目」开始记录。</div>';
     return h;
   }
   h += '<div id="study-print" class="study-cols">';
-  for(var i=0;i<DB.study.projects.length;i++){
-    var pp=DB.study.projects[i], recs=studyItems(pp.id), ph=0, k, pcol=(pp.color||'#9D4EDD');
+  for(var i=0;i<projects.length;i++){
+    var pp=projects[i], recs=studyItems(pp.id), ph=0, k, pcol=(pp.color||'#9D4EDD');
     for(var k=0;k<recs.length;k++) ph += (+recs[k].hours||0);
     h += '<div class="card study-col" style="border-top:4px solid '+pcol+'"><div class="card-h">'+
       '<button class="study-name" onclick="renameStudyProject(\''+pp.id+'\')" title="点击重命名">'+esc(pp.name)+' <svg width="13" height="13" style="opacity:.55"><use href="#i-edit"/></svg></button>'+
@@ -2392,7 +2399,8 @@ function studyStageHtml(){
 }
 /* 进修时长趋势（累计，按周/按月） */
 function studyTrendData(mode){
-  var its=DB.study.items.slice().sort(function(a,b){
+  var items=DB.study&&DB.study.items||[];
+  var its=items.slice().sort(function(a,b){
     return (a.y*10000+a.m*100+a.d)-(b.y*10000+b.m*100+b.d) || (a.t||'').localeCompare(b.t||'');
   });
   var map={}, order=[], i;
@@ -2519,8 +2527,9 @@ function delStudyLink(id, idx){ var it=studyItemById(id); if(!it) return;
 function switchLib(l){ UI.lib=l; UI.libProject='all'; renderLib(); }
 function libMats(){
   var out=[], q=($('lib-q')?$('lib-q').value.trim().toLowerCase():'');
-  for(var i=0;i<DB.lib.mats.length;i++){
-    var m=DB.lib.mats[i];
+  var mats=(DB.lib&&DB.lib.mats)||[];
+  for(var i=0;i<mats.length;i++){
+    var m=mats[i];
     if(m.lib!==UI.lib) continue;
     if(UI.libProject!=='all' && (m.projects||[]).indexOf(UI.libProject)<0) continue;
     if(q){
@@ -2540,14 +2549,16 @@ function renderLib(){
     else { bs.classList.add('v'); bw.classList.remove('v'); }
   }
   if(t) t.textContent = UI.lib==='work'?'工作素材':'学习素材';
-  var ps=DB.lib[UI.lib].projects, i, h='';
+  var lib=(DB.lib||{})[UI.lib]||{projects:[]};
+  var ps=lib.projects||[], i, h='';
+  var allMats=(DB.lib&&DB.lib.mats)||[];
   if(pbox){
     var allN=0;
-    for(var i=0;i<DB.lib.mats.length;i++){ if(DB.lib.mats[i].lib===UI.lib) allN++; }
+    for(var i=0;i<allMats.length;i++){ if(allMats[i].lib===UI.lib) allN++; }
     h += '<button class="btn sm'+(UI.libProject==='all'?' v':'')+'" onclick="pickProject(\'all\')">全部 · '+allN+'</button>';
     for(var i=0;i<ps.length;i++){
       var p=ps[i], n=0;
-      for(var j=0;j<DB.lib.mats.length;j++){ var m=DB.lib.mats[j];
+      for(var j=0;j<allMats.length;j++){ var m=allMats[j];
         if(m.lib===UI.lib && (m.projects||[]).indexOf(p.id)>=0) n++; }
       h += '<span class="tag'+(UI.libProject===p.id?' violet':'')+'" style="padding:6px 10px">'+
         '<button class="btn sm" style="min-height:20px;padding:0;border:0;background:none;font-size:13px" onclick="pickProject(\''+p.id+'\')">'+esc(p.name)+' · '+n+'</button>'+
@@ -2622,34 +2633,39 @@ function exportMemosXls(){
   exportXls('速记流水_'+todayStr()+'.xls', rows, '速记流水');
 }
 function addProject(){ askPrompt('新增项目','项目名称，如：试卷 / 阅读 / 作文 / 佳词佳句','', function(v){
-  DB.lib[UI.lib].projects.push({id:uid(), name:v}); save(); renderLib(); toast('项目已添加'); }); }
+  var lib=(DB.lib||{})[UI.lib]||{projects:[]};
+  lib.projects.push({id:uid(), name:v}); (DB.lib||{})[UI.lib]=lib; save(); renderLib(); toast('项目已添加'); }); }
 function renameProject(id){
-  var ps=DB.lib[UI.lib].projects, p=null;
+  var ps=((DB.lib||{})[UI.lib]||{projects:[]}).projects, p=null;
   for(var i=0;i<ps.length;i++){ if(ps[i].id===id) p=ps[i]; }
   if(!p) return;
   askPrompt('修改项目名称','项目名称', p.name, function(v){ p.name=v; save(); renderLib(); toast('已修改'); });
 }
 function delProject(id){
+  var mats=(DB.lib&&DB.lib.mats)||[];
   var cnt=0, only=0, i;
-  for(var i=0;i<DB.lib.mats.length;i++){ var m=DB.lib.mats[i];
+  for(var i=0;i<mats.length;i++){ var m=mats[i];
     if((m.projects||[]).indexOf(id)>=0){ cnt++; if(m.projects.length===1) only++; } }
   askConfirm('删除项目','该项目下有 <b>'+cnt+'</b> 条素材，其中 <b>'+only+'</b> 条仅归属本项目（删除后会变为「未分类」，内容不会丢失）。确定删除项目？', function(){
-    DB.lib[UI.lib].projects=DB.lib[UI.lib].projects.filter(function(p){ return p.id!==id; });
-    for(var i2=0;i2<DB.lib.mats.length;i2++){
-      DB.lib.mats[i2].projects=(DB.lib.mats[i2].projects||[]).filter(function(x){ return x!==id; }); }
+    var lib=(DB.lib||{})[UI.lib]||{projects:[]};
+    lib.projects=(lib.projects||[]).filter(function(p){ return p.id!==id; });
+    (DB.lib||{})[UI.lib]=lib;
+    for(var i2=0;i2<mats.length;i2++){
+      mats[i2].projects=(mats[i2].projects||[]).filter(function(x){ return x!==id; }); }
     if(UI.libProject===id) UI.libProject='all';
     save(); renderLib(); toast('项目已删除');
   }, '删除');
 }
 function clearProject(id){
+  var mats=(DB.lib&&DB.lib.mats)||[];
   var del=0, un=0, i;
-  for(var i=0;i<DB.lib.mats.length;i++){ var m=DB.lib.mats[i];
+  for(var i=0;i<mats.length;i++){ var m=mats[i];
     if(m.lib===UI.lib && (m.projects||[]).indexOf(id)>=0){ if(m.projects.length===1) del++; else un++; } }
   askConfirm('一键清空项目',
     '将清空「'+esc(projName(UI.lib,id))+'」下的素材：<br>· 仅属于本项目的 <b>'+del+'</b> 条将被<span class="err">彻底删除</span><br>· 与其他项目共用的 <b>'+un+'</b> 条只移除本项目归属（内容保留）<br>点击确定即刻执行。',
     function(){
       var keep=[];
-      for(var i2=0;i2<DB.lib.mats.length;i2++){ var m2=DB.lib.mats[i2];
+      for(var i2=0;i2<mats.length;i2++){ var m2=mats[i2];
         if(m2.lib===UI.lib && (m2.projects||[]).indexOf(id)>=0){
           if(m2.projects.length===1) continue;
           m2.projects=m2.projects.filter(function(x){ return x!==id; });
@@ -2666,7 +2682,7 @@ function clearProject(id){
 var MF = { imgs:[], files:[] };
 function openMatForm(){
   MF.imgs=[]; MF.files=[];
-  var ps=DB.lib[UI.lib].projects, i, chk='';
+  var ps=((DB.lib||{})[UI.lib]||{projects:[]}).projects, i, chk='';
   if(!ps.length){ toast('请先在当前库新增一个项目'); return; }
   for(var i=0;i<ps.length;i++){
     var on = (UI.libProject===ps[i].id) || (UI.libProject==='all' && i===0);
@@ -2788,9 +2804,10 @@ function saveMat(){
   var links=collectLinks();
   var obj={id:uid(), lib:UI.lib, projects:pj, title:title||text.slice(0,18), text:text,
     files:MF.files.slice(), images:MF.imgs.slice(), links:links, at:nowStr(), analysis:null};
+  var mats=(DB.lib&&DB.lib.mats)||[];
   var dup=null, score=0;
-  for(var i=0;i<DB.lib.mats.length;i++){
-    var m=DB.lib.mats[i];
+  for(var i=0;i<mats.length;i++){
+    var m=mats[i];
     var s1=similarity(m.title, obj.title), s2=similarity(m.text, obj.text);
     var s=Math.max(s1*0.6+s2*0.4, s2);
     if(m.title===obj.title) s=1;
@@ -2833,7 +2850,8 @@ function mergeIntoOld(oldId){
 function forceSaveMat(){ var n=PENDING_MAT; PENDING_MAT=null; closeModal(); if(n) doSaveMat(n); }
 function doSaveMat(obj){
   if(obj.text && obj.text.length>20) obj.analysis=analyzeArticle(obj.text);
-  DB.lib.mats.unshift(obj);
+  var mats=(DB.lib&&DB.lib.mats)||[];
+  mats.unshift(obj); DB.lib.mats=mats;
   MF.imgs=[]; MF.files=[];
   closeModal(); save(); refreshAll();
   toast('素材已保存'+(obj.analysis?('，判定为 '+obj.analysis.genre):''));
@@ -2888,7 +2906,7 @@ function dlMatFile(id, idx){
 }
 function editMatProjects(id){
   var m=matById(id); if(!m) return;
-  var ps=DB.lib[m.lib].projects, chk='';
+  var ps=((DB.lib||{})[m.lib]||{projects:[]}).projects, chk='';
   for(var i=0;i<ps.length;i++){
     chk += '<label class="tag" style="padding:7px 11px;cursor:pointer"><input type="checkbox" class="ep-p" value="'+ps[i].id+'"'+
       ((m.projects||[]).indexOf(ps[i].id)>=0?' checked':'')+' style="width:auto;margin-right:5px">'+esc(ps[i].name)+'</label>';
@@ -2907,7 +2925,8 @@ function saveMatProjects(id){
 function delMat(id){
   var m=matById(id); if(!m) return;
   askConfirm('删除素材','确定删除《'+esc(m.title)+'》？其原稿与图片也会一并删除，不可恢复。', function(){
-    DB.lib.mats=DB.lib.mats.filter(function(x){ return x.id!==id; }); save(); refreshAll(); toast('已删除');
+    var mats=(DB.lib&&DB.lib.mats)||[];
+    DB.lib.mats=mats.filter(function(x){ return x.id!==id; }); save(); refreshAll(); toast('已删除');
   }, '删除');
 }
 function editMatLinks(id){
@@ -2928,7 +2947,7 @@ function saveMatLinks(id){
    备份 / 设置 / 初始化
    ======================================================================= */
 function dataCount(){
-  var n=DB.todos.length+DB.memos.length+DB.students.length+DB.records.length+DB.reading.length+DB.lib.mats.length+DB.study.items.length;
+  var n=(DB.todos||[]).length+(DB.memos||[]).length+(DB.students||[]).length+(DB.records||[]).length+(DB.reading||[]).length+((DB.lib&&DB.lib.mats)||[]).length+((DB.study&&DB.study.items)||[]).length;
   for(var i=0;i<SUNP.length;i++){ var arr=DB.health[SUNP[i].k]; if(Array.isArray(arr)) n += arr.length; }
   return n;
 }
@@ -2954,7 +2973,7 @@ function importBackupPick(){
     }); }, '继续导入');
 }
 function ensureFlowerRules(){
-  var def={glucoseLow:5, glucoseHighEq:6, glucoseHigh:7.5, weightReward:true, monthlyErr:20};
+  var def={glucoseLow:5, glucoseHighEq:6, glucoseHigh:7.5, weightReward:true, monthlyErr:20, warnCount:80};
   if(!DB.flowerRules || typeof DB.flowerRules!=='object') DB.flowerRules=def;
   else { for(var k in def){ if(DB.flowerRules[k]==null) DB.flowerRules[k]=def[k]; } }
 }
@@ -2982,7 +3001,8 @@ function clearDemo(){
     DB.students=DB.students.filter(function(s){ if(s.note==='示例'){ demoIds[s.id]=1; return false; } return true; });
     DB.records=DB.records.filter(function(r){ return !demoIds[r.studentId] && r.src!=='示例'; });
     DB.reading=DB.reading.filter(function(r){ return !demoIds[r.studentId]; });
-    DB.lib.mats=DB.lib.mats.filter(function(m){ return m.src!=='示例'; });
+    var mats=(DB.lib&&DB.lib.mats)||[];
+    DB.lib.mats=mats.filter(function(m){ return m.src!=='示例'; });
     for(var i=0;i<SUNP.length;i++){
       DB.health[SUNP[i].k]=DB.health[SUNP[i].k].filter(function(r){ return String(r.note||'').indexOf('示例')<0; }); }
     DB.meta.demo=false;
@@ -3009,14 +3029,16 @@ function openSettings(){
     (UI.sunUnlocked?' <button class="btn sm" onclick="lockSun();closeModal()"><svg><use href="#i-lock"/></svg>立即重新锁定</button>':'')+
     '</div></div>'+
     '<div class="zone"><div class="zone-h">月度自动总结（每月 25 日）</div><div class="zone-b">'+
-    '<div class="tiny">规则：展示台红字 &lt;20 的学生加一朵小红花；红字 &gt;80 的学生姓名在名单中显示为蓝色。上次执行：'+esc(DB.meta.summaryMonth||'尚未执行')+'</div>'+
+    '<div class="tiny">规则：展示台红字 &lt;'+(DB.flowerRules&&DB.flowerRules.monthlyErr!=null?DB.flowerRules.monthlyErr:20)+' 的学生加一朵小红花；红字 &gt;'+(DB.flowerRules&&DB.flowerRules.warnCount!=null?DB.flowerRules.warnCount:80)+' 的学生姓名在名单中显示为蓝色。上次执行：'+esc(DB.meta.summaryMonth||'尚未执行')+'</div>'+
     '<button class="btn sm g" style="margin-top:8px" onclick="manualSummary()"><svg><use href="#i-star"/></svg>立即执行一次总结</button></div></div>'+
     '<div class="zone"><div class="zone-h">小红花奖励标准（全班通用 · 可随时调整）</div><div class="zone-b">'+
     '<div class="tiny" style="margin-bottom:7px">指标达标自动加红花、超标扣红花；阈值对所有学生一致，修改后即时生效。</div>'+
-    '<div class="inline-form"><div class="field"><label class="fl">血糖理想下限</label><input type="number" step="0.1" id="fr-glow" value="'+DB.flowerRules.glucoseLow+'"></div>'+
-    '<div class="field"><label class="fl">血糖理想上限</label><input type="number" step="0.1" id="fr-gheq" value="'+DB.flowerRules.glucoseHighEq+'"></div></div>'+
-    '<div class="inline-form"><div class="field"><label class="fl">血糖偏高阈值</label><input type="number" step="0.1" id="fr-ghigh" value="'+DB.flowerRules.glucoseHigh+'"></div>'+
-    '<div class="field"><label class="fl">月度红字加花线</label><input type="number" id="fr-err" value="'+DB.flowerRules.monthlyErr+'"></div></div>'+
+    (function(R){ R=R||{}; return '<div class="inline-form"><div class="field"><label class="fl">血糖理想下限</label><input type="number" step="0.1" id="fr-glow" value="'+(R.glucoseLow!=null?R.glucoseLow:5)+'"></div>'+
+    '<div class="field"><label class="fl">血糖理想上限</label><input type="number" step="0.1" id="fr-gheq" value="'+(R.glucoseHighEq!=null?R.glucoseHighEq:6)+'"></div></div>'+
+    '<div class="inline-form"><div class="field"><label class="fl">血糖偏高阈值</label><input type="number" step="0.1" id="fr-ghigh" value="'+(R.glucoseHigh!=null?R.glucoseHigh:7.5)+'"></div>'+
+    '<div class="field"><label class="fl">月度红字加花线</label><input type="number" id="fr-err" value="'+(R.monthlyErr!=null?R.monthlyErr:20)+'"></div></div>'+
+    '<div class="inline-form" style="margin-top:8px"><div class="field"><label class="fl">红字变蓝名阈值</label><input type="number" id="fr-warn" value="'+(R.warnCount!=null?R.warnCount:80)+'"></div>'+
+    '<div class="field"><label class="fl" style="color:var(--blue)">红字≥此值·姓名显蓝</label><span class="tiny">如 80，可随时调整</span></div></div>'; })(DB.flowerRules)+
     '<button class="btn sm o" onclick="saveFlowerRules()"><svg><use href="#i-edit"/></svg>保存奖励标准</button></div></div>'+
     '<div class="zone"><div class="zone-h">账号与同步（跨设备共用一份数据 · 数据存云端）</div><div class="zone-b">'+
     '<div class="field"><label class="fl">同步后端</label><select id="sync-backend" onchange="SYNC.backend=this.value;saveSyncCfg();openSettings();">'+
@@ -3131,11 +3153,12 @@ function manualSummary(){
 }
 function showSummary(r, manual){
   if(!r) return;
+  var _fr=DB.flowerRules||{}, _me=_fr.monthlyErr!=null?_fr.monthlyErr:20, _wc=_fr.warnCount!=null?_fr.warnCount:80;
   var h='<div class="row" style="margin-bottom:9px"><span class="tag amber"><svg width="13" height="13"><use href="#i-star"/></svg>'+esc(r.month)+' 月度总结</span>'+
     (manual?'<span class="tiny">手动执行</span>':'<span class="tiny">每月 25 日自动生成</span>')+'</div>';
-  h += '<div class="zone"><div class="zone-h">优等 · 红字少于 20（已加小红花）</div><div class="zone-b">'+
+  h += '<div class="zone"><div class="zone-h">优等 · 红字少于 '+_me+'（已加小红花）</div><div class="zone-b">'+
     (r.good.length? r.good.map(function(x){ return '<div class="rec">'+esc(x)+' '+flowerSvg(16)+'</div>'; }).join('') : '<div class="tiny">本月暂无</div>')+'</div></div>';
-  h += '<div class="zone"><div class="zone-h">需重点辅导 · 红字超过 80（名单中显示蓝色）</div><div class="zone-b">'+
+  h += '<div class="zone"><div class="zone-h">需重点辅导 · 红字超过 '+_wc+'（名单中显示蓝色）</div><div class="zone-b">'+
     (r.warn.length? r.warn.map(function(x){ return '<div class="rec" style="color:var(--blue);font-weight:700">'+esc(x)+'</div>'; }).join('') : '<div class="tiny">本月暂无</div>')+'</div></div>';
   openModal('学情月度总结', h, '<button class="btn a" onclick="closeModal()">知道了</button>');
   if(r.good.length) boom(30);
