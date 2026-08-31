@@ -145,7 +145,7 @@ label.fl{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin:0
 .empty{padding:26px 14px;text-align:center;color:var(--ink3);border:2px dashed var(--line);border-radius:var(--r2);background:#FFFEFA;font-size:14px}
 
 /* ============ 学生名单 ============ */
-.stu-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(158px,1fr))}
+.stu-grid{display:grid;gap:10px;grid-template-columns:repeat(6,minmax(0,1fr))}
 .stu{position:relative;display:flex;flex-direction:column;gap:4px;padding:13px;border-radius:var(--r2);border:1.5px solid var(--line);background:#fff;text-align:left;min-height:76px;transition:.16s}
 .stu:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
 .stu .nm{font-size:17px;font-weight:800;font-family:var(--fs);letter-spacing:1px;display:flex;align-items:center;gap:5px}
@@ -231,7 +231,8 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
 .tabbar button.on[data-m="path"]{color:var(--m2)}
 .tabbar button.on[data-m="sun"]{color:var(--m3)}
 .tabbar button.on[data-m="lib"]{color:var(--m4)}
-@media(max-width:900px){.g5,.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1100px){.stu-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:900px){.g5,.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}.stu-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:768px){
   .nav{display:none}
   .tabbar{display:block}
@@ -242,7 +243,7 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
   .topbar-actions{width:100%;margin-left:0}
   .topbar-actions .btn{flex:1}
   .card-hero h2{font-size:22px}
-  .stu-grid{grid-template-columns:repeat(2,1fr)}
+  .stu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .btn{min-height:44px}
 }
 /* ============ PWA 安装引导 ============ */
@@ -285,6 +286,8 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
 <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M4 19v1h16v-1"/></symbol>
 <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
 <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7L11.5 5.8"/><path d="M14 11a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 19.7l1.5-1.5"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l14 8-14 8z"/></symbol>
+<symbol id="i-cog" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></symbol>
 <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></symbol>
 <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V4M4 20h16M8 17v-5M12 17V8M16 17v-8"/></symbol>
 <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/></symbol>
@@ -351,6 +354,7 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
         </div>
         <div id="memo-imgs" class="thumbs"></div>
         <div id="memo-result" style="margin-top:11px"></div>
+        <div id="memo-err" style="margin-top:10px"></div>
       </div>
     </div>
 
@@ -366,12 +370,24 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
       </div>
     </div>
 
+    <div class="card">
+      <div class="card-h"><svg width="19" height="19" style="color:var(--m3)"><use href="#i-file"/></svg><h2>速记流水</h2>
+        <span class="right">
+          <button class="btn sm" onclick="exportMemosXls()"><svg><use href="#i-file"/></svg>导出Excel</button>
+          <span class="tiny">「仅存速记」和已归类的速记都在此；未归类可点「重新归类」</span>
+        </span></div>
+      <div id="memo-flow" style="margin-top:8px"></div>
+    </div>
+
     <div class="grid g4" id="quick"></div>
 
     <div class="grid g2" style="align-items:start">
       <div class="card">
         <div class="card-h"><svg width="19" height="19" style="color:var(--m2)"><use href="#i-check"/></svg><h2>待办事项</h2>
-          <span class="right"><span class="tiny">点一下即完成，出现删除线</span></span></div>
+          <span class="right">
+            <button class="btn sm" onclick="exportTodosXls()"><svg><use href="#i-file"/></svg>导出Excel</button>
+            <span class="tiny">点一下即完成，出现删除线</span>
+          </span></div>
         <div class="row">
           <input type="text" id="todo-in" placeholder="添加待办…" onkeydown="if(event.key==='Enter')addTodo()" style="flex:1;min-width:130px">
           <input type="date" id="todo-date" style="max-width:150px">
@@ -407,7 +423,8 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
           <span class="right">
             <button class="btn sm g" onclick="addStudent()"><svg><use href="#i-plus"/></svg>添加学生</button>
             <button class="btn sm" onclick="importStudentsPick()"><svg><use href="#i-upload"/></svg>导入</button>
-            <button class="btn sm" onclick="exportStudentsCsv()"><svg><use href="#i-download"/></svg>Excel/CSV</button>
+            <button class="btn sm" onclick="exportStudentsCsv()"><svg><use href="#i-download"/></svg>CSV</button>
+            <button class="btn sm" onclick="exportStudentsXls()"><svg><use href="#i-file"/></svg>Excel</button>
             <button class="btn sm" onclick="printExport('stu-print','学生名单')"><svg><use href="#i-file"/></svg>PDF</button>
             <button class="btn sm danger" onclick="clearZone('students')"><svg><use href="#i-trash"/></svg>清空</button>
           </span></div>
@@ -449,6 +466,7 @@ mark{background:#FFF08A;color:inherit;padding:0 2px;border-radius:3px;font-weigh
         <span class="right">
           <button class="btn sm v" onclick="addProject()"><svg><use href="#i-plus"/></svg>新增项目</button>
           <button class="btn sm a" onclick="openMatForm()"><svg><use href="#i-upload"/></svg>添加素材</button>
+          <button class="btn sm" onclick="exportLibXls()"><svg><use href="#i-file"/></svg>导出Excel</button>
         </span></div>
       <div class="row" id="lib-projects"></div>
       <div class="sep"></div>
@@ -511,7 +529,13 @@ function toast(msg, ms){
   var old=document.querySelector('.toast'); if(old) old.remove();
   var el=document.createElement('div'); el.className='toast'; el.textContent=msg;
   document.body.appendChild(el);
-  setTimeout(function(){ if(el.parentNode) el.remove(); }, ms||2400);
+  setTimeout(function(){ if(el.parentNode) el.remove(); }, ms||3800);
+}
+function showErrBanner(txt){
+  var el=document.getElementById('memo-err');
+  if(!el) return;
+  el.innerHTML='<div style="background:#FFE3E3;border:1px solid #E5383B;color:#B00020;padding:9px 11px;border-radius:9px;font-size:13px;line-height:1.6">'+esc(String(txt||''))+'</div>';
+  setTimeout(function(){ if(el) el.innerHTML=''; }, 10000);
 }
 function download(name, content, mime){
   var blob = content instanceof Blob ? content : new Blob(['\ufeff'+content], {type:(mime||'text/plain')+';charset=utf-8'});
@@ -589,7 +613,7 @@ function blankDB(){
 var STUDY_COLORS=['#FFB703','#06A77D','#FF6B35','#9D4EDD','#2A9D8F','#E76F51','#457B9D','#F4A261','#E07A5F','#3D5A80'];
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(DB)); }
-  catch(e){ toast('保存失败：本地空间可能已满，请导出备份后清理图片'); }
+  catch(e){ toast('保存失败：本地存储空间不足，多半是音频/视频/软件文件过大，请删除部分大文件后再保存'); }
   if(window.SYNC && window.SYNC.token && !window.SYNC.pulling && typeof schedulePush==='function') schedulePush();
 }
 function load(){
@@ -923,18 +947,20 @@ function analyzeMemoText(raw){
       content:content||ue.join('、'), errs:ue, desc:'未指明栏目，默认归入听写；错字：'+ue.join('、')});
   }
   // 健康数值（扩展）
-  var g=t.match(/血糖\s*[:：]?\s*([\d.]+)/);
+  // SEP：关键词与数值之间可能夹着语音停顿产生的标点/空格，全部忽略
+  var SEP='[\\s。.，,、:：；;·\\-~—]*';
+  var g=t.match(new RegExp('血糖'+SEP+'([\\d.]+)'));
   if(g) sug.push({type:'health', panel:'glucose', title:'骄阳永灿 · 血糖', val:parseFloat(g[1]), desc:'记录血糖 '+g[1]+' mmol/L'});
-  var bp=t.match(/血压\s*[:：]?\s*([\d.]+)\s*(?:\/|到|至|-|~)?\s*([\d.]+)?/);
+  var bp=t.match(new RegExp('血压'+SEP+'([\\d.]+)(?:[\\s。.，,、:：；;·\\-~—\\/到至~-]*)?([\\d.]+)?'));
   if(bp) sug.push({type:'health', panel:'bp', title:'骄阳永灿 · 血压', val:parseFloat(bp[1]), note:(bp[2]?('低压 '+bp[2]):''), desc:'记录血压 '+(bp[2]?(bp[1]+'/'+bp[2]):bp[1])+' mmHg'});
-  var hr=t.match(/(?:心率|脉搏|心跳)\s*[:：]?\s*([\d.]+)/);
+  var hr=t.match(new RegExp('(?:心率|脉搏|心跳)'+SEP+'([\\d.]+)'));
   if(hr) sug.push({type:'health', panel:'hr', title:'骄阳永灿 · 心率', val:parseFloat(hr[1]), desc:'记录心率 '+hr[1]+' 次/分'});
-  var w=t.match(/(?:体重|重)\s*[:：]?\s*([\d.]+)/);
+  var w=t.match(new RegExp('(?:体重|重)'+SEP+'([\\d.]+)'));
   if(w) sug.push({type:'health', panel:'weight', title:'骄阳永灿 · 体重', val:parseFloat(w[1]), desc:'记录体重 '+w[1]+' kg'});
-  var sp=t.match(/(?:运动|跑步|快走|健走|骑行|游泳|瑜伽|跳操|健身)\s*[了]?\s*([\d.]+)\s*(分钟|公里|km|小时|个钟)?/);
+  var sp=t.match(new RegExp('(?:运动|跑步|快走|健走|骑行|游泳|瑜伽|跳操|健身)'+SEP+'[了]?\\s*([\\d.]+)\\s*(分钟|公里|km|小时|个钟)?'));
   if(sp) sug.push({type:'health', panel:'sport', title:'骄阳永灿 · 运动', val:parseFloat(sp[1]),
     note:(sp[0]||'').replace(/[\d.]+.*$/,'')+(sp[2]||'分钟'), desc:'记录运动 '+sp[1]+' '+(sp[2]||'分钟')});
-  var sl=t.match(/睡眠\s*[:：]?\s*([\d.]+)\s*(小时|h|个钟)?/);
+  var sl=t.match(new RegExp('睡眠'+SEP+'([\\d.]+)\\s*(小时|h|个钟)?'));
   if(sl) sug.push({type:'health', panel:'sleep', title:'骄阳永灿 · 睡眠', val:parseFloat(sl[1]), note:(sl[2]||'小时'), desc:'记录睡眠 '+sl[1]+' 小时'});
   if(/早餐|午餐|晚餐|吃了|加餐|饮食|喝|吃饭/.test(t)) sug.push({type:'health', panel:'diet', title:'骄阳永灿 · 餐饮', val:t.slice(0,40), desc:'记入餐饮记录'});
   // 进修
@@ -1320,6 +1346,22 @@ function renderMemoImgs(){
   box.innerHTML=h;
 }
 function delMemoImg(i){ UI.memoImgs.splice(i,1); renderMemoImgs(); }
+function renderMemoFlow(){
+  var box=$('memo-flow'); if(!box) return;
+  if(!DB.memos.length){ box.innerHTML='<div class="tiny">暂无速记。在「一句话速记」里点「仅存速记」或某条建议的「分配」后，记录都会出现在这里。</div>'; return; }
+  var h='';
+  for(var i=0;i<DB.memos.length && i<80;i++){
+    var m=DB.memos[i];
+    var badge = m.assigned? '<span class="tag g">'+esc(m.assigned)+'</span>' : '<span class="tag amber">待归类</span>';
+    h += '<div class="item"><div class="grow"><div style="font-weight:700;word-break:break-all">'+esc(m.text.slice(0,80))+'</div>'+
+      '<div class="tiny">'+m.at+' '+badge+(m.images&&m.images.length?(' · 图'+m.images.length):'')+'</div></div>'+
+      '<div class="ops">'+(m.assigned?'':'<button class="btn sm" onclick="reMemo('+i+')">重新归类</button>')+
+      '<button class="btn sm danger" onclick="delMemo('+i+')">删除</button></div></div>';
+  }
+  box.innerHTML=h;
+}
+function reMemo(i){ var m=DB.memos[i]; if(!m) return; switchModule('dash'); $('memo').value=m.text; UI.memoImgs=(m.images||[]).slice(); renderMemoImgs(); analyzeMemo(); }
+function delMemo(i){ if(!DB.memos[i]) return; DB.memos.splice(i,1); save(); renderMemoFlow(); toast('已删除该速记'); }
 function analyzeMemo(){
   var t=$('memo').value.trim();
   if(!t){ toast('请先输入、语音或补录文字内容'); return; }
@@ -1431,6 +1473,16 @@ function exportPng(title, lines){
 }
 function csvCell(v){ var s=String(v==null?'':v).replace(/"/g,'""'); return '"'+s+'"'; }
 function toCsv(rows){ var out=[]; for(var i=0;i<rows.length;i++){ var r=[]; for(var j=0;j<rows[i].length;j++) r.push(csvCell(rows[i][j])); out.push(r.join(',')); } return out.join('\r\n'); }
+// 生成 Excel 可直接打开的 .xls（SpreadsheetML / HTML 表格，纯本地无外部依赖）
+function toXls(rows, sheet){
+  sheet = sheet||'Sheet1';
+  var esc=function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var t='<table border="1" cellspacing="0">';
+  for(var i=0;i<rows.length;i++){ t+='<tr>'; for(var j=0;j<rows[i].length;j++) t+='<td>'+esc(rows[i][j])+'</td>'; t+='</tr>'; }
+  t+='</table>';
+  return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>'+esc(sheet)+'</title></head><body>'+t+'</body></html>';
+}
+function exportXls(filename, rows, sheet){ download(filename, toXls(rows, sheet), 'application/vnd.ms-excel'); toast('Excel 已导出（双击用 Excel 打开）'); }
 
 /* =======================================================================
    康庄幽径
@@ -1855,12 +1907,18 @@ function exportStudentsCsv(){
   download('学生名单_'+todayStr()+'.csv', toCsv(rows), 'text/csv');
   toast('CSV 已导出（Excel 可直接打开）');
 }
+function exportStudentsXls(){
+  var rows=[['姓名','班级','备注','红字数','小红花','建档时间']];
+  for(var i=0;i<DB.students.length;i++){ var s=DB.students[i];
+    rows.push([s.name, clsName(s.classId), s.note||'', errCount(s.id), s.flowers||0, s.createdAt||'']); }
+  exportXls('学生名单_'+todayStr()+'.xls', rows, '学生名单');
+}
 function importStudentsPick(){
   openModal('导入学生名单',
     '<div class="tiny" style="line-height:1.9">支持两种方式：<br>'+
-    '<b>1. 文件导入</b>：CSV / TXT（Excel 请先「另存为 CSV」）或本工作台导出的 JSON 备份。每行格式：<code>姓名,班级,备注</code><br>'+
+    '<b>1. 文件导入</b>：CSV / TXT（Excel 导出的表格请先「另存为 CSV」）或本工作台导出的 JSON 备份，也可直接选本工具导出的 <code>.xls</code>。每行格式：<code>姓名,班级,备注</code><br>'+
     '<b>2. 直接粘贴</b>：把名单粘到下面文本框，一行一个，或用顿号分隔。<br>'+
-    '<span style="color:var(--red)">说明：PDF / xlsx 是二进制格式，纯本地网页无法解析其内容，请转成 CSV 或粘贴文字。</span></div>'+
+    '<span style="color:var(--red)">说明：PDF / 真正的 .xlsx（压缩二进制）无法被纯本地网页解析，请「另存为 CSV」后用「选择 CSV/TXT/JSON」导入，或直接粘贴文字。</span></div>'+
     '<div class="field" style="margin-top:11px"><label class="fl">粘贴名单</label>'+
     '<textarea id="imp-txt" placeholder="张三,五年级(1)班,住宿&#10;李四,五年级(1)班&#10;王小雨"></textarea></div>',
     '<button class="btn sm" onclick="importStudentsFile()"><svg><use href="#i-upload"/></svg>选择 CSV/TXT/JSON</button>'+
@@ -2459,7 +2517,10 @@ function renderLib(){
     }
     if((mt.files||[]).length){
       out += '<div class="row">';
-      for(var k=0;k<mt.files.length;k++) out += '<button class="fileicon" onclick="dlMatFile(\''+mt.id+'\','+k+')"><svg width="13" height="13"><use href="#i-download"/></svg>'+esc(mt.files[k].name)+'</button>';
+      for(var k=0;k<mt.files.length;k++){ var fl=mt.files[k];
+        if(fl.kind==='audio'||fl.kind==='video') out += '<button class="fileicon" onclick="openMatDetail(\''+mt.id+'\')"><svg width="13" height="13"><use href="'+matKindIcon(fl.kind)+'"/></svg>▶ '+esc(fl.name)+'</button>';
+        else out += '<button class="fileicon" onclick="dlMatFile(\''+mt.id+'\','+k+')"><svg width="13" height="13"><use href="'+matKindIcon(fl.kind)+'"/></svg>'+esc(fl.name)+'</button>';
+      }
       out += '</div>';
     }
     if((mt.links||[]).length){
@@ -2477,6 +2538,27 @@ function renderLib(){
   lbox.innerHTML=out;
 }
 function pickProject(id){ UI.libProject=id; renderLib(); }
+function exportLibXls(){
+  var mats=libMats(), rows=[['标题','库','归属项目','正文','链接','附件','时间']];
+  for(var i=0;i<mats.length;i++){ var m=mats[i];
+    var links=(m.links||[]).map(function(l){ return (l.name||'')+(l.url?(' '+l.url):''); }).join(' | ');
+    var files=(m.files||[]).map(function(f){ return (matKindWord(f.kind)||'')+' '+f.name; }).join(' | ');
+    rows.push([m.title, m.lib==='work'?'工作素材':'学习素材', (m.projects||[]).map(function(p){return projName(m.lib,p);}).join('/'), (m.text||'').replace(/\n/g,' '), links, files, m.at||'']);
+  }
+  exportXls((UI.lib==='work'?'工作素材':'学习素材')+'_'+todayStr()+'.xls', rows, '素材库');
+}
+function exportTodosXls(){
+  var rows=[['待办内容','目标日期','是否完成']];
+  for(var i=0;i<DB.todos.length;i++){ var t=DB.todos[i];
+    rows.push([t.text, t.date||'', t.done?'已完成':'未完成']); }
+  exportXls('待办事项_'+todayStr()+'.xls', rows, '待办事项');
+}
+function exportMemosXls(){
+  var rows=[['内容','保存时间','归属']];
+  for(var i=0;i<DB.memos.length;i++){ var m=DB.memos[i];
+    rows.push([m.text, m.at||'', m.assigned||'待归类']); }
+  exportXls('速记流水_'+todayStr()+'.xls', rows, '速记流水');
+}
 function addProject(){ askPrompt('新增项目','项目名称，如：试卷 / 阅读 / 作文 / 佳词佳句','', function(v){
   DB.lib[UI.lib].projects.push({id:uid(), name:v}); save(); renderLib(); toast('项目已添加'); }); }
 function renameProject(id){
@@ -2536,12 +2618,27 @@ function openMatForm(){
     '<textarea id="mf-text" style="min-height:130px" placeholder="可直接粘贴文字；若是纸质材料，先用手机相册或扫描 App 识别文字后粘到此处，原稿可一并上传保存"></textarea></div>'+
     '<div class="field"><label class="fl">外部链接（网站 / 软件，可添加多个，名称|网址）</label><div id="mf-links"></div>'+
     '<button class="btn sm" type="button" onclick="addLinkRow()"><svg><use href="#i-plus"/></svg>再加一个链接</button>'+
-    '<div class="row"><button class="btn sm" onclick="pickMatImages()"><svg><use href="#i-image"/></svg>上传图片/扫描件</button>'+
-    '<button class="btn sm" onclick="pickMatFiles()"><svg><use href="#i-upload"/></svg>上传原稿（word/pdf/excel）</button></div>'+
+    '<div class="row"><button class="btn sm" onclick="pickMatImages()"><svg><use href="#i-image"/></svg>图片</button>'+
+    '<button class="btn sm" onclick="pickMatMedia(\'audio\')"><svg><use href="#i-mic"/></svg>音频</button>'+
+    '<button class="btn sm" onclick="pickMatMedia(\'video\')"><svg><use href="#i-play"/></svg>视频</button>'+
+    '<button class="btn sm" onclick="pickMatFiles()"><svg><use href="#i-upload"/></svg>原稿(word/pdf/excel)</button>'+
+    '<button class="btn sm" onclick="pickMatSoftware()"><svg><use href="#i-cog"/></svg>软件</button></div>'+
     '<div id="mf-thumbs" class="thumbs"></div><div id="mf-files" class="row" style="margin-top:6px"></div>'+
     '<div class="tiny" style="margin-top:9px">保存时会自动与库内已有素材比对，内容重复会先提示你对比后再决定是否储存。</div>',
     '<button class="btn" onclick="closeModal()">取消</button><button class="btn v" onclick="saveMat()">保存素材</button>', true);
   renderLinkRows([]);
+}
+function matKindIcon(kind){
+  if(kind==='audio') return '#i-mic';
+  if(kind==='video') return '#i-play';
+  if(kind==='software') return '#i-cog';
+  return '#i-file';
+}
+function matKindWord(kind){
+  if(kind==='audio') return '音频';
+  if(kind==='video') return '视频';
+  if(kind==='software') return '软件';
+  return '原稿';
 }
 function renderMFThumbs(){
   var t=$('mf-thumbs'), f=$('mf-files'); if(!t||!f) return;
@@ -2549,8 +2646,16 @@ function renderMFThumbs(){
   for(var i=0;i<MF.imgs.length;i++) h += '<img src="'+MF.imgs[i]+'" alt="图">';
   t.innerHTML=h;
   h='';
-  for(var i=0;i<MF.files.length;i++) h += '<span class="fileicon"><svg width="13" height="13"><use href="#i-file"/></svg>'+esc(MF.files[i].name)+'</span>';
+  for(var i=0;i<MF.files.length;i++){ var fl=MF.files[i];
+    h += '<span class="fileicon"><svg width="13" height="13"><use href="'+matKindIcon(fl.kind)+'"/></svg>'+esc(fl.name)+' <span class="tiny">'+matKindWord(fl.kind)+'</span></span>'; }
   f.innerHTML=h;
+}
+function pushMatFile(f, kind, capMB, cb){
+  if(f.size > capMB*1024*1024){ toast('「'+f.name+'」超过 '+capMB+'MB，本地空间有限已跳过；大文件建议只存链接'); if(cb) cb(); return; }
+  var fr=new FileReader();
+  fr.onload=function(){ MF.files.push({name:f.name, type:f.type, size:f.size, data:String(fr.result), kind:kind}); if(cb) cb(); };
+  fr.onerror=function(){ if(cb) cb(); };
+  fr.readAsDataURL(f);
 }
 function linkRowHtml(name,url){
   return '<div class="link-row" style="display:flex;gap:6px;margin-bottom:6px"><input type="text" class="lk-name" placeholder="名称（如：学科网 / 扫描全能王）" value="'+esc(name)+'" style="flex:1;min-width:0">'+
@@ -2583,16 +2688,24 @@ function pickMatImages(){
 }
 function pickMatFiles(){
   pickFiles('.doc,.docx,.pdf,.xls,.xlsx,.csv,.txt,.ppt,.pptx', true, function(fs){
-    var n=Math.min(fs.length, 5), done=0;
-    for(var i=0;i<n;i++){
-      (function(f){
-        if(f.size > 2*1024*1024){ toast('「'+f.name+'」超过 2MB，为避免本地空间被占满已跳过；建议只存文字+图片'); done++; return; }
-        var fr=new FileReader();
-        fr.onload=function(){ MF.files.push({name:f.name, type:f.type, size:f.size, data:String(fr.result)}); done++; if(done>=n) renderMFThumbs(); };
-        fr.onerror=function(){ done++; };
-        fr.readAsDataURL(f);
-      })(fs[i]);
-    }
+    var n=Math.min(fs.length, 6), done=0;
+    for(var i=0;i<n;i++){ (function(f){ pushMatFile(f, 'doc', 4, function(){ done++; if(done>=n) renderMFThumbs(); }); })(fs[i]); }
+    setTimeout(renderMFThumbs, 900);
+  });
+}
+function pickMatMedia(kind){
+  var accept = kind==='audio' ? 'audio/*' : 'video/*';
+  var cap = kind==='audio' ? 8 : 20;
+  pickFiles(accept, true, function(fs){
+    var n=Math.min(fs.length, 4), done=0;
+    for(var i=0;i<n;i++){ (function(f){ pushMatFile(f, kind, cap, function(){ done++; if(done>=n) renderMFThumbs(); }); })(fs[i]); }
+    setTimeout(renderMFThumbs, 900);
+  });
+}
+function pickMatSoftware(){
+  pickFiles('.apk,.exe,.msi,.zip,.rar,.7z,.dmg,.deb,.AppImage,application/octet-stream', true, function(fs){
+    var n=Math.min(fs.length, 4), done=0;
+    for(var i=0;i<n;i++){ (function(f){ pushMatFile(f, 'software', 8, function(){ done++; if(done>=n) renderMFThumbs(); }); })(fs[i]); }
     setTimeout(renderMFThumbs, 900);
   });
 }
@@ -2674,8 +2787,12 @@ function openMatDetail(id){
   if((m.images||[]).length){ h += '<div class="thumbs">';
     for(var i=0;i<m.images.length;i++) h += '<img src="'+m.images[i]+'" style="width:120px;height:120px" alt="图">';
     h += '</div>'; }
-  if((m.files||[]).length){ h += '<div class="row no-print" style="margin-top:8px">';
-    for(var i=0;i<m.files.length;i++) h += '<button class="fileicon" onclick="dlMatFile(\''+m.id+'\','+i+')"><svg width="13" height="13"><use href="#i-download"/></svg>'+esc(m.files[i].name)+'（下载原稿）</button>';
+  if((m.files||[]).length){ h += '<div class="row no-print" style="margin-top:8px;flex-direction:column;align-items:stretch">';
+    for(var i=0;i<m.files.length;i++){ var fl=m.files[i];
+      if(fl.kind==='audio') h += '<div style="margin:4px 0"><span class="tiny" style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><svg width="13" height="13"><use href="#i-mic"/></svg>音频 · '+esc(fl.name)+'</span><audio controls src="'+fl.data+'" style="width:100%"></audio></div>';
+      else if(fl.kind==='video') h += '<div style="margin:4px 0"><span class="tiny" style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><svg width="13" height="13"><use href="#i-play"/></svg>视频 · '+esc(fl.name)+'</span><video controls src="'+fl.data+'" style="width:100%;max-height:280px;border-radius:9px;background:#000"></video></div>';
+      else h += '<button class="fileicon" onclick="dlMatFile(\''+m.id+'\','+i+')"><svg width="13" height="13"><use href="#'+matKindIcon(fl.kind).slice(1)+'"/></svg>'+esc(fl.name)+'（下载'+matKindWord(fl.kind)+'）</button>';
+    }
     h += '</div>'; }
   if((m.links||[]).length){ h += '<div class="row" style="margin-top:9px">';
     for(var i=0;i<m.links.length;i++){ var lk=m.links[i];
@@ -2832,7 +2949,7 @@ function openSettings(){
     '<option value="supabase"'+(SYNC.backend==='supabase'?' selected':'')+'>Supabase（免费·国内有时可达）</option>'+
     '<option value="custom"'+(SYNC.backend==='custom'?' selected':'')+'>自建/其它服务器</option>'+
     '<option value="bmob"'+(SYNC.backend==='bmob'?' selected':'')+'>Bmob 云（国内免费·手机号注册）</option>'+
-    '<option value="github"'+(SYNC.backend==='github'?' selected':'')+'>GitHub Gist（免费·需 GitHub 账号）</option>'+
+    '<option value="github"'+(SYNC.backend==='github'?' selected':'')+'>GitHub Gist（免费·推荐·需 GitHub 账号）</option>'+
     '<option value="leancloud"'+(SYNC.backend==='leancloud'?' selected':'')+'>LeanCloud（旧·已停新注册）</option></select></div>'+
     (SYNC.backend==='leancloud' ?
       '<div class="field"><label class="fl">LeanCloud API 地址</label><input type="text" id="lc-api" placeholder="https://api.leancloud.cn" value="'+esc(SYNC.lcApi||'')+'"></div>'+
@@ -2975,6 +3092,7 @@ function refreshAll(){
   renderTodos();
   renderSearch();
   renderMemoResult();
+  renderMemoFlow();
   renderPath();
   renderSun();
   renderLib();
@@ -2982,14 +3100,17 @@ function refreshAll(){
 window.onerror=function(msg, src, line, col, err){
   var txt='出现一个小问题：';
   if(msg==='Script error.' || !msg) txt+='Script error（多为浏览器扩展/外接脚本或内联事件异常，建议换系统浏览器重试）';
-  else txt+=String(msg).slice(0,80);
+  else txt+=String(msg).slice(0,120);
   if(line) txt+=' ['+line+(col?':'+col:'')+']';
-  toast(txt);
+  console.error('WorkBuddy onerror:', msg, src, line, col, err);
+  toast(txt); showErrBanner(txt+'\n（已记入控制台，可截图反馈）');
   return false;
 };
 window.onunhandledrejection=function(ev){
   var r=ev&&ev.reason;
-  toast('出现一个小问题：'+(r&&(r.message||r)||'未处理的 Promise 异常').toString().slice(0,80));
+  var txt='出现一个小问题：'+(r&&(r.message||r)||'未处理的 Promise 异常').toString().slice(0,120);
+  console.error('WorkBuddy unhandledrejection:', r);
+  toast(txt); showErrBanner(txt);
 };
 document.addEventListener('DOMContentLoaded', function(){
   load();
@@ -3004,11 +3125,11 @@ document.addEventListener('DOMContentLoaded', function(){
 <script>
 /* ============ 云端同步（统一协议 Bearer Token + /api/*；多后端可一键切换/迁移） ============ */
 // 后端类型：cb 腾讯云CloudBase / cf Cloudflare / oracle Oracle Cloud / supabase Supabase / custom 自建 / bmob Bmob云 / github GitHub Gist；leancloud 仅旧兼容
-var SYNC = { backend:'cb', token:null, user:null, base:'', lcApp:'', lcKey:'', lcApi:'https://api.leancloud.cn', lcUid:'', lcObj:'', bmobApp:'', bmobKey:'', bmobUid:'', bmobObj:'', ghId:'', updatedAt:0, status:'off', pulling:false, _t:null, _iv:null, ocrAk:'', ocrSk:'', ocrTok:'', ocrExp:0, ocrProxy:'' };
+var SYNC = { backend:'github', token:null, user:null, base:'', lcApp:'', lcKey:'', lcApi:'https://api.leancloud.cn', lcUid:'', lcObj:'', bmobApp:'', bmobKey:'', bmobUid:'', bmobObj:'', ghId:'', updatedAt:0, status:'off', pulling:false, _t:null, _iv:null, ocrAk:'', ocrSk:'', ocrTok:'', ocrExp:0, ocrProxy:'' };
 
 function loadSyncCfg(){
   try{ var s=JSON.parse(localStorage.getItem('wb_yjtjy_sync')||'{}');
-    SYNC.backend=s.backend||'cb'; SYNC.token=s.token||null; SYNC.user=s.user||null;
+    SYNC.backend=s.backend||'github'; SYNC.token=s.token||null; SYNC.user=s.user||null;
     SYNC.base=(s.base||s.cbBase||'').replace(/\/+$/,''); SYNC.lcApp=s.lcApp||''; SYNC.lcKey=s.lcKey||'';
     SYNC.lcApi=s.lcApi||'https://api.leancloud.cn'; SYNC.lcUid=s.lcUid||''; SYNC.lcObj=s.lcObj||'';
     SYNC.bmobApp=s.bmobApp||''; SYNC.bmobKey=s.bmobKey||''; SYNC.bmobUid=s.bmobUid||''; SYNC.bmobObj=s.bmobObj||''; SYNC.ghId=s.ghId||''; SYNC.updatedAt=s.updatedAt||0;
